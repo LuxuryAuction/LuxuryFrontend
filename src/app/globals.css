@@ -1,0 +1,104 @@
+@config "../../tailwind.config.js";
+@import "tailwindcss";
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+html,
+body {
+}
+
+html {
+  height: 100%;
+  background: #0b0c0f;
+}
+
+body {
+  min-height: 100dvh;
+  margin: 0;
+  background: #0b0c0f;
+
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+}
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+/* Price Slider Styles */
+.thumb {
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.thumb::-webkit-slider-thumb {
+  background-color: #f0a500;
+  border: 3px solid #1c1f27;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(240, 165, 0, 0);
+  cursor: pointer;
+  height: 20px;
+  width: 20px;
+  pointer-events: all;
+  position: relative;
+  -webkit-appearance: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.thumb:active::-webkit-slider-thumb {
+  box-shadow: 0 0 0 10px rgba(240, 165, 0, 0.15);
+  transform: scale(1.1);
+}
+
+.thumb::-moz-range-thumb {
+  background-color: #f0a500;
+  border: 3px solid #1c1f27;
+  border-radius: 50%;
+  cursor: pointer;
+  height: 20px;
+  width: 20px;
+  pointer-events: all;
+  position: relative;
+  transition: all 0.2s ease-in-out;
+}
+
+.thumb:active::-moz-range-thumb {
+  box-shadow: 0 0 0 10px rgba(240, 165, 0, 0.15);
+  transform: scale(1.1);
+}
+
+/* Hide browser default icons/arrows for inputs */
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+input[type="datetime-local"]::-webkit-inner-spin-button,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}

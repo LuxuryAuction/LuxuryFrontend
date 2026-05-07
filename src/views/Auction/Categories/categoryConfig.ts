@@ -1,0 +1,58 @@
+import { IAuctionCategory } from "./types";
+
+export const MOCK_CATEGORIES: IAuctionCategory[] = [
+  {
+    id: "fine-art",
+    title: "OUTDOOR 🏔️ AUCTION",
+    shortDescription: "Oil paintings, sculptures and works on paper from Old Masters to Contemporary.",
+    img: "/images/categories/auction-image.jpg",
+    liveLots: 57,
+    price: 100,
+    href: "/user/auctions/fine-art",
+  },
+  {
+    id: "jewellery",
+    title: "LUXURY 💍 AUCTION",
+    shortDescription: "Signed pieces, diamonds, vintage timepieces and estate collections.",
+    img: "/images/categories/auction2-image.jpg",
+    liveLots: 57,
+    price: 100,
+    href: "/user/auctions/jewellery",
+  },
+  {
+    id: "antiquities",
+    title: "JERSEY ⚽️ AUCTION",
+    shortDescription: "Ancient Greek, Roman and Near Eastern objects with verified provenance.",
+    img: "/images/categories/auction3-image.jpg",
+    liveLots: 57,
+    price: 100,
+    href: "/user/auctions/antiquities",
+  },
+  {
+    id: "asian-art",
+    title: "LUXURY 💍 AUCTION",
+    shortDescription: "Chinese ceramics, Japanese prints, bronzes and decorative objects.",
+    img: "/images/categories/auction4-image.jpg",
+    liveLots: 57,
+    price: 100,
+    href: "/user/auctions/asian-art",
+  },
+  {
+    id: "design",
+    title: "VINTAGE ⏳ AUCTION",
+    shortDescription: "Modernist and contemporary furniture, lighting and decorative design.",
+    img: "/images/categories/auction5-image.jpg",
+   liveLots: 57,
+    price: 100,
+    href: "/user/auctions/design",
+  },
+  {
+    id: "manuscripts",
+    title: "SNEAKERS 👟 AUCTION",
+    shortDescription: "Illuminated manuscripts, rare books, maps and archival documents.",
+    img: "/images/categories/auction6-image.jpg",
+    liveLots: 57,
+    price: 100,
+    href: "/user/auctions/manuscripts",
+  },
+];
