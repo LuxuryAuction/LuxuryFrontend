@@ -13,7 +13,7 @@ export const Section = ({ step, title, description, children }: SectionProps) =>
         <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[#F0A50014] border border-[#F0A50030] text-brand-primary font-mono text-xs font-bold shrink-0">
           {step}
         </div>
-        <div className="flex-1 w-px bg-gradient-to-b from-[#F0A50020] to-transparent min-h-[2rem]" />
+        <div className="flex-1 w-px bg-linear-to-b from-[#F0A50020] to-transparent min-h-8" />
       </div>
       <div className="flex-1 bg-surface-secondary border border-border-primary rounded-2xl p-5 md:p-6 mb-6 hover:border-[#F0A50020] transition-colors duration-300">
         <div className="mb-5">

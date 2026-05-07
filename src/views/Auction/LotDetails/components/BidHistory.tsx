@@ -12,7 +12,7 @@ interface BidHistoryProps {
 export const BidHistory = ({ bids }: BidHistoryProps) => {
   return (
     <div className="flex flex-col gap-5 p-6 rounded-[16px] bg-surface-secondary/50 border border-border-primary relative overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-brand-primary/40 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-linear-to-r from-brand-primary/40 to-transparent" />
 
       <div className="flex items-center justify-between relative z-10">
         <div className="flex items-center gap-2">

@@ -1,23 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { ILot } from "../types";
-import { STATUS_CFG, LIVE_STATUSES, ENDED_STATUSES } from "../constants";
+import { LIVE_STATUSES, ENDED_STATUSES, STATUS_CFG } from "../constants";
 import { Countdown } from "./Countdown";
 import { StatusBadge } from "./StatusBadge";
 import { ImageCarousel } from "./ImageCarousel";
 import { ParticipantsIcon } from "@/public/assets/icons";
 import { formatCurrency } from "@/src/utils/textUtils";
+import { ILot } from "@/src/services/LotsService/types";
 
 export const GridVariant = ({ lot, showCategory = true }: { lot: ILot; showCategory?: boolean }) => {
   const c = STATUS_CFG[lot.status];
   const isLive = LIVE_STATUSES.includes(lot.status);
   const isEnded = ENDED_STATUSES.includes(lot.status);
-  const href = lot.href ?? `/user/auctions/${lot.category}/${lot.id}`;
 
   return (
     <Link
-      href={href}
+      href={`/user/auctions/${lot.categoryId}/${lot.id}`}
       className="group relative flex flex-col h-full overflow-hidden rounded-md transition-all duration-300 hover:-translate-y-[4px] bg-surface-secondary border border-border-primary hover:border-brand-primary/30 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
     >
       <div
@@ -28,12 +27,12 @@ export const GridVariant = ({ lot, showCategory = true }: { lot: ILot; showCateg
         }}
       />
 
-      <div className="relative overflow-hidden aspect-[4/3]">
-        <ImageCarousel images={lot.images} img={lot.images?.[0]} category={lot.category} />
-        <div className="absolute inset-0 bg-gradient-to-t from-surface-primary/90 via-transparent to-black/10 pointer-events-none" />
+      <div className="relative overflow-hidden aspect-4/3">
+        <ImageCarousel images={lot.images} img={lot.images?.[0]} category={lot.category.name} />
+        <div className="absolute inset-0 bg-linear-to-t from-surface-primary/90 via-transparent to-black/10 pointer-events-none" />
 
         <div className="absolute top-3 left-3 right-3 flex items-start justify-between z-10">
-          <span className="px-2 py-1 rounded-sm font-mono text-[9px] tracking-[0.1em] uppercase bg-black/50 border border-white/10 text-content-secondary backdrop-blur-md">
+          <span className="px-2 py-1 rounded-sm font-mono text-[9px] tracking-widest uppercase bg-black/50 border border-white/10 text-content-secondary backdrop-blur-md">
             #{lot.lotNumber}
           </span>
           <StatusBadge status={lot.status} />
@@ -41,7 +40,7 @@ export const GridVariant = ({ lot, showCategory = true }: { lot: ILot; showCateg
 
         <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between z-10">
           <div className="flex gap-1.5">
-            {isLive && <Countdown endsAt={lot.endsAt} />}
+            {isLive && <Countdown endsAt={lot.endDate} />}
             <span className="px-2 py-[4px] rounded-sm font-mono text-[9px] flex items-center gap-1 bg-black/50 border border-white/10 text-content-secondary backdrop-blur-md">
               <ParticipantsIcon className="w-[10px] h-[10px]" />
               {lot.totalParticipants}
@@ -57,12 +56,12 @@ export const GridVariant = ({ lot, showCategory = true }: { lot: ILot; showCateg
       <div className="flex flex-col flex-1 p-4">
         {showCategory && (
           <span className="font-mono text-[9px] tracking-[0.18em] uppercase mb-1 text-content-tertiary">
-            {lot.category}
+            {lot.category.name}
           </span>
         )}
 
         <h3 className="font-semibold text-[15px] leading-tight mb-2 text-content-primary group-hover:text-white transition-colors duration-200 line-clamp-2">
-          {lot.title}
+          {lot.name}
         </h3>
 
         <div className="flex flex-wrap gap-1.5 mb-3">
@@ -82,20 +81,25 @@ export const GridVariant = ({ lot, showCategory = true }: { lot: ILot; showCateg
             </span>
           )}
         </div>
-
+        {/* 
         {lot.description && (
           <p className="text-[11px] text-content-tertiary mb-2 line-clamp-2">
             {lot.description}
           </p>
-        )}
+        )} */}
+
+        <p className="text-[11px] text-content-tertiary mb-2 line-clamp-2">
+          Exceptional vintage Submariner with original meters first matte dial. Kept in a safe for 20 years, untouched case with thick lugs and chamfers.
+        </p>
+
 
         <div className="text-[11px] mb-4 text-content-tertiary font-medium flex items-center justify-between">
           <span>
             by <span className="text-content-secondary">@{lot.sellerUsername}</span>
           </span>
-          {lot.publishedAt && (
+          {lot.startsAt && (
             <span className="font-mono text-[9px] uppercase tracking-wider opacity-60">
-              {new Date(lot.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              {new Date(lot.startsAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
             </span>
           )}
         </div>
@@ -110,7 +114,8 @@ export const GridVariant = ({ lot, showCategory = true }: { lot: ILot; showCateg
               className={`font-mono text-[15px] font-bold leading-none ${isEnded ? "text-green-400" : "text-brand-primary"
                 }`}
             >
-              {formatCurrency(lot.currentBid)}
+              {/* {formatCurrency(lot.currentBid)} */}
+              {formatCurrency(666)}
             </div>
           </div>
 
@@ -126,6 +131,6 @@ export const GridVariant = ({ lot, showCategory = true }: { lot: ILot; showCateg
           </div>
         </div>
       </div>
-    </Link>
+    </Link >
   );
 };

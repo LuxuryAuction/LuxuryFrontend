@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import { ImgPlaceholder } from "./ImgPlaceholder";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/public/assets/icons";
@@ -106,7 +106,7 @@ export const ImageCarousel = ({ images, img, category }: ImageCarouselProps) => 
         {allImages.map((src, i) => (
           <div
             key={i}
-            className="relative h-full flex-shrink-0"
+            className="relative h-full shrink-0"
             style={{ width: `${100 / count}%` }}
           >
             <Image

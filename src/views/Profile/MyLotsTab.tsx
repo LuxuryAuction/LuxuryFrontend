@@ -9,6 +9,7 @@ import { useIsMobile } from "@/src/hooks/useIsMobile";
 import { Pagination } from "@/src/components/ui/Pagination";
 import { EmptyBoxIcon } from "@/public/assets/icons";
 import { MOCK_LOTS } from "@/src/views/Auction/MyLots/mockLots";
+import NoData from "@/src/components/ui/NoData";
 
 const MY_LOTS_FILTER_TABS = [
   { id: "all", label: "All Lots" },
@@ -93,13 +94,11 @@ export const MyLotsTab = () => {
           />
         </>
       ) : (
-        <div className="flex flex-col items-center justify-center py-20 bg-surface-secondary border border-dashed border-border-primary rounded-3xl animate-bvCatFadeUp">
-          <div className="w-16 h-16 bg-surface-primary rounded-2xl flex items-center justify-center mb-4 border border-border-primary">
-            <EmptyBoxIcon className="text-content-tertiary" />
-          </div>
-          <h3 className="text-content-primary font-semibold text-lg">No lots found</h3>
-          <p className="text-content-tertiary text-sm mt-1">There are no lots matching your search.</p>
-        </div>
+        <NoData
+          title="No lots found"
+          description="There are no lots matching your search."
+          icon={<EmptyBoxIcon className="text-content-tertiary" />}
+        />
       )}
     </div>
   );

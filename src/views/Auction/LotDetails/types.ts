@@ -1,4 +1,4 @@
-import { LotStatus } from "@/src/components/ui/LotCard/types";
+import { LotStatus } from "@/src/components/ui/LotCard/constants";
 
 export interface IBid {
   id: string;
@@ -32,7 +32,6 @@ export interface ILotDetails {
   status: LotStatus;
   totalParticipants: number;
   totalBids: number;
-  buyNowPrice?: number;
   publishedAt?: string;
   sex?: string;
   seller: {

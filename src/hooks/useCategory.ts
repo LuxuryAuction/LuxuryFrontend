@@ -4,18 +4,18 @@ import { categoryService } from "../services/CategoriesService";
 
 export const useGetCategories = () => {
   const [categories, setCategories] = useState<ICategory[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchCategories = async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const data = await categoryService.getCategories();
       setCategories(data);
     } catch (error) {
       setError(error as Error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -25,7 +25,7 @@ export const useGetCategories = () => {
 
   return {
     categories,
-    loading,
+    isLoading,
     error,
     fetchCategories,
   };

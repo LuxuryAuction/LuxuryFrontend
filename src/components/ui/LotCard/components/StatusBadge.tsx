@@ -1,14 +1,14 @@
 "use client";
 
-import React from "react";
-import { LotStatus } from "../types";
-import { STATUS_CFG } from "../constants";
+import { LotStatus, STATUS_CFG } from "../constants";
 
 export const StatusBadge = ({ status }: { status: LotStatus }) => {
   const c = STATUS_CFG[status];
+  if (!c) return null;
+
   return (
     <span
-      className="inline-flex items-center gap-1 px-2 py-[3px] rounded-full font-mono text-[9px] font-medium uppercase tracking-[0.1em] whitespace-nowrap"
+      className="inline-flex items-center gap-1 px-2 py-[3px] rounded-full font-mono text-[9px] font-medium uppercase tracking-widest whitespace-nowrap"
       style={{
         background: c.bg,
         border: `1px solid ${c.border}`,
@@ -24,7 +24,7 @@ export const StatusBadge = ({ status }: { status: LotStatus }) => {
           }}
         />
       )}
-      {status === "ACTIVE" ? "Live" : c.label}
+      {c.label}
     </span>
   );
 };

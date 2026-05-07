@@ -4,6 +4,10 @@
  */
 export const API_ENDPOINTS = { 
   CATEGORIES:{
-    LIST: 'admin/categories'
+    LIST: 'categories'
+  },
+  LOTS:{
+    LIST: 'lots',
+    GET_BY_ID: (id: number) => `lots/${id}`
   }
 }

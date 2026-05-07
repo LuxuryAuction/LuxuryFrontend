@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ClockIcon, LightningIcon, ShieldIcon, CreditCardIcon, CheckIcon } from "@/public/assets/icons";
+import { ClockIcon, ShieldIcon, CreditCardIcon, CheckIcon } from "@/public/assets/icons";
 import { formatCurrency } from "@/src/utils/textUtils";
 
 interface BiddingPanelProps {
@@ -11,7 +11,6 @@ interface BiddingPanelProps {
   endTime: string;
   totalBids: number;
   totalParticipants: number;
-  buyNowPrice?: number;
   onPlaceBid: (amount: number) => void;
 }
 
@@ -22,7 +21,6 @@ export const BiddingPanel = ({
   endTime,
   totalBids,
   totalParticipants,
-  buyNowPrice,
   onPlaceBid,
 }: BiddingPanelProps) => {
   const [timeLeft, setTimeLeft] = useState("");
@@ -53,7 +51,7 @@ export const BiddingPanel = ({
 
         setIsUrgent(diff < 1000 * 60 * 60 * 2);
       }
-    }, 1000);
+    }, 10000);
     return () => clearInterval(timer);
   }, [endTime]);
 
@@ -63,8 +61,8 @@ export const BiddingPanel = ({
 
   return (
     <div className="flex flex-col">
-      <div className="rounded-t-[16px] bg-gradient-to-br from-surface-secondary via-surface-secondary to-surface-tertiary/50 border border-border-primary border-b-0 relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-brand-primary via-brand-primary/60 to-transparent" />
+      <div className="rounded-t-[16px] bg-linear-to-br from-surface-secondary via-surface-secondary to-surface-tertiary/50 border border-border-primary border-b-0 relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-linear-to-r from-brand-primary via-brand-primary/60 to-transparent" />
 
         <div className="absolute -top-16 -right-16 w-40 h-40 bg-brand-primary/8 blur-[60px] pointer-events-none" />
 
@@ -156,20 +154,14 @@ export const BiddingPanel = ({
 
           <button
             onClick={() => onPlaceBid(bidAmount)}
-            className="group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-brand-primary to-[#ffb822] py-4 text-[13px] uppercase tracking-[0.15em] font-black text-black shadow-[0_8px_20px_rgba(240,165,0,0.25)] hover:shadow-[0_12px_25px_rgba(240,165,0,0.4)] active:scale-[0.98] transition-all duration-300 cursor-pointer"
+            className="group relative w-full overflow-hidden rounded-xl bg-linear-to-r from-brand-primary to-[#ffb822] py-4 text-[13px] uppercase tracking-[0.15em] font-black text-black shadow-[0_8px_20px_rgba(240,165,0,0.25)] hover:shadow-[0_12px_25px_rgba(240,165,0,0.4)] active:scale-[0.98] transition-all duration-300 cursor-pointer"
+          // className="w-full py-3.5 rounded-xl border border-brand-primary/25 text-brand-primary text-[12px] font-bold uppercase tracking-widest hover:bg-brand-primary/5 hover:border-brand-primary/40 transition-all flex items-center justify-center gap-2 group cursor-pointer"
           >
-            <div className="absolute inset-0 -translate-x-[150%] bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out skew-x-[-20deg]" />
+            <div className="absolute inset-0 -translate-x-[150%] bg-linear-to-r from-transparent via-white/40 to-transparent group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out skew-x-[-20deg]" />
             <span className="relative z-10 flex items-center justify-center gap-2">
               Place Bid <span className="opacity-50 font-normal">—</span> {formatCurrency(bidAmount, "before")}
             </span>
           </button>
-
-          {buyNowPrice && (
-            <button className="w-full py-3.5 rounded-xl border border-brand-primary/25 text-brand-primary text-[12px] font-bold uppercase tracking-widest hover:bg-brand-primary/5 hover:border-brand-primary/40 transition-all flex items-center justify-center gap-2 group cursor-pointer">
-              <LightningIcon className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
-              Buy Now — {formatCurrency(buyNowPrice, "before")}
-            </button>
-          )}
 
           <div className="flex items-center justify-center gap-4 pt-3 border-t border-border-primary/30">
             <div className="flex items-center gap-1.5 text-[9px] text-content-tertiary uppercase tracking-wider">

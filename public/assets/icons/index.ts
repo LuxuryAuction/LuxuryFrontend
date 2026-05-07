@@ -18,6 +18,7 @@ import HryvniaIcon from "./hryvnia-icon.svg"
 import GridIcon from "./grid-icon.svg"
 import ListIcon from "./list-icon.svg"
 import ClockIcon from "./clock-icon.svg"
+import FilterIcon from "./filter-icon.svg"
 import ParticipantsIcon from "./participants-icon.svg"
 import ChevronLeftIcon from "./chevron-left-icon.svg"
 import ChevronRightIcon from "./chevron-right-icon.svg"
@@ -30,6 +31,7 @@ import CheckIcon from "./check-icon.svg"
 import SendIcon from "./send-icon.svg"
 import OpenLinkIcon from "./open-link-icon.svg";
 import WarningIcon from "./warning-icon.svg";
+import PhotoIcon from "./photo-icon.svg";
 
 export {
   SearchIcon,
@@ -52,6 +54,7 @@ export {
   GridIcon,
   ListIcon,
   ClockIcon,
+  FilterIcon,
   ParticipantsIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -63,5 +66,6 @@ export {
   CheckIcon,
   SendIcon,
   OpenLinkIcon,
-  WarningIcon
+  WarningIcon,
+  PhotoIcon,
 }

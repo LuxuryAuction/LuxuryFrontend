@@ -1,130 +1,114 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { LotInfo } from "./components/LotInfo";
 import { BiddingPanel } from "./components/BiddingPanel";
 import { BidHistory } from "./components/BidHistory";
 import { LotChat } from "./components/LotChat";
-import { MOCK_LOT_DETAILS } from "./lot-details.config";
-import { MOCK_LOTS } from "../MyLots/mockLots";
 import { useToast } from "@/src/components/ui/Toast";
 import PageHeader from "@/src/components/ui/PageHeader";
 import { Tabs } from "@/src/components/ui/Tabs";
 import { SellerCard } from "./components/SellerCard";
 import { formatCurrency } from "@/src/utils/textUtils";
+import { useGetLot } from "@/src/hooks/useLots";
 
 interface LotDetailsViewProps {
   id?: string;
 }
 
+const MOCK_MESSAGES = [
+  {
+    id: "m1",
+    userName: "Trajan",
+    userAvatar: "https://i.pravatar.cc/150?u=trajan",
+    message: "Does it come with original box and papers?",
+    timestamp: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
+    role: "bidder" as const,
+  },
+  {
+    id: "m2",
+    userName: "Alex Kovalenko",
+    userAvatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200&h=200",
+    message: "This listing is for the watch only. However, it was recently serviced by an authorized Rolex center.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 150).toISOString(),
+    role: "seller" as const,
+  },
+  {
+    id: "m3",
+    userName: "Marcus Aurelius",
+    userAvatar: "https://i.pravatar.cc/150?u=marcus",
+    message: "Beautiful piece! Is the lume still glowing?",
+    timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
+    role: "bidder" as const,
+  },
+];
+
+const MOCK_BIDS = [
+  {
+    id: "b1",
+    userName: "Marcus Aurelius",
+    userAvatar: "https://i.pravatar.cc/150?u=marcus",
+    amount: 1450,
+    timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+    isLeading: true,
+  },
+  {
+    id: "b2",
+    userName: "Hadrian",
+    userAvatar: "https://i.pravatar.cc/150?u=hadrian",
+    amount: 1350,
+    timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+    isLeading: false,
+  },
+  {
+    id: "b3",
+    userName: "Nero Claudius",
+    userAvatar: "https://i.pravatar.cc/150?u=nero",
+    amount: 1200,
+    timestamp: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
+    isLeading: false,
+  },
+  {
+    id: "b4",
+    userName: "Trajan",
+    userAvatar: "https://i.pravatar.cc/150?u=trajan",
+    amount: 1100,
+    timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
+    isLeading: false,
+  },
+];
+
 export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
-  const [lot, setLot] = useState(MOCK_LOT_DETAILS);
+  const { data: lot } = useGetLot(Number(id))
   const [activeTab, setActiveTab] = useState<"history" | "chat">("history");
   const { showToast } = useToast();
 
-  useEffect(() => {
-    if (id) {
-      const foundLot = MOCK_LOTS.find(l => l.id === id);
-      if (foundLot) {
-        setLot({
-          ...MOCK_LOT_DETAILS,
-          id: foundLot.id,
-          lotNumber: foundLot.lotNumber,
-          title: foundLot.title,
-          category: foundLot.category,
-          description: foundLot.description || MOCK_LOT_DETAILS.description,
-          images: foundLot.images || MOCK_LOT_DETAILS.images,
-          currentPrice: foundLot.currentBid,
-          startingBid: foundLot.startingBid,
-          minStep: foundLot.priceStep,
-          endTime: foundLot.endsAt,
-          status: foundLot.status,
-          totalParticipants: foundLot.totalParticipants,
-          totalBids: foundLot.totalBids,
-          buyNowPrice: foundLot.buyNowPrice,
-          publishedAt: foundLot.publishedAt,
-          sex: foundLot.sex,
-          attributes: [
-            { label: "Size", value: foundLot.size || "N/A" },
-            { label: "Condition", value: foundLot.condition || "N/A" },
-            { label: "Sex", value: foundLot.sex || "Unisex" }
-          ]
-        });
-      }
-    }
-  }, [id]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const outbidAmount = lot.currentPrice + 500;
-      const systemBid = {
-        id: `b-sys-${Date.now()}`,
-        userName: "Gaius Julius",
-        userAvatar: "https://i.pravatar.cc/150?u=gaius",
-        amount: outbidAmount,
-        timestamp: new Date().toISOString(),
-        isLeading: true
-      };
-
-      setLot(prev => ({
-        ...prev,
-        currentPrice: outbidAmount,
-        totalBids: prev.totalBids + 1,
-        bids: [systemBid, ...prev.bids.map(b => ({ ...b, isLeading: false }))]
-      }));
-
-      showToast("info", `New leading bid: ${formatCurrency(outbidAmount, "before")}!`);
-    }, 15000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   const handlePlaceBid = (amount: number) => {
+    if (!lot) return;
+
     if (amount <= lot.currentPrice) {
       showToast("error", "Bid must be higher than current price");
       return;
     }
 
-    const newBid = {
-      id: `b-${Date.now()}`,
-      userName: "You",
-      userAvatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200&h=200",
-      amount,
-      timestamp: new Date().toISOString(),
-      isLeading: true
-    };
-
-    setLot(prev => ({
-      ...prev,
-      currentPrice: amount,
-      totalBids: prev.totalBids + 1,
-      bids: [newBid, ...prev.bids.map(b => ({ ...b, isLeading: false }))]
-    }));
-
     showToast("success", `You are now the leading bidder at ${formatCurrency(amount, "before")}!`);
   };
 
   const handleSendMessage = (text: string) => {
-    const newMessage = {
-      id: `m-${Date.now()}`,
-      userName: "You",
-      userAvatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200&h=200",
-      message: text,
-      timestamp: new Date().toISOString(),
-      role: "bidder" as const
-    };
-
-    setLot(prev => ({
-      ...prev,
-      messages: [...prev.messages, newMessage]
-    }));
+    console.log(text);
+    showToast('success', `Msg sent ${text}`)
   };
+
+
+  if (!lot) {
+    return <div>No data</div>
+  }
 
   return (
     <div className="flex flex-col min-h-screen p-5 md:p-8 mx-auto animate-bvCatFadeUp">
       <PageHeader
-        label={`LOT #${lot.lotNumber}`}
-        title={lot.title}
+        label={`${lot.lotNumber}`}
+        title={lot.name}
         description={
           <div className="flex flex-wrap items-center gap-3 mt-1">
             <div className="flex items-center gap-1.5">
@@ -142,17 +126,21 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 mt-4 items-start">
         <div className="lg:col-span-7 flex flex-col gap-10">
           <LotInfo
-            title={lot.title}
+            title={lot.name}
             description={lot.description}
-            images={lot.images}
-            attributes={lot.attributes}
+            images={lot.imageUrls}
+            attributes={[
+              { label: "Size", value: lot.size },
+              { label: "Condition", value: lot.condition },
+              { label: "Sex", value: lot.sex },
+            ]}
             lotNumber={lot.lotNumber}
-            category={lot.category}
-            publishedAt={lot.publishedAt}
+            category={lot.category.name}
+            publishedAt={lot.startsAt}
           />
 
           <div className="hidden lg:block">
-            <LotChat messages={lot.messages} onSendMessage={handleSendMessage} />
+            <LotChat messages={MOCK_MESSAGES} onSendMessage={handleSendMessage} />
           </div>
         </div>
 
@@ -160,12 +148,11 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
           <div className="lg:top-6 z-20">
             <BiddingPanel
               currentPrice={lot.currentPrice}
-              startingBid={lot.startingBid}
-              minStep={lot.minStep}
-              endTime={lot.endTime}
+              startingBid={lot.startingPrice}
+              minStep={lot.priceStep}
+              endTime={lot.endDate}
               totalBids={lot.totalBids}
               totalParticipants={lot.totalParticipants}
-              buyNowPrice={lot.buyNowPrice}
               onPlaceBid={handlePlaceBid}
             />
           </div>
@@ -184,11 +171,11 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
 
 
             <div className={activeTab === "history" ? "block" : "hidden lg:block"}>
-              <BidHistory bids={lot.bids} />
+              <BidHistory bids={MOCK_BIDS} />
             </div>
 
             <div className={activeTab === "chat" ? "block lg:hidden" : "hidden"}>
-              <LotChat messages={lot.messages} onSendMessage={handleSendMessage} />
+              <LotChat messages={MOCK_MESSAGES} onSendMessage={handleSendMessage} />
             </div>
 
             <SellerCard seller={lot.seller} />

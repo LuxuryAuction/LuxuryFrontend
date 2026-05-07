@@ -1,8 +1,9 @@
 "use client";
 
-import { ChevronLeftIcon, ChevronRightIcon } from "@/public/assets/icons";
+import { ChevronLeftIcon, ChevronRightIcon, PhotoIcon } from "@/public/assets/icons";
 import { formatDateTime } from "@/src/utils/textUtils";
-import { useState } from "react";
+import Image from "next/image";
+import { useState, useRef } from "react";
 
 interface LotInfoProps {
   title: string;
@@ -17,42 +18,87 @@ interface LotInfoProps {
 export const LotInfo = ({ title, description, images, attributes, lotNumber, category, publishedAt }: LotInfoProps) => {
   const [activeImage, setActiveImage] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
+  const dragStartX = useRef<number | null>(null);
+  const didDrag = useRef(false);
 
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (isZoomed) return;
+    dragStartX.current = e.clientX;
+    didDrag.current = false;
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (dragStartX.current !== null && Math.abs(e.clientX - dragStartX.current) > 10) {
+      didDrag.current = true;
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (dragStartX.current === null) return;
+    const delta = e.clientX - dragStartX.current;
+    dragStartX.current = null;
+
+    if (didDrag.current) {
+      if (delta < -50) {
+        setActiveImage((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+      } else if (delta > 50) {
+        setActiveImage((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+      }
+      didDrag.current = false;
+    }
+  };
 
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-4">
         <div
-          className="relative aspect-[4/3] rounded-[16px] overflow-hidden border border-border-primary bg-surface-secondary shadow-2xl cursor-zoom-in group"
-          onClick={() => setIsZoomed(!isZoomed)}
+          className="relative aspect-4/3 rounded-[16px] overflow-hidden border border-border-primary bg-surface-secondary shadow-2xl cursor-zoom-in group select-none touch-none"
+          onClick={() => !didDrag.current && setIsZoomed(!isZoomed)}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
         >
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-brand-primary via-brand-primary/60 to-transparent opacity-90 z-20" />
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-linear-to-r from-brand-primary via-brand-primary/60 to-transparent opacity-90 z-30" />
 
-          <img
-            src={images[activeImage]}
-            alt={title}
-            className={`w-full h-full object-cover transition-transform duration-700 ease-out ${isZoomed ? "scale-150" : "scale-100 group-hover:scale-[1.03]"}`}
-            key={activeImage}
-          />
+          <div
+            className="flex h-full transition-transform duration-500 ease-out will-change-transform"
+            style={{
+              width: `${images.length * 100}%`,
+              transform: `translateX(-${(activeImage * 100) / images.length}%)`,
+            }}
+          >
+            {images.map((img, i) => (
+              <div
+                key={i}
+                className="relative h-full shrink-0 overflow-hidden"
+                style={{ width: `${100 / images.length}%` }}
+              >
+                <Image
+                  src={img}
+                  alt={`${title} ${i + 1}`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 900px"
+                  className={`object-cover transition-transform duration-700 ease-out pointer-events-none ${isZoomed && activeImage === i ? "scale-150" : "scale-100 group-hover:scale-[1.03]"}`}
+                  draggable={false}
+                  priority={i === 0}
+                  unoptimized
+                />
+              </div>
+            ))}
+          </div>
 
-          <div className="absolute inset-0 bg-gradient-to-t from-surface-primary/70 via-transparent to-surface-primary/10 pointer-events-none" />
+          <div className="absolute inset-0 bg-linear-to-t from-surface-primary/70 via-transparent to-surface-primary/10 pointer-events-none z-10" />
 
-          {/* Image counter badge */}
           <div className="absolute bottom-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 z-20">
-            <svg className="w-3.5 h-3.5 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-              <circle cx="8.5" cy="8.5" r="1.5" />
-              <polyline points="21 15 16 10 5 21" />
-            </svg>
+            <PhotoIcon className="w-3.5 h-3.5 text-white/70" />
             <span className="text-[11px] font-mono text-white/80 font-medium">
               {activeImage + 1} / {images.length}
             </span>
           </div>
 
-          {/* Lot number badge */}
           <div className="absolute top-4 left-4 flex items-center gap-2 z-20">
             <span className="px-2.5 py-1 rounded-lg bg-black/50 backdrop-blur-md border border-white/10 text-[10px] font-mono font-bold text-white/90 uppercase tracking-widest">
-              LOT #{lotNumber}
+              {lotNumber}
             </span>
           </div>
 
@@ -84,7 +130,14 @@ export const LotInfo = ({ title, description, images, attributes, lotNumber, cat
                 : "border-border-primary opacity-40 hover:opacity-80 hover:border-border-primary/80"
                 }`}
             >
-              <img src={img} alt={`${title} ${i + 1}`} className="w-full h-full object-cover" />
+              <Image
+                src={img}
+                alt={`${title} ${i + 1}`}
+                fill
+                sizes="72px"
+                className="object-cover"
+                unoptimized
+              />
               {activeImage === i && (
                 <div className="absolute inset-0 border-2 border-brand-primary rounded-[10px]" />
               )}
@@ -117,7 +170,7 @@ export const LotInfo = ({ title, description, images, attributes, lotNumber, cat
       </div>
 
       <div className="grid grid-cols-3 gap-px bg-border-primary/40 rounded-[16px] border border-border-primary relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-brand-primary via-brand-primary/40 to-transparent opacity-60 z-10" />
+        <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-linear-to-r from-brand-primary via-brand-primary/40 to-transparent opacity-60 z-10" />
 
         {attributes.map((attr, i) => (
           <div
@@ -134,5 +187,6 @@ export const LotInfo = ({ title, description, images, attributes, lotNumber, cat
         ))}
       </div>
     </div>
+
   );
 };

@@ -14,7 +14,6 @@ const AuctionRulesStrictSection = ({ rules }: AuctionRulesStrictSectionProps) =>
   return (
     <section className="mb-12 md:mb-16 animate-bvCatFadeUp">
 
-      {/* ── section header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-2.5 mb-3">
@@ -29,7 +28,7 @@ const AuctionRulesStrictSection = ({ rules }: AuctionRulesStrictSectionProps) =>
           </h2>
         </div>
 
-        <div className="flex items-center gap-2.5 self-start sm:self-auto shrink-0 px-3.5 py-2 rounded-xl border border-red-500/30 bg-red-500/[0.08]">
+        <div className="flex items-center gap-2.5 self-start sm:self-auto shrink-0 px-3.5 py-2 rounded-xl border border-red-500/30 bg-red-500/8">
           <span className="relative flex h-1.5 w-1.5 shrink-0" aria-hidden>
             <span className="absolute inline-flex h-full w-full rounded-full bg-red-400/60 animate-ping" />
             <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red-500" />

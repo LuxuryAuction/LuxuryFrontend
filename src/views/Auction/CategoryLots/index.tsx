@@ -1,32 +1,26 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useRef, useState } from "react";
 import { PageHeader } from "@/src/components/ui/PageHeader";
-import { LotCard, ILot } from "@/src/components/ui/LotCard";
+import { LotCard } from "@/src/components/ui/LotCard";
 import { ViewSwitcher, ViewVariant } from "@/src/components/ui/ViewSwitcher";
 import { Tabs } from "@/src/components/ui/Tabs";
 import { Input } from "@/src/components/ui/Input";
 import { Pagination } from "@/src/components/ui/Pagination";
 import { useClickOutside } from "@/src/hooks/useClickOutside";
 import { useIsMobile } from "@/src/hooks/useIsMobile";
-import { EmptyBoxIcon } from "@/public/assets/icons";
+import { EmptyBoxIcon, FilterIcon } from "@/public/assets/icons";
 import { FiltersPopover } from "./components/FiltersPopover";
-import { MOCK_CATEGORIES } from "../Categories/categoryConfig";
-import { SEX_OPTIONS, SIZE_OPTIONS } from "../CreateLot/createLotConfig";
-import { MOCK_LOTS } from "../MyLots/mockLots";
-
-const CATEGORY_FILTER_TABS = [
-  { id: "all", label: "All Lots" },
-  { id: "live", label: "Live Now" },
-  { id: "upcoming", label: "Upcoming" },
-  { id: "ended", label: "Ended" },
-];
+import NoData from "@/src/components/ui/NoData";
+import { useGetLots } from "@/src/hooks/useLots";
+import { CATEGORY_FILTER_TABS } from "./categoryConfig";
 
 interface CategoryLotsViewProps {
   categoryId: string;
 }
 
 export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
+
   const [viewVariant, setViewVariant] = useState<ViewVariant>("grid");
   const [activeTab, setActiveTab] = useState("all");
 
@@ -43,39 +37,36 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
   const isMobile = useIsMobile();
   const filtersRef = useRef<HTMLDivElement>(null);
 
+  const { data } = useGetLots({
+    categoryId: Number(categoryId),
+    page,
+    pageSize: 10,
+    search,
+    sex,
+    minPrice,
+    maxPrice,
+  });
+
+  const onTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    setPage(1);
+  };
+
+  const onSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
 
   useClickOutside(filtersRef, () => setShowFilters(false));
 
-  const category = MOCK_CATEGORIES.find(c => c.id === categoryId);
-  const title = category?.title || "Category Not Found";
-  const desc = category?.shortDescription || "Browse available lots in this category.";
-
-  const filteredLots = MOCK_LOTS.filter(lot => {
-    if (activeTab !== "all") {
-      if (activeTab === "live" && lot.status !== "ACTIVE") return false;
-      if (activeTab === "upcoming" && lot.status !== "PENDING_APPROVAL" && lot.status !== "DRAFT") return false;
-      if (activeTab === "ended" && lot.status !== "COMPLETED") return false;
-    }
-
-    if (search && !lot.title.toLowerCase().includes(search.toLowerCase())) return false;
-    if (sex && lot.sex !== sex) return false;
-    if (size && lot.size !== size) return false;
-    if (condition && lot.condition !== condition) return false;
-    if (brand && !lot.title.toLowerCase().includes(brand.toLowerCase())) return false;
-
-    if (minPrice && lot.currentBid < Number(minPrice)) return false;
-    if (maxPrice && lot.currentBid > Number(maxPrice)) return false;
-
-    return true;
-  });
 
   return (
     <div className="p-5 md:p-7 max-w-7xl mx-auto flex flex-col gap-8">
       <main className="flex-1 min-w-0">
         <PageHeader
           label="Auctions"
-          title={title}
-          description={desc}
+          title="Mock Title"
+          description="Mock Desc"
         />
 
         <div className="flex flex-col lg:flex-row-reverse justify-between gap-4 mb-8">
@@ -85,7 +76,7 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
                 type="search"
                 placeholder="Search lots..."
                 value={search}
-                onChange={setSearch}
+                onChange={onSearchChange}
               />
             </div>
 
@@ -98,13 +89,10 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
                     : "bg-surface-secondary border-border-primary text-content-primary hover:border-brand-primary/50"
                   }`}
               >
-                <svg className={`w-4 h-4 transition-transform duration-300 ${showFilters ? "rotate-90" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M4 6h16M4 12h16m-7 6h7" />
-                </svg>
+                <FilterIcon
+                  className={`w-4 h-4 transition-transform duration-300 ${showFilters ? "rotate-90" : ""}`}
+                />
                 Filters
-                {(sex || size || brand || minPrice > 0 || maxPrice < 100000) && (
-                  <span className="w-2 h-2 rounded-full bg-state-danger animate-pulse" />
-                )}
               </button>
 
               <FiltersPopover
@@ -118,19 +106,38 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
                   setMaxPrice(100000);
                   setSearch("");
                   setCondition("");
+                  setPage(1);
                 }}
                 sex={sex}
-                setSex={setSex}
+                setSex={(value) => {
+                  setSex(value);
+                  setPage(1);
+                }}
                 size={size}
-                setSize={setSize}
+                setSize={(value) => {
+                  setSize(value);
+                  setPage(1);
+                }}
                 condition={condition}
-                setCondition={setCondition}
+                setCondition={(value) => {
+                  setCondition(value);
+                  setPage(1);
+                }}
                 brand={brand}
-                setBrand={setBrand}
+                setBrand={(value) => {
+                  setBrand(value);
+                  setPage(1);
+                }}
                 minPrice={minPrice}
-                setMinPrice={setMinPrice}
+                setMinPrice={(value) => {
+                  setMinPrice(value);
+                  setPage(1);
+                }}
                 maxPrice={maxPrice}
-                setMaxPrice={setMaxPrice}
+                setMaxPrice={(value) => {
+                  setMaxPrice(value);
+                  setPage(1);
+                }}
               />
             </div>
 
@@ -144,23 +151,23 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
           <Tabs
             tabs={CATEGORY_FILTER_TABS}
             activeTab={activeTab}
-            onChange={setActiveTab}
+            onChange={onTabChange}
             variant="pill"
           />
         </div>
 
         {
-          filteredLots.length > 0 ? (
+          (data?.items?.length ?? 0) > 0 ? (
             <>
               <div className={
                 (isMobile || viewVariant === "grid")
                   ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-bvCatFadeUp"
                   : "flex flex-col gap-3 animate-bvCatFadeUp"
               }>
-                {filteredLots.map((lot, idx) => (
+                {data?.items.map((lot, idx) => (
                   <div key={lot.id} className="h-full" style={{ animationDelay: `${idx * 0.05}s` }}>
                     <LotCard
-                      lot={{ ...lot, category: category?.title || lot.category }}
+                      lot={lot}
                       variant={isMobile ? "grid" : viewVariant}
                       showCategory={false}
                     />
@@ -170,19 +177,17 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
 
               <Pagination
                 currentPage={page}
-                totalPages={3}
+                totalPages={data?.totalCount || 1}
                 onPageChange={setPage}
                 className="mt-12"
               />
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center py-20 bg-surface-secondary border border-dashed border-border-primary rounded-3xl animate-bvCatFadeUp">
-              <div className="w-16 h-16 bg-surface-primary rounded-2xl flex items-center justify-center mb-4 border border-border-primary">
-                <EmptyBoxIcon className="text-content-tertiary" />
-              </div>
-              <h3 className="text-content-primary font-semibold text-lg">No lots found</h3>
-              <p className="text-content-tertiary text-sm mt-1">There are no lots matching this filter.</p>
-            </div>
+            <NoData
+              title="No lots found"
+              description="There are no lots matching your search."
+              icon={<EmptyBoxIcon className="text-content-tertiary" />}
+            />
           )
         }
       </main >

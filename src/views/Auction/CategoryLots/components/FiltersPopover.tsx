@@ -43,7 +43,7 @@ export const FiltersPopover = ({
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-14 right-0 z-[100] w-[320px] bg-[#1c1f27]/98 backdrop-blur-xl border border-[#2a2e3a] rounded-2xl overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.7)] animate-bvCatFadeUp origin-top-right max-h-[85vh] flex flex-col">
+    <div className="absolute top-14 right-0 z-100 w-[320px] bg-[#1c1f27]/98 backdrop-blur-xl border border-[#2a2e3a] rounded-2xl overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.7)] animate-bvCatFadeUp origin-top-right max-h-[85vh] flex flex-col">
       {/* Header */}
       <div className="bg-[#242835]/50 px-5 py-3.5 border-b border-[#2a2e3a] flex items-center justify-between shrink-0">
         <h3 className="font-semibold text-content-primary text-[14px] tracking-tight">Search Filters</h3>
@@ -95,7 +95,7 @@ export const FiltersPopover = ({
         />
       </div>
 
-      <div className="p-4 bg-[#242835]/30 border-t border-[#2a2e3a] shrink-0 mt-auto">
+      <div className="p-4 bg-[#242835]/30 border-t border-[#2a2e3a] shrink-0">
         <button
           onClick={onClose}
           className="w-full py-3 bg-brand-primary text-black font-bold rounded-xl text-sm transition-all hover:brightness-110 active:scale-[0.98] shadow-lg shadow-brand-primary/10 cursor-pointer"
