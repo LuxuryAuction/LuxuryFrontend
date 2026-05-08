@@ -1,6 +1,6 @@
 import { api } from "../apiService";
 import { API_ENDPOINTS } from "@/src/constants/api";
-import { ILotDetails, ILotListResponse, ILotListParams } from "./types";
+import { ILotDetails, ILotListResponse, ILotListParams, ILot } from "./types";
 import { filterApiParams } from "@/src/utils/apiUtils";
 
 export const lotsService = {
@@ -15,6 +15,15 @@ export const lotsService = {
 
   getLotById: async (id: number): Promise<ILotDetails> => {
     const response = await api.get<ILotDetails>(API_ENDPOINTS.LOTS.GET_BY_ID(id));
+    return response;
+  },
+
+  getUserLots: async (filters: ILotListParams): Promise<ILot[]> => {
+    const params = filterApiParams(filters);
+    const response = await api.get<ILot[]>(
+      API_ENDPOINTS.USERS.ME.MY_LOTS,
+      params
+    );
     return response;
   },
 };

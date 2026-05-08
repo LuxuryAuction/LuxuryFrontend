@@ -75,9 +75,11 @@ export interface ILotListResponse {
   totalCount: number;
 }
 
+
 export interface ILotListParams {
   categoryId?: number;
   sex?: string;
+  status?: string;
   minPrice?: number;
   maxPrice?: number;
   search?: string;

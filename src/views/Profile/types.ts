@@ -19,10 +19,8 @@ export interface LotRow {
 
 export interface IProfile {
   name: string;
-  username: string;
+  userName: string;
   memberSince: string;
-  avatarName: string;
-  avatarUrl?: string;
   isVerified: boolean;
   trustScore: number;
 }

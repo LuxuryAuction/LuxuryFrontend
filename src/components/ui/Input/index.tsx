@@ -43,6 +43,8 @@ type InputProps = Omit<
   onChange?: (value: string) => void;
 
   onSearch?: (value?: string) => void;
+  onDebounceChange?: (value: string) => void;
+  debounceDelay?: number;
   loading?: boolean;
   isEditing?: boolean;
   rows?: number;
@@ -139,6 +141,8 @@ function SearchField({
   value,
   onChange,
   onSearch,
+  onDebounceChange,
+  debounceDelay = 500,
   loading,
   inputSize,
   variant,
@@ -149,16 +153,21 @@ function SearchField({
   ...props
 }: BaseInputProps & {
   onSearch?: (value?: string) => void;
+  onDebounceChange?: (value: string) => void;
+  debounceDelay?: number;
   loading?: boolean;
   isEditing?: boolean;
 }) {
-  const [internal, setInternal] = useState<string>((value as string) || "");
-  const debounced = useDebounceValue(internal, 300);
+  const [internal, setInternal] = useState<string>((value || props.defaultValue || "") as string);
+  const debounced = useDebounceValue(internal, debounceDelay);
 
   const hasValue = internal.length > 0;
 
   useEffect(() => {
-    if (isEditing) onSearch?.(debounced);
+    if (isEditing !== false) {
+      onSearch?.(debounced);
+      onDebounceChange?.(debounced);
+    }
   }, [debounced]);
 
   const trigger = () => onSearch?.(internal);
@@ -413,6 +422,8 @@ export function Input({
   variant = "primary",
   required = false,
   id,
+  onDebounceChange,
+  debounceDelay,
   ...props
 }: InputProps) {
   const inputId = id ?? props.name ?? undefined;
@@ -436,6 +447,8 @@ export function Input({
             inputSize={inputSize}
             variant={variant}
             error={error}
+            onDebounceChange={onDebounceChange}
+            debounceDelay={debounceDelay}
           />
         );
 

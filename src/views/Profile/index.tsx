@@ -6,22 +6,28 @@ import { ProfileHeader } from "./ProfileHeader";
 import { OverviewTab } from "./OverviewTab";
 import { MyLotsTab } from "./MyLotsTab";
 import Tabs from "@/src/components/ui/Tabs";
+import { useUserProfile } from "@/src/hooks/useUserProfile";
 
 export const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState<TabId>("overview");
+  const { data: profile, isLoading, error } = useUserProfile();
 
   const tabsConfig = [
     { id: "overview" as TabId, label: "Overview" },
-    { id: "my-lots" as TabId, label: "My Active Lots" },
-    { id: "auctions" as TabId, label: "My Auction Lots" },
+    { id: "my-lots" as TabId, label: "My Auction Lots" },
     { id: "payments" as TabId, label: "Payments" },
     { id: "trust" as TabId, label: "Trust & Safety" },
   ];
 
+  if (isLoading || !profile) {
+    return <div className="p-5 md:p-7 text-content-secondary animate-pulse">Loading profile...</div>;
+  }
+
   return (
     <div className="p-5 md:p-7">
-      <ProfileHeader />
+      <ProfileHeader profile={profile} />
       <Tabs
+
         tabs={tabsConfig}
         activeTab={activeTab}
         onChange={setActiveTab}

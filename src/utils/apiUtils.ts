@@ -25,5 +25,5 @@ const isValidValue = (value: any): boolean => {
   if (typeof value === "number" && !Number.isFinite(value)) return false;
   if (Array.isArray(value) && value.length === 0) return false;
   if (typeof value === "string" && value.trim() === "") return false;
-  return value !== undefined && value !== null && value !== "" && value !== "All";
+  return value !== undefined && value !== null && value !== "" && value !== "all";
 };

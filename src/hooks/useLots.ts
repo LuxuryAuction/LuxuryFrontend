@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { lotsService } from "../services/LotsService";
-import { ILotListResponse, ILotListParams, ILotDetails } from "../services/LotsService/types";
+import { ILotListResponse, ILotListParams, ILotDetails, ILot } from "../services/LotsService/types";
 
 export const useGetLots = (params?: ILotListParams) => {
   const [data, setData] = useState<ILotListResponse>();
@@ -23,15 +23,46 @@ export const useGetLots = (params?: ILotListParams) => {
   }, [params]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchLots();
-  }, []);
+  }, [params]);
 
   return {
     data,
     isLoading,
     error,
     refetch: fetchLots,
+  };
+};
+
+export const useGetUserLots = (params: ILotListParams) => {
+  const [data, setData] = useState<ILot[]>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchUserLots = useCallback(async () => {
+    try {
+      setIsLoading(true);
+
+      const data = await lotsService.getUserLots(params);
+
+      setData(data);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Failed to fetch user lots"));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [params]);
+
+  useEffect(() => {
+    fetchUserLots();
+  }, [params]);
+
+  return {
+    data,
+    isLoading,
+    error,
+    refetch: fetchUserLots,
   };
 };
 
@@ -53,7 +84,6 @@ export const useGetLot = (id?: number) => {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchLot();
   }, [id]);
 

@@ -4,22 +4,49 @@ import Button from "@/src/components/ui/Button";
 import Input from "@/src/components/ui/Input";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { registerSchema, RegisterSchema } from "@/src/schemas/auth.schema";
 import AuthSidePanel from "@/src/components/auth/AuthSidePanel";
+import { useAuth } from "@/src/hooks/useAuth";
+import { useToast } from "@/src/components/ui/Toast";
+
 
 const Register = () => {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
+  const { control, handleSubmit: hookFormSubmit, formState: { errors } } = useForm<RegisterSchema>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      userName: "",
+      password: "",
+      confirmPassword: "",
+      phoneNumber: "",
+    },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log(form);
+  const { register, isLoading } = useAuth();
+  const { showToast } = useToast();
+  const router = useRouter();
+
+  const handleSignUp = async (values: RegisterSchema) => {
+    try {
+      await register({
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        userName: values.userName,
+        password: values.password,
+        phoneNumber: values.phoneNumber,
+      });
+      showToast("success", "Account created successfully! Please sign in.", "bottom-right");
+      router.push("/login");
+    } catch (err: any) {
+      showToast("error", err.message || "Failed to create account. Please try again.", "bottom-right");
+    }
   };
 
-  const router = useRouter();
 
   return (
     <div className="h-dvh flex overflow-hidden bg-auth-primary justify-center">
@@ -30,7 +57,7 @@ const Register = () => {
 
       {/* RIGHT */}
       <div className="w-full lg:w-[520px] flex items-center justify-center px-6 lg:px-10 h-full overflow-hidden">
-        <form className="w-full" onSubmit={handleSubmit}>
+        <form className="w-full" onSubmit={hookFormSubmit(handleSignUp)}>
           <div className="flex items-center gap-[0.7rem] mb-6">
             <div className="w-[32px] h-[32px] bg-brand-primary rounded-md flex items-center justify-center font-extrabold">
               B
@@ -49,18 +76,66 @@ const Register = () => {
 
           <div className="flex flex-col space-y-4">
             <div className="flex flex-row gap-4">
-              <Input type="text" label="First Name" inputSize="xs" placeholder="Alex" required />
-              <Input type="text" label="Last Name" inputSize="xs" placeholder="Kovalenko" required />
+              <Controller
+                name="firstName"
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <Input type="text" label="First Name" inputSize="xs" placeholder="Alex" value={value} onChange={onChange} error={errors.firstName?.message} />
+                )}
+              />
+              <Controller
+                name="lastName"
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <Input type="text" label="Last Name" inputSize="xs" placeholder="Kovalenko" value={value} onChange={onChange} error={errors.lastName?.message} />
+                )}
+              />
             </div>
 
-            <Input type="email" label="Email Address" inputSize="xs" placeholder="you@example.com" required />
-            <Input type="text" label="Username" inputSize="xs" placeholder="alex_bids" required />
+            <Controller
+              name="email"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <Input type="email" label="Email Address" inputSize="xs" placeholder="you@example.com" value={value} onChange={onChange} error={errors.email?.message} />
+              )}
+            />
 
             <div className="flex flex-row gap-4">
-              <Input type="password" label="Password" inputSize="xs" placeholder="password" required />
-              <Input type="password" label="Confirm Password" inputSize="xs" placeholder="password" required />
+              <Controller
+                name="userName"
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <Input type="text" label="Username" inputSize="xs" placeholder="alex_bids" value={value} onChange={onChange} error={errors.userName?.message} />
+                )}
+              />
+              <Controller
+                name="phoneNumber"
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <Input type="text" label="Phone Number" inputSize="xs" placeholder="+380991234567" value={value} onChange={onChange} error={errors.phoneNumber?.message} />
+                )}
+              />
             </div>
-            <Button variant="primary" size="sm" textSize="xs" onClick={() => router.push("/user/profile")} fullWidth>Create Account</Button>
+
+            <div className="flex flex-row gap-4">
+              <Controller
+                name="password"
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <Input type="password" label="Password" inputSize="xs" placeholder="password" value={value} onChange={onChange} error={errors.password?.message} />
+                )}
+              />
+              <Controller
+                name="confirmPassword"
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <Input type="password" label="Confirm Password" inputSize="xs" placeholder="password" value={value} onChange={onChange} error={errors.confirmPassword?.message} />
+                )}
+              />
+            </div>
+            <Button variant="primary" size="sm" textSize="xs" type="submit" fullWidth disabled={isLoading}>
+              {isLoading ? "Creating Account..." : "Create Account"}
+            </Button>
 
           </div>
 

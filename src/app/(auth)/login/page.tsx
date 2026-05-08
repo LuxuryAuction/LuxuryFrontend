@@ -4,35 +4,46 @@ import { TelegramIcon } from "@/public/assets/icons";
 import Button from "@/src/components/ui/Button";
 import Input from "@/src/components/ui/Input";
 import { useRouter } from "next/navigation";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, LoginSchema } from "@/src/schemas/auth.schema";
 import { useToast } from "@/src/components/ui/Toast";
 import { useState } from "react";
 import AuthSidePanel from "@/src/components/auth/AuthSidePanel";
+import { useAuth } from "@/src/hooks/useAuth";
 
 const Login = () => {
   const { showToast } = useToast();
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
+  const { control, handleSubmit: hookFormSubmit, formState: { errors } } = useForm<LoginSchema>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      userNameOrEmail: "",
+      password: "",
+    },
   });
+  const { login, isLoading } = useAuth();
+
 
   const router = useRouter();
 
-  const handleSignIn = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    showToast("success", "Welcome back! You have successfully signed in.", "bottom-right");
-    router.push("/user/profile");
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleSignIn();
+  const handleSignIn = async (values: LoginSchema) => {
+    try {
+      await login({
+        userNameOrEmail: values.userNameOrEmail,
+        password: values.password,
+      });
+      showToast("success", "Welcome back! You have successfully signed in.", "bottom-right");
+      router.push("/user/profile");
+    } catch (err: any) {
+      showToast("error", err.message || "Failed to sign in. Please try again.", "bottom-right");
+    }
   };
 
   return (
     <div className="h-dvh flex overflow-hidden bg-auth-primary justify-center">
 
       {/* LEFT */}
-      <AuthSidePanel 
+      <AuthSidePanel
         title={<>Welcome <br /><span className="text-brand-primary">Back.</span></>}
         subtitle="Continue bidding in real-time auctions with your account."
       />
@@ -40,7 +51,7 @@ const Login = () => {
       {/* RIGHT */}
       <div className="w-full lg:w-[520px] flex items-center justify-center px-6 lg:px-10 h-full overflow-hidden">
 
-        <form className="w-full" onSubmit={handleSubmit}>
+        <form className="w-full" onSubmit={hookFormSubmit(handleSignIn)}>
 
           <div className="flex items-center gap-[0.7rem] mb-6">
             <div className="w-[32px] h-[32px] bg-brand-primary rounded-md flex items-center justify-center font-extrabold">
@@ -61,20 +72,36 @@ const Login = () => {
 
           <div className="flex flex-col space-y-4">
 
-            <Input
-              type="email"
-              label="Email Address"
-              inputSize="xs"
-              placeholder="you@example.com"
-              required
+            <Controller
+              name="userNameOrEmail"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  type="text"
+                  label="Email Address or Username"
+                  inputSize="xs"
+                  placeholder="you@example.com"
+                  value={value}
+                  onChange={onChange}
+                  error={errors.userNameOrEmail?.message}
+                />
+              )}
             />
 
-            <Input
-              type="password"
-              label="Password"
-              inputSize="xs"
-              placeholder="password"
-              required
+            <Controller
+              name="password"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <Input
+                  type="password"
+                  label="Password"
+                  inputSize="xs"
+                  placeholder="password"
+                  value={value}
+                  onChange={onChange}
+                  error={errors.password?.message}
+                />
+              )}
             />
 
             <Button
@@ -83,6 +110,8 @@ const Login = () => {
               textSize="xs"
               type="submit"
               fullWidth
+              disabled={isLoading}
+              loadingText="Signing In..."
             >
               Sign In
             </Button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { LotCard } from "@/src/components/ui/LotCard";
 import { ViewSwitcher, ViewVariant } from "@/src/components/ui/ViewSwitcher";
@@ -23,11 +23,9 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
 
   const [viewVariant, setViewVariant] = useState<ViewVariant>("grid");
   const [activeTab, setActiveTab] = useState("all");
-
   const [search, setSearch] = useState("");
   const [sex, setSex] = useState("");
   const [size, setSize] = useState("");
-  const [brand, setBrand] = useState("");
   const [condition, setCondition] = useState("");
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(100000);
@@ -37,15 +35,18 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
   const isMobile = useIsMobile();
   const filtersRef = useRef<HTMLDivElement>(null);
 
-  const { data } = useGetLots({
+  const params = useMemo(() => ({
     categoryId: Number(categoryId),
     page,
     pageSize: 10,
-    search,
+    search: search || undefined,
     sex,
+    status: activeTab,
     minPrice,
     maxPrice,
-  });
+  }), [categoryId, page, search, sex, activeTab, minPrice, maxPrice]);
+
+  const { data } = useGetLots(params);
 
   const onTabChange = (tabId: string) => {
     setActiveTab(tabId);
@@ -75,8 +76,8 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
               <Input
                 type="search"
                 placeholder="Search lots..."
-                value={search}
-                onChange={onSearchChange}
+                defaultValue={search}
+                onDebounceChange={onSearchChange}
               />
             </div>
 
@@ -98,44 +99,19 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
               <FiltersPopover
                 isOpen={showFilters}
                 onClose={() => setShowFilters(false)}
-                onReset={() => {
-                  setSex("");
-                  setSize("");
-                  setBrand("");
-                  setMinPrice(0);
-                  setMaxPrice(100000);
-                  setSearch("");
-                  setCondition("");
-                  setPage(1);
+                initialFilters={{
+                  sex,
+                  size,
+                  condition,
+                  minPrice,
+                  maxPrice,
                 }}
-                sex={sex}
-                setSex={(value) => {
-                  setSex(value);
-                  setPage(1);
-                }}
-                size={size}
-                setSize={(value) => {
-                  setSize(value);
-                  setPage(1);
-                }}
-                condition={condition}
-                setCondition={(value) => {
-                  setCondition(value);
-                  setPage(1);
-                }}
-                brand={brand}
-                setBrand={(value) => {
-                  setBrand(value);
-                  setPage(1);
-                }}
-                minPrice={minPrice}
-                setMinPrice={(value) => {
-                  setMinPrice(value);
-                  setPage(1);
-                }}
-                maxPrice={maxPrice}
-                setMaxPrice={(value) => {
-                  setMaxPrice(value);
+                onApply={(newFilters) => {
+                  setSex(newFilters.sex);
+                  setSize(newFilters.size);
+                  setCondition(newFilters.condition);
+                  setMinPrice(newFilters.minPrice);
+                  setMaxPrice(newFilters.maxPrice);
                   setPage(1);
                 }}
               />

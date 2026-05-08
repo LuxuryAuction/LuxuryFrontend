@@ -8,6 +8,7 @@ import { useToast } from "@/src/components/ui/Toast";
 import { languages, userOptions } from "./config";
 import { capitalize } from "@/src/utils/textUtils";
 import { useState } from "react";
+import { useAuth } from "@/src/hooks/useAuth";
 
 interface TopBarProps {
   toggleDrawer: () => void;
@@ -29,11 +30,13 @@ export const TopBar = ({ toggleDrawer, userName, userAvatar }: TopBarProps) => {
   const router = useRouter();
   const { showToast } = useToast();
   const [lang, setLang] = useState("en");
+  const { logout } = useAuth();
 
-  const handleUserAction = (action: string) => {
+  const handleUserAction = async (action: string) => {
     switch (action) {
       case "logout":
-        showToast("success", "Successfully logged out. See you soon!");
+        await logout();
+        showToast("success", "Successfully logged out. See you soon!", "bottom-right");
         router.push("/login");
         break;
       case "profile":

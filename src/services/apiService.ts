@@ -1,4 +1,4 @@
-
+import { getAccessToken } from "../utils/session";
 
 interface ApiError {
   message: string;
@@ -70,7 +70,7 @@ export async function apiRequest<TResponse>(
 ): Promise<TResponse> {
   const { body, params, returnBlob, ...restOptions } = options;
 
-  // const accessToken = options.accessToken || getAuthToken();
+  const accessToken = options.accessToken || getAccessToken();
   
 
   // Handle FormData vs JSON
@@ -81,9 +81,9 @@ export async function apiRequest<TResponse>(
     headers.set("Content-Type", "application/json");
   }
 
-  // if (accessToken) {
-  //   headers.set("Authorization", `Bearer ${accessToken}`);
-  // }
+  if (accessToken) {
+    headers.set("Authorization", `Bearer ${accessToken}`);
+  }
 
   try {
     let fullUrl = `${API_BASE_URL}/${url}`;
@@ -132,28 +132,6 @@ export async function apiRequest<TResponse>(
 }
 
 
-/**
- * Get auth token from Redux store (client-side only)
- */
-// function getAuthToken(): string | null | undefined {
-//   // Get token from Redux store if available
-//   if (typeof window !== "undefined") {
-//     try {
-//       // Import store dynamically to avoid SSR issues
-//       const { store } = require("@/redux/store");
-//       const state = store.getState();
-
-//       // Try multiple possible paths for the token
-//       const token =
-//         state.persisted?.auth?.token || state.auth?.token || state.persisted?.auth?.user?.token;
-
-//       return token;
-//     } catch (error) {
-//       console.warn("Could not get token from Redux store:", error);
-//     }
-//   }
-//   return null;
-// }
 
 /**
  * Helper function to create query string from parameters, properly handling arrays

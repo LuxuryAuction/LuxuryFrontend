@@ -1,14 +1,4 @@
-import { ActivityItem, LotRow, IProfile } from "./types";
-
-export const USER_DATA: IProfile = {
-  name: "Alex Kovalenko",
-  username: "@alex_kovalenko",
-  memberSince: "Jan 2024",
-  avatarName: "Alex Kovalenko",
-  avatarUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200&h=200",
-  isVerified: true,
-  trustScore: 92,
-};
+import { ActivityItem } from "./types";
 
 export const USER_STATS = [
   { val: "47", label: "Lots Sold" },

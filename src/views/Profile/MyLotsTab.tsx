@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { LotCard } from "@/src/components/ui/LotCard";
 import { ViewSwitcher, ViewVariant } from "@/src/components/ui/ViewSwitcher";
 import { Tabs } from "@/src/components/ui/Tabs";
@@ -8,14 +8,14 @@ import { Input } from "@/src/components/ui/Input";
 import { useIsMobile } from "@/src/hooks/useIsMobile";
 import { Pagination } from "@/src/components/ui/Pagination";
 import { EmptyBoxIcon } from "@/public/assets/icons";
-import { MOCK_LOTS } from "@/src/views/Auction/MyLots/mockLots";
+import { useGetUserLots } from "@/src/hooks/useLots";
 import NoData from "@/src/components/ui/NoData";
 
 const MY_LOTS_FILTER_TABS = [
   { id: "all", label: "All Lots" },
-  { id: "active", label: "Active" },
-  { id: "draft", label: "Drafts" },
-  { id: "ended", label: "Ended" },
+  { id: "Active", label: "Active" },
+  { id: "Draft", label: "Drafts" },
+  { id: "Completed", label: "Ended" },
 ];
 
 export const MyLotsTab = () => {
@@ -25,18 +25,14 @@ export const MyLotsTab = () => {
   const [page, setPage] = useState(1);
   const isMobile = useIsMobile();
 
+  const params = useMemo(() => ({
+    status: activeTab !== "all" ? activeTab : undefined,
+    search: search || undefined,
+  }), [activeTab, search]);
 
-  const filteredLots = MOCK_LOTS.filter(lot => {
-    if (activeTab !== "all") {
-      if (activeTab === "active" && !["ACTIVE", "EXTENDED"].includes(lot.status)) return false;
-      if (activeTab === "upcoming" && lot.status !== "PENDING_APPROVAL") return false;
-      if (activeTab === "ended" && !["COMPLETED", "PAID", "DELIVERED"].includes(lot.status)) return false;
-      if (activeTab === "draft" && lot.status !== "DRAFT") return false;
-    }
-    if (search && !lot.title.toLowerCase().includes(search.toLowerCase())) return false;
+  const { data: lots, isLoading: isLoadingLots } = useGetUserLots(params);
 
-    return true;
-  });
+  const items = lots || [];
 
   return (
     <div className="flex flex-col gap-6">
@@ -69,14 +65,20 @@ export const MyLotsTab = () => {
           />
         </div>
       </div>
-      {filteredLots.length > 0 ? (
+      {isLoadingLots ? (
+        <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <p className="text-content-tertiary font-mono text-[10px] uppercase tracking-widest animate-pulse">
+            Loading your auction lots...
+          </p>
+        </div>
+      ) : items.length > 0 ? (
         <>
           <div className={
             (isMobile || viewVariant === "grid")
               ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-bvCatFadeUp"
               : "flex flex-col gap-3 animate-bvCatFadeUp"
           }>
-            {filteredLots.map((lot, idx) => (
+            {items.map((lot, idx) => (
               <div key={lot.id} className="h-full" style={{ animationDelay: `${idx * 0.05}s` }}>
                 <LotCard
                   lot={lot}
@@ -95,8 +97,8 @@ export const MyLotsTab = () => {
         </>
       ) : (
         <NoData
-          title="No lots found"
-          description="There are no lots matching your search."
+          title={search ? "No lots found" : "No auctions yet"}
+          description={search ? "There are no lots matching your search." : "You haven't created any auction lots yet."}
           icon={<EmptyBoxIcon className="text-content-tertiary" />}
         />
       )}

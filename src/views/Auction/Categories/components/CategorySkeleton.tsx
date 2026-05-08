@@ -4,7 +4,6 @@ export const CategorySkeleton = () => {
   return (
     <div className="flex flex-col overflow-hidden rounded-[12px] bg-surface-primary border border-border-primary animate-pulse">
       <div className="relative aspect-4/5 bg-surface-secondary/50">
-        <div className="absolute top-3 left-3 w-24 h-5 rounded-full bg-surface-tertiary/60" />
       </div>
       <div className="flex flex-col flex-1 px-4 pt-3.5 pb-4">
         <div className="h-5 w-3/4 rounded bg-surface-tertiary/80 mb-2.5" />

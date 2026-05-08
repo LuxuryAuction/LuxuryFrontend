@@ -3,10 +3,8 @@
 import { useSidebar } from "@/src/hooks/useSidebar";
 import { Sidebar } from "@/src/views/Sidebar/Sidebar";
 import { NAV_GROUPS } from "@/src/views/Sidebar/sidebar.config";
+import { useUserProfile } from "@/src/hooks/useUserProfile";
 import { TopBar } from "@/src/views/TopBar";
-
-
-import { USER_DATA } from "@/src/views/Profile/profile.config";
 
 export default function RootLayout({
   children,
@@ -18,6 +16,8 @@ export default function RootLayout({
     isOpen, isCollapsed, isMounted, toggleDrawer, closeDrawer, toggleCollapse,
   } = useSidebar();
 
+  const { data: profile } = useUserProfile();
+
   const marginClass = isMounted && isCollapsed ? "md:ml-16" : "md:ml-[248px]";
 
   return (
@@ -25,9 +25,9 @@ export default function RootLayout({
       <Sidebar
         groups={NAV_GROUPS}
         user={{
-          name: USER_DATA.name,
-          role: "Verified Seller",
-          avatarUrl: USER_DATA.avatarUrl
+          name: profile?.name || "",
+          role: profile?.isVerified ? "Verified Seller" : "Member",
+          avatarUrl: undefined
         }}
         logoHref="/"
         isCollapsed={isCollapsed}
@@ -38,10 +38,10 @@ export default function RootLayout({
       <div
         className={`flex flex-col min-h-screen transition-[margin] duration-300 ${marginClass}`}
       >
-        <TopBar 
+        <TopBar
           toggleDrawer={toggleDrawer}
-          userName={USER_DATA.name}
-          userAvatar={USER_DATA.avatarUrl}
+          userName={profile?.name || ""}
+          userAvatar={undefined}
         />
         <main className="w-full h-full">{children}</main>
       </div>
