@@ -1,6 +1,6 @@
 import { api } from "../apiService";
 import { API_ENDPOINTS } from "@/src/constants/api";
-import { ILotDetails, ILotListResponse, ILotListParams, ILot } from "./types";
+import { ILotDetails, ILotListResponse, ILotListParams, ILot, ICreateLotRequest } from "./types";
 import { filterApiParams } from "@/src/utils/apiUtils";
 
 export const lotsService = {
@@ -24,6 +24,11 @@ export const lotsService = {
       API_ENDPOINTS.USERS.ME.MY_LOTS,
       params
     );
+    return response;
+  },
+
+  createLot: async (data: ICreateLotRequest): Promise<ILot> => {
+    const response = await api.post<ILot>(API_ENDPOINTS.USERS.ME.MY_LOTS, data);
     return response;
   },
 };

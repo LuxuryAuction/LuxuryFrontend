@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { lotsService } from "../services/LotsService";
-import { ILotListResponse, ILotListParams, ILotDetails, ILot } from "../services/LotsService/types";
+import { ILotListResponse, ILotListParams, ILotDetails, ILot, ICreateLotRequest } from "../services/LotsService/types";
 
 export const useGetLots = (params?: ILotListParams) => {
   const [data, setData] = useState<ILotListResponse>();
@@ -91,5 +91,31 @@ export const useGetLot = (id?: number) => {
     data,
     isLoading,
     refetch: fetchLot,
+  };
+};
+export const useCreateLot = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const createLot = async (data: ICreateLotRequest) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await lotsService.createLot(data);
+      return response;
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error("Failed to create lot");
+      setError(error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return {
+    createLot,
+    isLoading,
+    error,
   };
 };

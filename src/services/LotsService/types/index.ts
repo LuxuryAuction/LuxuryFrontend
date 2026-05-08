@@ -86,3 +86,17 @@ export interface ILotListParams {
   page?: number;
   pageSize?: number;
 }
+
+export interface ICreateLotRequest {
+  name: string;
+  categoryId: number;
+  description: string;
+  startingPrice: number;
+  priceStep: number;
+  startDate: string;
+  draft: boolean;
+  sex: string;
+  condition: string;
+  size: string;
+  imageUrls: string[];
+}

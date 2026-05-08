@@ -21,12 +21,14 @@ import { EyeIcon } from "@/public/assets/icons";
 import { createLotSchema } from "@/src/schemas/createLot.schema";
 import { LotPublished } from "./components/LotPublished";
 import { Checkbox } from "@/src/components/ui/Checkbox";
+import { useCreateLot } from "@/src/hooks/useLots";
 
 export const CreateLotView = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const { createLot, isLoading: isCreating } = useCreateLot();
 
   const {
     control,
@@ -40,11 +42,48 @@ export const CreateLotView = () => {
   });
 
   const onSubmit = async (data: ICreateLotFormData) => {
-    setLoading(true);
-    await new Promise((r) => setTimeout(r, 1400));
-    console.log(data);
-    setLoading(false);
-    setSubmitted(true);
+    try {
+      await createLot({
+        name: data.title,
+        description: data.description,
+        categoryId: 4,
+        startingPrice: Number(data.startingPrice),
+        priceStep: Number(data.minBidIncrement) || 10,
+        startDate: new Date(data.startDate).toISOString(),
+        draft: false,
+        sex: data.sex || "Unisex",
+        condition: data.condition,
+        size: data.size || "Universal",
+        imageUrls: ["https://picsum.photos/800/800"], // mock for now
+      });
+
+      setSubmitted(true);
+    } catch (error) {
+      console.error("Failed to create lot:", error);
+    }
+  };
+
+  const onSaveDraft = async () => {
+    const data = watch();
+    try {
+      await createLot({
+        name: data.title || "Untitled Draft",
+        description: data.description || "",
+        categoryId: Number(data.categoryId) || 1,
+        startingPrice: Number(data.startingPrice) || 0,
+        priceStep: Number(data.minBidIncrement) || 10,
+        startDate: data.startDate ? new Date(data.startDate).toISOString() : new Date().toISOString(),
+        draft: true,
+        sex: data.sex || "Unisex",
+        condition: data.condition || "New",
+        size: data.size || "Universal",
+        imageUrls: ["https://picsum.photos/800/800"], // mock
+      });
+      reset(INITIAL_FORM);
+      alert("Draft saved successfully!");
+    } catch (error) {
+      console.error("Failed to save draft:", error);
+    }
   };
 
   const formValues = watch();
@@ -280,6 +319,8 @@ export const CreateLotView = () => {
                 type="button"
                 variant="secondary"
                 size="sm"
+                onClick={onSaveDraft}
+                isLoading={isCreating}
               >
                 Save Draft
               </Button>
@@ -287,7 +328,7 @@ export const CreateLotView = () => {
                 type="submit"
                 variant="primary"
                 size="sm"
-                isLoading={loading}
+                isLoading={isCreating}
                 loadingText="Publishing…"
                 disabled={!agreed}
               >
