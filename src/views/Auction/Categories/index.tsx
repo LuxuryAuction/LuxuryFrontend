@@ -13,14 +13,14 @@ export const CategoriesView = () => {
 
   if (error) {
     return (
-      <div className="p-5 md:p-7 text-center text-red-500">
+      <div className="p-5 md:p-7 max-w-7xl mx-auto text-center text-red-500">
         {t("error")}
       </div>
     );
   }
 
   return (
-    <div className="p-5 md:p-7">
+    <div className="p-5 md:p-7 max-w-7xl mx-auto mb-4">
       <PageHeader
         label={t("eyebrow")}
         title={t("title")}

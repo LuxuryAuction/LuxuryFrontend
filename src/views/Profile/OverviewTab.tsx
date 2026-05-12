@@ -17,7 +17,7 @@ function StatCard({
     <div className="relative bg-auth-app border border-border-primary rounded-lg px-5 py-4 overflow-hidden">
       <div className={`absolute top-0 left-0 right-0 h-[2px] ${topBar}`} />
       <div className="font-mono text-[0.6rem] tracking-[0.14em] uppercase text-content-tertiary mb-2">{label}</div>
-      <div className="text-[2rem] font-bold text-content-light leading-none font-serif">{value}</div>
+      <div className="text-[2rem] font-bold text-content-light leading-none">{value}</div>
       <div className={`font-mono text-[0.6rem] mt-2.5 ${deltaColor}`}>{delta}</div>
     </div>
   );

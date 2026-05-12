@@ -10,6 +10,7 @@ import { PageHeader } from "@/src/components/ui/PageHeader";
 import { FILTER_TABS } from "./constants";
 import { BidCard } from "./components/BidCard";
 import { LightningIcon } from "@/public/assets/icons";
+import { Alert } from "@/src/components/ui/Alert";
 
 
 export const MyBidsView = () => {
@@ -22,7 +23,7 @@ export const MyBidsView = () => {
   const outbidCount = 1
 
   return (
-    <div className="p-5 md:p-7 mx-auto flex flex-col">
+    <div className="p-5 md:p-7 mx-auto flex flex-col max-w-7xl">
       <PageHeader
         label="Bidding"
         title="My Bids"
@@ -31,14 +32,11 @@ export const MyBidsView = () => {
 
       <div className="flex flex-col gap-6">
         {outbidCount > 0 && (
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#ef4444]/5 border border-[#ef4444]/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#ef4444] shrink-0" />
-            <p className="text-sm text-[#ef4444]/90">
-              You are outbid on{" "}
-              <span className="font-bold">{outbidCount} {outbidCount === 1 ? "lot" : "lots"}</span>.
-              Raise your bid before the auction ends.
-            </p>
-          </div>
+          <Alert variant="warning" title="Outbid Alert">
+            You are <span>outbid</span> on{" "}
+            <span className="font-bold">{outbidCount} {outbidCount === 1 ? "lot" : "lots"}</span>.
+            Raise your bid before the auction ends.
+          </Alert>
         )}
 
         <div className="flex flex-col-reverse sm:flex-row gap-3 items-start sm:items-center justify-between">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "@/src/i18n/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,7 +11,7 @@ import { Select } from "@/src/components/ui/Select";
 import { Button } from "@/src/components/ui/Button";
 
 import { ICreateLotFormData, INITIAL_FORM } from "./types";
-import { CATEGORY_OPTIONS, CONDITION_OPTIONS, DELIVERY_OPTIONS, SEX_OPTIONS, SIZE_OPTIONS } from "./createLotConfig";
+import { CONDITION_OPTIONS, DELIVERY_OPTIONS, SEX_OPTIONS, SIZE_OPTIONS } from "./createLotConfig";
 
 import { Section } from "./components/Section";
 import { ImageUpload } from "./components/ImageUpload";
@@ -22,12 +22,27 @@ import { createLotSchema } from "@/src/schemas/createLot.schema";
 import { LotPublished } from "./components/LotPublished";
 import { Checkbox } from "@/src/components/ui/Checkbox";
 import { useCreateLot } from "@/src/hooks/useLots";
+import { useWayForPay } from "@/src/hooks/useWayForPay";
+import { useGetCategories } from "@/src/hooks/useCategory";
+import { formatCurrency } from "@/src/utils/textUtils";
+import { useToast } from "@/src/components/ui/Toast";
 
 export const CreateLotView = () => {
   const [submitted, setSubmitted] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const { createLot, isLoading: isCreating } = useCreateLot();
+  const { pay, isLoading: isPaying } = useWayForPay();
+  const { categories, isLoading: isLoadingCategories } = useGetCategories();
+  const { showToast } = useToast();
+
+  const categoryOptions = useMemo(() => 
+    categories.map(cat => ({ 
+      value: String(cat.id), 
+      label: `${cat.name} (${formatCurrency(cat.postingPrice)})` 
+    })),
+    [categories]
+  );
 
   const {
     control,
@@ -42,10 +57,27 @@ export const CreateLotView = () => {
 
   const onSubmit = async (data: ICreateLotFormData) => {
     try {
+      const selectedCategory = categories.find(cat => cat.id === Number(data.categoryId));
+      const postingPrice = selectedCategory?.postingPrice || 50;
+      const paymentResult = await pay({
+        amount: postingPrice,
+        productName: `Listing fee: ${data.title}`,
+        clientFirstName: "User", // TODO: Get from profile
+      });
+
+      console.log("WayForPay Result:", paymentResult);
+
+      if (paymentResult.status !== "approved") {
+        showToast("error", "Payment was not successful. Please try again.");
+        return;
+      }
+
+      showToast("success", "Payment successful! Creating lot...");
+
       await createLot({
         name: data.title,
         description: data.description,
-        categoryId: 4,
+        categoryId: Number(data.categoryId),
         startingPrice: Number(data.startingPrice),
         priceStep: Number(data.minBidIncrement) || 10,
         startDate: new Date(data.startDate).toISOString(),
@@ -59,6 +91,8 @@ export const CreateLotView = () => {
       setSubmitted(true);
     } catch (error) {
       console.error("Failed to create lot:", error);
+      const message = error instanceof Error ? error.message : "Failed to create lot";
+      showToast("error", message);
     }
   };
 
@@ -122,10 +156,10 @@ export const CreateLotView = () => {
                     <Select
                       label="Category"
                       required
-                      options={CATEGORY_OPTIONS}
+                      options={categoryOptions}
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder="Select category"
+                      placeholder={isLoadingCategories ? "Loading categories..." : "Select category"}
                       error={errors.categoryId?.message}
                     />
                   )}
@@ -305,11 +339,15 @@ export const CreateLotView = () => {
                 type="submit"
                 variant="primary"
                 size="sm"
-                isLoading={isCreating}
-                loadingText="Publishing…"
+                isLoading={isCreating || isPaying}
+                loadingText={isPaying ? "Processing Payment…" : "Publishing…"}
                 disabled={!agreed}
               >
-                Publish Lot
+                {formValues.categoryId ? (
+                  <>Publish Lot ({formatCurrency(categories.find(cat => cat.id === Number(formValues.categoryId))?.postingPrice || 0)})</>
+                ) : (
+                  <>Publish Lot</>
+                )}
               </Button>
             </div>
           </div>
@@ -338,7 +376,7 @@ export const CreateLotView = () => {
             >
               Close ✕
             </button>
-            <PreviewCard form={formValues} />
+            <PreviewCard form={formValues} categories={categories} />
           </div>
         </div>
       )}

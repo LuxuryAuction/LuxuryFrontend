@@ -81,7 +81,7 @@ export const NotificationsView = () => {
 
 
   return (
-    <div className="p-5 md:p-7 mx-auto">
+    <div className="p-5 md:p-7 mx-auto max-w-7xl">
       <PageHeader
         label="Activities"
         title="Notification Center"

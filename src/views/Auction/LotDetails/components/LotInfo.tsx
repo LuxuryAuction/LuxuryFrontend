@@ -126,7 +126,7 @@ export const LotInfo = ({ title, description, images, attributes, lotNumber, cat
               key={i}
               onClick={() => { setActiveImage(i); setIsZoomed(false); }}
               className={`relative w-[72px] h-[72px] rounded-xl overflow-hidden border-2 transition-all duration-300 shrink-0 ${activeImage === i
-                ? "border-brand-primary shadow-[0_0_20px_rgba(240,165,0,0.25)] scale-[1.05]"
+                ? "border-brand-primary"
                 : "border-border-primary opacity-40 hover:opacity-80 hover:border-border-primary/80"
                 }`}
             >
@@ -138,9 +138,6 @@ export const LotInfo = ({ title, description, images, attributes, lotNumber, cat
                 className="object-cover"
                 unoptimized
               />
-              {activeImage === i && (
-                <div className="absolute inset-0 border-2 border-brand-primary rounded-[10px]" />
-              )}
             </button>
           ))}
         </div>

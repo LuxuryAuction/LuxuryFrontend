@@ -22,4 +22,5 @@ export interface IProfile {
   memberSince: string;
   isVerified: boolean;
   trustScore: number;
+  balance?: number;
 }

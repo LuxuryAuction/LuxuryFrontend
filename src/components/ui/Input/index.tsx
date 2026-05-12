@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback, useLayoutEffect } from "react";
+import { createPortal } from "react-dom";
 import { useDebounceValue } from "@/src/hooks/useDebounce";
-import { useClickOutside } from "@/src/hooks/useClickOutside";
+import { useClickOutside, BV_IGNORE_OUTSIDE_CLICK_ATTR } from "@/src/hooks/useClickOutside";
 import { CalendarIcon, ClosedEyeIcon, EmailIcon, EyeIcon, HryvniaIcon, SearchIcon } from "@/public/assets/icons";
 
 const DAYS_OF_WEEK = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
@@ -14,6 +15,29 @@ function getDaysInMonth(year: number, month: number) {
 function getFirstDayOfMonth(year: number, month: number) {
   const day = new Date(year, month, 1).getDay();
   return day === 0 ? 6 : day - 1;
+}
+
+const MENU_GAP_PX = 8;
+const VIEWPORT_PAD_PX = 8;
+
+function pickMenuTop(anchorRect: DOMRect, menuHeight: number, gap: number, pad: number): number {
+  const spaceBelow = window.innerHeight - anchorRect.bottom - gap - pad;
+  const spaceAbove = anchorRect.top - gap - pad;
+  const topBelow = anchorRect.bottom + gap;
+  const topAbove = anchorRect.top - menuHeight - gap;
+
+  const fitsBelow = menuHeight <= spaceBelow;
+  const fitsAbove = menuHeight <= spaceAbove;
+
+  if (fitsBelow && !fitsAbove) return topBelow;
+  if (fitsAbove && !fitsBelow) return Math.max(pad, topAbove);
+  if (fitsBelow && fitsAbove) {
+    return spaceBelow >= spaceAbove ? topBelow : Math.max(pad, topAbove);
+  }
+  if (spaceAbove > spaceBelow) {
+    return Math.max(pad, Math.min(topAbove, window.innerHeight - menuHeight - pad));
+  }
+  return Math.min(topBelow, window.innerHeight - menuHeight - pad);
 }
 
 function formatDate(date: Date) {
@@ -297,16 +321,71 @@ function DateField({
 }: BaseInputProps) {
   const [isOpen, setIsOpen] = useState(false);
   const initialDate = value && typeof value === "string" ? new Date(value) : new Date();
-  // Ensure invalid dates don't break the component
   const validInitialDate = isNaN(initialDate.getTime()) ? new Date() : initialDate;
   const [currentMonth, setCurrentMonth] = useState(validInitialDate);
-  const containerRef = useRef<HTMLDivElement>(null);
-  useClickOutside(containerRef, () => setIsOpen(false));
+  
+  const anchorRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuStyle, setMenuStyle] = useState<React.CSSProperties | null>(null);
 
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
+
+  const applyMenuPosition = useCallback(
+    (heightGuess: number) => {
+      const el = anchorRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const width = 280; // Fixed width for calendar
+      let left = rect.left;
+      left = Math.min(
+        Math.max(left, VIEWPORT_PAD_PX),
+        window.innerWidth - width - VIEWPORT_PAD_PX,
+      );
+      const top = pickMenuTop(rect, heightGuess, MENU_GAP_PX, VIEWPORT_PAD_PX);
+      setMenuStyle({
+        position: "fixed",
+        top,
+        left,
+        width,
+        zIndex: 100,
+      });
+    },
+    [],
+  );
+
+  useLayoutEffect(() => {
+    if (!isOpen) return;
+    
+    const height = 340; // Estimated height for calendar
+    applyMenuPosition(height);
+
+    const refine = () => {
+      const h = menuRef.current?.getBoundingClientRect().height || height;
+      applyMenuPosition(h);
+    };
+
+    window.addEventListener("scroll", refine, true);
+    window.addEventListener("resize", refine);
+    return () => {
+      window.removeEventListener("scroll", refine, true);
+      window.removeEventListener("resize", refine);
+    };
+  }, [isOpen, applyMenuPosition]);
+
+  useEffect(() => {
+    const handleMouseDown = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (anchorRef.current?.contains(target) || menuRef.current?.contains(target)) {
+        return;
+      }
+      setIsOpen(false);
+    };
+    document.addEventListener("mousedown", handleMouseDown);
+    return () => document.removeEventListener("mousedown", handleMouseDown);
+  }, []);
 
   const prevMonth = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -325,9 +404,91 @@ function DateField({
     setIsOpen(false);
   };
 
+  const calendarBody = (
+    <div
+      ref={menuRef}
+      {...{ [BV_IGNORE_OUTSIDE_CLICK_ATTR]: "" }}
+      style={menuStyle || {}}
+      className={`rounded-xl border p-4 shadow-lg animate-in fade-in zoom-in-95 duration-200 ${variant === "admin" ? "border-white/10 bg-admin-panel text-white/90" : "border-border-primary bg-surface-secondary shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] backdrop-blur-md"}`}
+    >
+      <div className="flex items-center justify-between mb-4">
+        <button
+          type="button"
+          onClick={prevMonth}
+          className={`p-1.5 rounded-lg transition-colors cursor-pointer ${variant === "admin" ? "text-white/55 hover:bg-white/10 hover:text-white/90" : "hover:bg-surface-primary text-content-secondary"}`}
+        >
+          &lt;
+        </button>
+        <div
+          className={`font-medium text-sm capitalize ${variant === "admin" ? "text-white/85" : "text-content-primary"}`}
+        >
+          {currentMonth.toLocaleString("en-US", { month: "long", year: "numeric" })}
+        </div>
+        <button
+          type="button"
+          onClick={nextMonth}
+          className={`p-1.5 rounded-lg transition-colors cursor-pointer ${variant === "admin" ? "text-white/55 hover:bg-white/10 hover:text-white/90" : "hover:bg-surface-primary text-content-secondary"}`}
+        >
+          &gt;
+        </button>
+      </div>
+
+      <div className="grid grid-cols-7 gap-1 mb-2">
+        {DAYS_OF_WEEK.map((day) => (
+          <div
+            key={day}
+            className={`py-1 text-center text-xs font-medium ${variant === "admin" ? "text-white/45" : "text-content-tertiary"}`}
+          >
+            {day}
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-7 gap-1">
+        {Array.from({ length: firstDay }).map((_, i) => (
+          <div key={`empty-${i}`} className="p-1" />
+        ))}
+        {Array.from({ length: daysInMonth }).map((_, i) => {
+          const day = i + 1;
+          const isSelected = value === formatDate(new Date(year, month, day));
+          const isToday = formatDate(new Date()) === formatDate(new Date(year, month, day));
+          const isAdmin = variant === "admin";
+
+          return (
+            <button
+              key={day}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSelectDate(day);
+              }}
+              className={`
+                h-8 w-8 rounded-full flex items-center justify-center text-sm transition-all cursor-pointer
+                ${isSelected
+                  ? isAdmin
+                    ? "bg-admin-accent font-medium text-admin-canvas"
+                    : "bg-brand-primary text-black font-medium"
+                  : isToday
+                    ? isAdmin
+                      ? "border border-admin-accent/30 bg-white/5 font-medium text-admin-accent-hi"
+                      : "bg-surface-primary text-brand-primary font-medium border border-brand-primary/20"
+                    : isAdmin
+                      ? "text-white/80 hover:bg-white/10 hover:text-admin-accent-hi"
+                      : "text-content-primary hover:bg-surface-primary hover:text-brand-primary"
+                }
+              `}
+            >
+              {day}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="relative w-full" ref={containerRef}>
-      <div onClick={() => setIsOpen(true)} className="relative w-full">
+    <div className="relative w-full" ref={anchorRef}>
+      <div onClick={() => setIsOpen(!isOpen)} className="relative w-full">
         <BaseInput
           {...props}
           type="text"
@@ -346,84 +507,7 @@ function DateField({
         </div>
       </div>
 
-      {isOpen && (
-        <div
-          className={`absolute z-50 mt-2 w-[280px] rounded-xl border p-4 shadow-lg animate-in fade-in zoom-in-95 duration-200 ${variant === "admin" ? "border-white/10 bg-admin-panel text-white/90" : "border-border-primary bg-surface-secondary"}`}
-        >
-          <div className="flex items-center justify-between mb-4">
-            <button
-              type="button"
-              onClick={prevMonth}
-              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${variant === "admin" ? "text-white/55 hover:bg-white/10 hover:text-white/90" : "hover:bg-surface-primary text-content-secondary"}`}
-            >
-              &lt;
-            </button>
-            <div
-              className={`font-medium text-sm capitalize ${variant === "admin" ? "text-white/85" : "text-content-primary"}`}
-            >
-              {currentMonth.toLocaleString("en-US", { month: "long", year: "numeric" })}
-            </div>
-            <button
-              type="button"
-              onClick={nextMonth}
-              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${variant === "admin" ? "text-white/55 hover:bg-white/10 hover:text-white/90" : "hover:bg-surface-primary text-content-secondary"}`}
-            >
-              &gt;
-            </button>
-          </div>
-
-          <div className="grid grid-cols-7 gap-1 mb-2">
-            {DAYS_OF_WEEK.map((day) => (
-              <div
-                key={day}
-                className={`py-1 text-center text-xs font-medium ${variant === "admin" ? "text-white/45" : "text-content-tertiary"}`}
-              >
-                {day}
-              </div>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-7 gap-1">
-            {Array.from({ length: firstDay }).map((_, i) => (
-              <div key={`empty-${i}`} className="p-1" />
-            ))}
-            {Array.from({ length: daysInMonth }).map((_, i) => {
-              const day = i + 1;
-              const isSelected = value === formatDate(new Date(year, month, day));
-              const isToday = formatDate(new Date()) === formatDate(new Date(year, month, day));
-              const isAdmin = variant === "admin";
-
-              return (
-                <button
-                  key={day}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSelectDate(day);
-                  }}
-                  className={`
-                    h-8 w-8 rounded-full flex items-center justify-center text-sm transition-all cursor-pointer
-                    ${isSelected
-                      ? isAdmin
-                        ? "bg-admin-accent font-medium text-admin-canvas"
-                        : "bg-brand-primary text-black font-medium"
-                      : isToday
-                        ? isAdmin
-                          ? "border border-admin-accent/30 bg-white/5 font-medium text-admin-accent-hi"
-                          : "bg-surface-primary text-brand-primary font-medium border border-brand-primary/20"
-                        : isAdmin
-                          ? "text-white/80 hover:bg-white/10 hover:text-admin-accent-hi"
-                          : "text-content-primary hover:bg-surface-primary hover:text-brand-primary"
-                    }
-                  `}
-                >
-                  {day}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      {isOpen && menuStyle && createPortal(calendarBody, document.body)}
     </div>
   );
 }

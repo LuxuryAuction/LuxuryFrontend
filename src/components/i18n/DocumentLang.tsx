@@ -3,7 +3,6 @@
 import { useLocale } from "next-intl";
 import { useEffect } from "react";
 
-/** Syncs `<html lang>` with the active next-intl locale (root layout cannot read `[locale]`). */
 export function DocumentLang() {
   const locale = useLocale();
 

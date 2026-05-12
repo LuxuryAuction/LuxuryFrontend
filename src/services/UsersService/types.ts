@@ -5,6 +5,7 @@ export interface IUserProfile {
   avatarName: string;
   isVerified: boolean;
   trustScore: number;
+  balance?: number;
 }
 
 // export type NotificationType =

@@ -39,7 +39,7 @@ export const ChatView = () => {
   const showThreadColumn = !isMobile || !mobileShowList;
 
   return (
-    <div className="p-5 md:p-7 mx-auto flex flex-col min-h-0">
+    <div className="p-5 md:p-7 max-w-7xl mx-auto flex flex-col min-h-0">
       <PageHeader
         label="Messages"
         title="Chats"

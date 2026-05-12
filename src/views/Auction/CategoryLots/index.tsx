@@ -76,7 +76,7 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
   );
 
   return (
-    <div className="p-5 md:p-7 mx-auto flex flex-col gap-8">
+    <div className="p-5 md:p-7 mx-auto flex flex-col gap-8 max-w-7xl">
       <main className="flex-1 min-w-0">
         <PageHeader
           label={t("eyebrow")}

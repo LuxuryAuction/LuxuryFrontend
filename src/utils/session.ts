@@ -16,6 +16,20 @@ export const getAccessToken = (): string | null => {
   return null;
 };
 
+export const getRefreshToken = (): string | null => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("refreshToken");
+  }
+  return null;
+};
+
+export const getRefreshTokenExpiresAt = (): string | null => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("refreshTokenExpiresAt");
+  }
+  return null;
+};
+
 export const clearSession = () => {
   if (typeof window !== "undefined") {
     localStorage.removeItem("accessToken");

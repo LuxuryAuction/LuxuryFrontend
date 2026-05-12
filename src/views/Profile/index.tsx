@@ -5,7 +5,10 @@ import { ProfileHeader } from "./ProfileHeader";
 import { OverviewTab } from "./OverviewTab";
 import { MyLotsTab } from "./MyLotsTab";
 import { MyBidsTab } from "./MyBidsTab";
+import { BalanceTab } from "./BalanceTab";
+import { ProfileSkeleton } from "./components/ProfileSkeleton";
 import Tabs from "@/src/components/ui/Tabs";
+import { Alert } from "@/src/components/ui/Alert";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
 
 export const ProfilePage = () => {
@@ -16,16 +19,21 @@ export const ProfilePage = () => {
     { id: "overview", label: "Overview" },
     { id: "lots", label: "Lots" },
     { id: "bids", label: "Bids" },
-    { id: "payments", label: "Payments" },
+    { id: "balance", label: "Balance" },
   ];
 
   if (isLoading || !profile) {
-    return <div className="p-5 md:p-7 text-content-secondary animate-pulse">Loading profile...</div>;
+    return <ProfileSkeleton />;
   }
 
   return (
-    <div className="p-5 md:p-7">
+    <div className="p-5 md:p-7 max-w-7xl mx-auto">
       <ProfileHeader profile={profile} />
+
+      <Alert variant="warning" title="Outbid Alert" className="mb-6">
+        You are <span>outbid</span> on 1 lot. Raise your bid before the auction ends.
+      </Alert>
+
       <Tabs
 
         tabs={tabsConfig}
@@ -37,11 +45,7 @@ export const ProfilePage = () => {
       {activeTab === "overview" && <OverviewTab />}
       {activeTab === "lots" && <MyLotsTab />}
       {activeTab === "bids" && <MyBidsTab />}
-      {activeTab === "payments" && (
-        <div className="bg-[#13151a] border border-[#2a2e3a] rounded-[12px] p-10 text-center text-[#555b6e] font-mono text-[0.75rem]">
-          {activeTab} — coming soon
-        </div>
-      )}
+      {activeTab === "balance" && <BalanceTab balance={profile.balance} />}
     </div>
   );
 };

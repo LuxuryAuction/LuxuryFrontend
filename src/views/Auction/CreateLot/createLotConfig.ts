@@ -1,16 +1,3 @@
-export const CATEGORY_OPTIONS = [
-  { value: "fine-art", label: "🎨 Fine Art" },
-  { value: "jewellery", label: "💍 Jewellery" },
-  { value: "antiquities", label: "🏛️ Antiquities" },
-  { value: "asian-art", label: "🏮 Asian Art" },
-  { value: "design", label: "⏳ Vintage Design" },
-  { value: "manuscripts", label: "📜 Manuscripts" },
-  { value: "sneakers", label: "👟 Sneakers" },
-  { value: "sport", label: "⚽ Sport Memorabilia" },
-  { value: "electronics", label: "💻 Electronics" },
-  { value: "other", label: "📦 Other" },
-];
-
 export const CONDITION_OPTIONS = [
   { value: "10", label: "10/10 — Brand New / Pristine" },
   { value: "9", label: "9/10 — Excellent / Minimal use" },

@@ -31,7 +31,7 @@ export const ProfileHeader = ({ profile }: ProfileHeaderProps) => {
 
       <div className="flex items-center justify-between sm:justify-start lg:justify-end gap-6 sm:gap-10 md:gap-12 w-full lg:w-auto pt-6 lg:pt-0 border-t lg:border-t-0 border-border-primary/50 lg:ml-auto px-4 lg:px-0">
         {USER_STATS.map(({ val, label }) => (
-          <div key={label} className="flex flex-col items-center lg:items-end">
+          <div key={label} className="flex flex-col items-center">
             <div className="text-[1.2rem] md:text-[1.3rem] font-bold text-content-light leading-none">{val}</div>
             <div className="font-mono text-[0.55rem] md:text-[0.58rem] tracking-[0.1em] uppercase text-content-tertiary mt-1.5">{label}</div>
           </div>

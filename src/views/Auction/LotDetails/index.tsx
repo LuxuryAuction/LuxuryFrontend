@@ -105,7 +105,7 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen p-5 md:p-8 mx-auto animate-bvCatFadeUp">
+    <div className="flex flex-col min-h-screen p-5 md:p-7 max-w-7xl mx-auto animate-bvCatFadeUp">
       <PageHeader
         label={`${lot.lotNumber}`}
         title={lot.name}

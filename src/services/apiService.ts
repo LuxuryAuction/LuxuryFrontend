@@ -1,16 +1,16 @@
-import { getAccessToken } from "../utils/session";
+import { getAccessToken, getRefreshToken, setSession, clearSession } from "../utils/session";
+import { IAuthTokens } from "./AuthService/types";
 
 interface ApiError {
   message: string;
   description?: string;
 }
+
 export interface ApiResponse<T> {
   code: number;
   data: T;
   message: string;
 }
-
-
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
   headers?: HeadersInit;
@@ -20,12 +20,8 @@ interface RequestOptions extends Omit<RequestInit, "body"> {
   returnBlob?: boolean;
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_ENDPOINT || "http://127.0.0.1:8080/api";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_ENDPOINT || "localhost:3000";
-/**
- * Convenience wrapper for common API operations
- * Automatically uses auth token from Redux store if not provided
- */
 export const api = {
   async get<T>(endpoint: string, params?: Record<string, string | string[]>) {
     return apiRequest<T>(endpoint, { method: "GET", params });
@@ -63,6 +59,7 @@ export const api = {
   },
 };
 
+let refreshPromise: Promise<void> | null = null;
 
 export async function apiRequest<TResponse>(
   url: string,
@@ -70,8 +67,7 @@ export async function apiRequest<TResponse>(
 ): Promise<TResponse> {
   const { body, params, returnBlob, ...restOptions } = options;
 
-  const accessToken = options.accessToken || getAccessToken();
-  
+  let accessToken = options.accessToken || getAccessToken();
 
   // Handle FormData vs JSON
   const isFormData = body instanceof FormData;
@@ -85,22 +81,72 @@ export async function apiRequest<TResponse>(
     headers.set("Authorization", `Bearer ${accessToken}`);
   }
 
-  try {
+  const makeRequest = async (token: string | null) => {
+    const requestHeaders = new Headers(headers);
+    if (token) {
+      requestHeaders.set("Authorization", `Bearer ${token}`);
+    }
+
     let fullUrl = `${API_BASE_URL}/${url}`;
     if (params && Object.keys(params).length > 0) {
       const searchParams = createQueryString(params);
       fullUrl += `?${searchParams}`;
     }
 
-    const response = await fetch(fullUrl, {
+    return fetch(fullUrl, {
       ...restOptions,
-      headers,
+      headers: requestHeaders,
       credentials: "include",
       body: isFormData ? body : body ? JSON.stringify(body) : null,
     });
+  };
+
+  try {
+    let response = await makeRequest(accessToken);
+
+    // Handle 401 Unauthorized - Attempt token refresh
+    if (response.status === 401 && !url.includes("auth/")) {
+      const refreshToken = getRefreshToken();
+
+      if (refreshToken) {
+        try {
+          // If a refresh is already in progress, wait for it
+          if (!refreshPromise) {
+            refreshPromise = (async () => {
+              const refreshRes = await fetch(`${API_BASE_URL}/auth/refresh`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ refreshToken }),
+              });
+
+              if (!refreshRes.ok) {
+                throw new Error("Refresh failed");
+              }
+
+              const newTokens: IAuthTokens = await refreshRes.json();
+              setSession(newTokens);
+            })();
+          }
+
+          await refreshPromise;
+          refreshPromise = null;
+
+          // Retry the original request with new token
+          accessToken = getAccessToken();
+          response = await makeRequest(accessToken);
+        } catch (refreshError) {
+          refreshPromise = null;
+          clearSession();
+          // Optionally redirect to login or throw specific error
+          throw {
+            message: "Session expired",
+            description: "Please log in again",
+          } as ApiError;
+        }
+      }
+    }
 
     if (!response.ok) {
-
       const errorData = await response.json().catch(() => ({}));
 
       throw {
@@ -109,12 +155,11 @@ export async function apiRequest<TResponse>(
       } as ApiError;
     }
 
-    // Handle 204 No Content responses (typically from DELETE operations)
+    // Handle 204 No Content responses
     if (response.status === 204) {
       return undefined as TResponse;
     }
 
-    // Return blob if returnBlob is true, otherwise return JSON
     if (returnBlob) {
       return response.blob() as TResponse;
     }

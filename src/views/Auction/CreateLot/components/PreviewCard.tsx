@@ -1,8 +1,8 @@
 import { formatCurrency, formatDateTime } from "@/src/utils/textUtils";
-import { CATEGORY_OPTIONS } from "../createLotConfig";
 import { ICreateLotFormData } from "../types";
+import { ICategory } from "@/src/services/CategoriesService/types";
 
-export const PreviewCard = ({ form }: { form: ICreateLotFormData }) => {
+export const PreviewCard = ({ form, categories }: { form: ICreateLotFormData; categories: ICategory[] }) => {
 
   const coverUrl = form.images.length > 0 ? URL.createObjectURL(form.images[0]) : "";
 
@@ -22,7 +22,7 @@ export const PreviewCard = ({ form }: { form: ICreateLotFormData }) => {
         <div className="absolute top-3 left-3 flex gap-2">
           {form.categoryId && (
             <span className="bg-[#1c1f27]/90 backdrop-blur text-content-primary text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded-md border border-border-primary">
-              {CATEGORY_OPTIONS.find(c => c.value === form.categoryId)?.label?.split(' ')[1] || form.categoryId}
+              {categories.find(c => String(c.id) === form.categoryId)?.name || form.categoryId}
             </span>
           )}
         </div>

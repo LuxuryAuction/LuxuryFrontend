@@ -57,7 +57,7 @@ export const ConversationList = ({ items, activeId, onSelect }: ConversationList
         </div>
       </header>
 
-      <div className="flex-1 min-h-[280px] max-h-[min(72vh,640px)] overflow-y-auto p-2.5 flex flex-col gap-1.5">
+      <div className="flex-1 min-h-[280px] max-h-[min(59vh,640px)] overflow-y-auto p-2.5 flex flex-col gap-1.5">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 px-4 text-center rounded-xl border border-dashed border-border-primary/60 bg-surface-primary/20">
             <div className="w-11 h-11 rounded-2xl border border-border-primary bg-surface-tertiary/50 flex items-center justify-center mb-3">
