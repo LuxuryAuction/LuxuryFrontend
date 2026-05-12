@@ -8,7 +8,6 @@ interface AvatarProps {
   name: string;
   src?: string;
   size?: AvatarSize;
-  onClick?: () => void;
   className?: string;
   bgColor?: string;
   style?: React.CSSProperties;
@@ -18,7 +17,7 @@ const getInitials = (name: string) => {
   if (!name) return "";
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return "";
-  
+
   return parts
     .map((w) => w[0])
     .join("")
@@ -37,7 +36,6 @@ export const Avatar = ({
   name,
   src,
   size = "md",
-  onClick,
   className = "",
   bgColor,
   style,
@@ -45,9 +43,7 @@ export const Avatar = ({
   const displayInitials = getInitials(name);
 
   return (
-    <button
-      onClick={onClick}
-      aria-label="User menu"
+    <div
       style={{
         ...(bgColor ? { background: bgColor, border: "none" } : {}),
         ...style,
@@ -55,7 +51,7 @@ export const Avatar = ({
       className={`
         ${sizeStyles[size]}
         shrink-0 flex items-center justify-center rounded-full font-bold overflow-hidden relative
-        ${!bgColor ? "bg-gradient-to-br from-[#f0a500] to-[#e87c00] border-[3px] border-[#353a4a] text-black" : "text-white"}
+        ${!bgColor ? "bg-linear-to-br from-[#f0a500] to-[#e87c00] border-[3px] border-[#353a4a] text-black" : "text-white"}
         ${className}
       `}
     >
@@ -64,6 +60,6 @@ export const Avatar = ({
       ) : (
         displayInitials
       )}
-    </button>
+    </div>
   );
 };

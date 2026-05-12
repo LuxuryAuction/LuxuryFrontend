@@ -3,11 +3,13 @@
 import { NavGroup, SidebarUser } from "./types";
 import { SidebarPanel } from "./SidebarPanel";
 import { CloseIcon } from "@/public/assets/icons";
+import { useTranslations } from "next-intl";
 
 export interface SidebarProps {
   groups: NavGroup[];
   user: SidebarUser;
   logoHref?: string;
+  variant?: "app" | "admin";
   isCollapsed: boolean;
   isOpen: boolean;
   onClose: () => void;
@@ -19,19 +21,26 @@ export function Sidebar({
   groups,
   user,
   logoHref = "/",
+  variant = "app",
   isCollapsed,
   isOpen,
   onClose,
   onToggleCollapse,
 }: SidebarProps) {
+  const t = useTranslations("Sidebar.aria");
+  const shellClass =
+    variant === "admin"
+      ? "bg-admin-canvas border-r border-admin-accent/20"
+      : "bg-auth-app border-r border-border-primary";
+
   return (
     <>
       <aside
         className={
           "hidden md:flex flex-col " +
           "fixed top-0 left-0 bottom-0 z-50 " +
-          "bg-auth-app border-r border-border-primary " +
-          "overflow-visible " +
+          shellClass +
+          " overflow-visible " +
           "transition-[width] duration-300 ease-in-out " +
           (isCollapsed ? "w-16" : "w-[248px]")
         }
@@ -40,6 +49,7 @@ export function Sidebar({
           groups={groups}
           user={user}
           logoHref={logoHref}
+          variant={variant}
           isCollapsed={isCollapsed}
           onClose={onClose}
           onToggleCollapse={onToggleCollapse}
@@ -60,15 +70,15 @@ export function Sidebar({
         className={
           "fixed top-0 left-0 bottom-0 z-50 md:hidden " +
           "w-full flex flex-col " +
-          "bg-auth-app border-r border-border-primary " +
-          "shadow-[4px_0_32px_rgba(0,0,0,0.6)] " +
+          shellClass +
+          " shadow-[4px_0_32px_rgba(0,0,0,0.6)] " +
           "transition-transform duration-300 ease-in-out " +
           (isOpen ? "translate-x-0" : "-translate-x-full")
         }
       >
         <button
           onClick={onClose}
-          aria-label="Close navigation"
+          aria-label={t("closeNav")}
           className="absolute top-5 right-3 z-10 w-7 h-7 flex items-center justify-center rounded-[6px] bg-[#1c1f27] border border-[#2a2e3a] text-[#4a5270] hover:text-[#e8eaf0] hover:border-[#353a4a] transition-all"
         >
           <CloseIcon className="w-4 h-4" />
@@ -78,11 +88,12 @@ export function Sidebar({
           groups={groups}
           user={user}
           logoHref={logoHref}
+          variant={variant}
           isCollapsed={false}
           onClose={onClose}
           onToggleCollapse={onToggleCollapse}
         />
-      </aside>
+      </aside >
     </>
   );
 }

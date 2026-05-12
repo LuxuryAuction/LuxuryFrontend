@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { LotCard } from "@/src/components/ui/LotCard";
 import { ViewSwitcher, ViewVariant } from "@/src/components/ui/ViewSwitcher";
@@ -9,17 +10,22 @@ import { Input } from "@/src/components/ui/Input";
 import { Pagination } from "@/src/components/ui/Pagination";
 import { useClickOutside } from "@/src/hooks/useClickOutside";
 import { useIsMobile } from "@/src/hooks/useIsMobile";
-import { EmptyBoxIcon, FilterIcon } from "@/public/assets/icons";
+import { ArrowRightIcon, EmptyBoxIcon, FilterIcon } from "@/public/assets/icons";
+import Button from "@/src/components/ui/Button";
+import { useRouter } from "@/src/i18n/navigation";
 import { FiltersPopover } from "./components/FiltersPopover";
 import NoData from "@/src/components/ui/NoData";
 import { useGetLots } from "@/src/hooks/useLots";
-import { CATEGORY_FILTER_TABS } from "./categoryConfig";
+import { LotsGridSkeleton } from "@/src/views/Auction/components/LotsGridSkeleton";
+import { CATEGORY_FILTER_TAB_IDS } from "./categoryConfig";
 
 interface CategoryLotsViewProps {
   categoryId: string;
 }
 
 export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
+  const t = useTranslations("CategoryLotsPage");
+  const router = useRouter();
 
   const [viewVariant, setViewVariant] = useState<ViewVariant>("grid");
   const [activeTab, setActiveTab] = useState("all");
@@ -46,7 +52,7 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
     maxPrice,
   }), [categoryId, page, search, sex, activeTab, minPrice, maxPrice]);
 
-  const { data } = useGetLots(params);
+  const { data, isLoading } = useGetLots(params);
 
   const onTabChange = (tabId: string) => {
     setActiveTab(tabId);
@@ -60,14 +66,22 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
 
   useClickOutside(filtersRef, () => setShowFilters(false));
 
+  const filterTabs = useMemo(
+    () =>
+      CATEGORY_FILTER_TAB_IDS.map((id) => ({
+        id,
+        label: t(`tabs.${id}`),
+      })),
+    [t],
+  );
 
   return (
-    <div className="p-5 md:p-7 max-w-7xl mx-auto flex flex-col gap-8">
+    <div className="p-5 md:p-7 mx-auto flex flex-col gap-8">
       <main className="flex-1 min-w-0">
         <PageHeader
-          label="Auctions"
-          title="Mock Title"
-          description="Mock Desc"
+          label={t("eyebrow")}
+          title="Mock Category Name"
+          description={t("description")}
         />
 
         <div className="flex flex-col lg:flex-row-reverse justify-between gap-4 mb-8">
@@ -75,7 +89,7 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
             <div className="flex-1 md:flex-none md:w-64">
               <Input
                 type="search"
-                placeholder="Search lots..."
+                placeholder={t("searchPlaceholder")}
                 defaultValue={search}
                 onDebounceChange={onSearchChange}
               />
@@ -93,7 +107,7 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
                 <FilterIcon
                   className={`w-4 h-4 transition-transform duration-300 ${showFilters ? "rotate-90" : ""}`}
                 />
-                Filters
+                {t("filters")}
               </button>
 
               <FiltersPopover
@@ -121,51 +135,63 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
               <ViewSwitcher
                 variant={viewVariant}
                 onChange={setViewVariant}
+                gridAriaLabel={t("aria.gridView")}
+                listAriaLabel={t("aria.listView")}
               />
             </div>
           </div>
           <Tabs
-            tabs={CATEGORY_FILTER_TABS}
+            tabs={filterTabs}
             activeTab={activeTab}
             onChange={onTabChange}
             variant="pill"
           />
         </div>
 
-        {
-          (data?.items?.length ?? 0) > 0 ? (
-            <>
-              <div className={
-                (isMobile || viewVariant === "grid")
-                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-bvCatFadeUp"
-                  : "flex flex-col gap-3 animate-bvCatFadeUp"
-              }>
-                {data?.items.map((lot, idx) => (
-                  <div key={lot.id} className="h-full" style={{ animationDelay: `${idx * 0.05}s` }}>
-                    <LotCard
-                      lot={lot}
-                      variant={isMobile ? "grid" : viewVariant}
-                      showCategory={false}
-                    />
-                  </div>
-                ))}
-              </div>
+        {isLoading ? (
+          <LotsGridSkeleton />
+        ) : (data?.items?.length ?? 0) > 0 ? (
+          <>
+            <div className={
+              (isMobile || viewVariant === "grid")
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-bvCatFadeUp"
+                : "flex flex-col gap-3 animate-bvCatFadeUp"
+            }>
+              {data?.items.map((lot, idx) => (
+                <div key={lot.id} className="h-full" style={{ animationDelay: `${idx * 0.05}s` }}>
+                  <LotCard
+                    lot={lot}
+                    variant={isMobile ? "grid" : viewVariant}
+                    showCategory={false}
+                  />
+                </div>
+              ))}
+            </div>
 
-              <Pagination
-                currentPage={page}
-                totalPages={data?.totalCount || 1}
-                onPageChange={setPage}
-                className="mt-12"
-              />
-            </>
-          ) : (
-            <NoData
-              title="No lots found"
-              description="There are no lots matching your search."
-              icon={<EmptyBoxIcon className="text-content-tertiary" />}
+            <Pagination
+              currentPage={page}
+              totalPages={data?.totalCount || 1}
+              onPageChange={setPage}
+              className="mt-12"
             />
-          )
-        }
+          </>
+        ) : (
+          <NoData
+            title={t("noLotsTitle")}
+            description={t("noLotsDescription")}
+            icon={<EmptyBoxIcon className="text-content-tertiary" />}
+            action={
+              <Button
+                variant="secondary"
+                size="md"
+                rightIcon={<ArrowRightIcon className="w-3.5 h-3.5" />}
+                onClick={() => router.push("/user/categories")}
+              >
+                {t("noLotsBrowseCategories")}
+              </Button>
+            }
+          />
+        )}
       </main >
     </div >
   );

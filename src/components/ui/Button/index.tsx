@@ -2,7 +2,16 @@
 
 import * as React from "react";
 
-type ButtonVariant = "primary" | "secondary" | "danger" | "ghost";
+export type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "danger"
+  | "ghost"
+  | "nexus"
+  | "admin"
+  | "admin-accent"
+  | "admin-primary"
+  | "admin-danger";
 type ButtonSize = "default" | "xxs" | "xs" | "sm" | "md" | "lg" | "xl";
 type ButtonTextSize = "xs" | "sm" | "md" | "lg" | "xl" | "inherit";
 
@@ -26,6 +35,15 @@ const variantClasses: Record<ButtonVariant, string> = {
   danger:
     "bg-[rgba(239,68,68,0.1)] text-state-danger border-[rgba(239,68,68,0.3)] hover:bg-[rgba(239,68,68,0.2)] text-[#ef4444]",
   ghost: "bg-transparent text-text-tertiary border-border-primary hover:text-text-primary hover:border-border-secondary",
+  nexus: "bg-white/5 border border-white/10 text-brand-primary/80 font-mono text-[10px] uppercase tracking-[0.3em] hover:bg-brand-primary/10 hover:text-brand-primary hover:border-brand-primary/30 transition-all duration-300 backdrop-blur-sm shadow-lg shadow-black/20",
+  admin:
+    "rounded-lg border border-white/6 bg-white/2 text-white/85 backdrop-blur-xl shadow-black/20 hover:border-admin-accent/35 hover:bg-admin-accent/10 hover:text-admin-accent-hi active:scale-[0.98]",
+  "admin-accent":
+    "rounded-lg border border-admin-accent/35 bg-admin-accent/15 text-admin-accent-hi shadow-black/20 hover:border-admin-accent/55 hover:bg-admin-accent/25 active:scale-[0.98]",
+  "admin-primary":
+    "group w-full justify-between !rounded-xl border border-white/5 bg-admin-panel px-4 py-3 text-left text-xs font-bold text-white hover:border-admin-accent/30",
+  "admin-danger":
+    "group w-full justify-between !rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-3 text-left text-xs font-bold text-rose-500 hover:bg-rose-500/20",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -80,7 +98,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
 
         {!isLoading ? rightIcon : null}
-      </button >
+      </button>
     );
   },
 );

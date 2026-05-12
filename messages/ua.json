@@ -1,0 +1,132 @@
+{
+  "Meta": {
+    "title": "BidVault | Преміум-аукціон",
+    "description": "Платформа високого класу для ексклюзивних лотів."
+  },
+  "HomePage": {
+    "hello": "Вітаємо на аукціоні",
+    "createAccount": "Створити акаунт",
+    "pricingTiming": "Ціна та час",
+    "password": "Пароль"
+  },
+  "LocaleSwitcher": {
+    "label": "Мова",
+    "en": "Англійська",
+    "ua": "Українська"
+  },
+  "Sidebar": {
+    "aria": {
+      "mainNav": "Головна навігація",
+      "closeNav": "Закрити меню",
+      "expandSidebar": "Розгорнути бічну панель",
+      "collapseSidebar": "Згорнути бічну панель"
+    },
+    "groups": {
+      "auth": "Авторизація",
+      "main": "Головне",
+      "direction": "Навігація",
+      "sellers": "Продавцям",
+      "admin": "Адмін",
+      "systemControl": "Керування системою",
+      "financeSupport": "Фінанси та підтримка",
+      "enforcement": "Модерація",
+      "return": "Назад"
+    },
+    "nav": {
+      "login": "Увійти",
+      "register": "Реєстрація",
+      "profile": "Профіль",
+      "categories": "Категорії",
+      "createLot": "Створити публікацію",
+      "myLots": "Мої публікації",
+      "myBids": "Мої ставки",
+      "notifications": "Сповіщення",
+      "verifiedSellers": "Перевірені продавці",
+      "directionInfo": "Інформація",
+      "auctionRules": "Правила",
+      "trustSafety": "Довіра та безпека",
+      "chats": "Чати",
+      "dashboard": "Адмін Панель"
+    },
+    "adminNav": {
+      "dashboard": "Дашборд",
+      "categories": "Категорії",
+      "lotMonitoring": "Моніторинг публікацій",
+      "userManagement": "Користувачі",
+      "ordersPayments": "Замовлення та оплата",
+      "disputes": "Спори",
+      "reports": "Скарги",
+      "banRegistry": "Реєстр банів",
+      "backToApp": "До застосунку"
+    },
+    "comingSoon": "Незабаром",
+    "comingSoonWithLabel": "{label} (незабаром)",
+    "user": {
+      "verifiedSeller": "Перевірений продавець",
+      "member": "Учасник",
+      "systemAdministrator": "Системний адміністратор",
+      "administrator": "Адміністратор"
+    }
+  },
+  "CategoriesPage": {
+    "error": "Не вдалося завантажити категорії. Спробуйте ще раз.",
+    "eyebrow": "Весняний розпродаж 2026",
+    "title": "Категорії аукціону",
+    "description": "Оберіть категорію, щоб переглянути активні публікації та зробити ставку.",
+    "emptyTitle": "Немає категорій",
+    "emptyDescription": "Зараз немає доступних категорій. Загляньте пізніше.",
+    "viewLots": "Переглянути публікації",
+    "activeLots": "Активних публікацій: {count}"
+  },
+  "CategoryLotsPage": {
+    "eyebrow": "Аукціони",
+    "description": "Переглядайте публікації в цій категорії, фільтруйте результати та робіть ставки.",
+    "searchPlaceholder": "Пошук публікацій...",
+    "filters": "Фільтри",
+    "noLotsTitle": "Публікацій не знайдено",
+    "noLotsDescription": "Спробуйте змінити фільтри або зайдіть пізніше — з’являться нові публікації.",
+    "noLotsBrowseCategories": "Переглянути категорії",
+    "tabs": {
+      "all": "Усі публікації",
+      "live": "Активні",
+      "upcoming": "Незабаром",
+      "ended": "Завершені"
+    },
+    "filtersPanel": {
+      "title": "Фільтри пошуку",
+      "reset": "Скинути",
+      "sexLabel": "Стать",
+      "sizeLabel": "Розмір",
+      "conditionLabel": "Стан (оцінка)",
+      "priceRangeLabel": "Діапазон цін (₴)",
+      "optionAll": "Усі",
+      "apply": "Застосувати фільтри"
+    },
+    "aria": {
+      "gridView": "Сітка",
+      "listView": "Список"
+    }
+  },
+  "MyLotsPage": {
+    "eyebrow": "Керування",
+    "title": "Мої публікації",
+    "descriptionLoading": "Завантажуємо ваші публікації…",
+    "descriptionWithCount": "У вас {count} публікацій у списку.",
+    "searchPlaceholder": "Пошук публікацій…",
+    "tabs": {
+      "all": "Усі публікації",
+      "active": "Активні",
+      "draft": "Чернетки",
+      "ended": "Завершені"
+    },
+    "emptySearchTitle": "Нічого не знайдено",
+    "emptySearchDescription": "Немає публікацій за вашим запитом.",
+    "emptyTitle": "Поки що немає публікацій",
+    "emptyDescription": "Ви ще не створили жодної публікації на аукціоні.",
+    "placeLot": "Створити публікацію",
+    "aria": {
+      "gridView": "Сітка",
+      "listView": "Список"
+    }
+  }
+}

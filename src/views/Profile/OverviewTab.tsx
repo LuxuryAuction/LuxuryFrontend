@@ -18,7 +18,7 @@ function StatCard({
       <div className={`absolute top-0 left-0 right-0 h-[2px] ${topBar}`} />
       <div className="font-mono text-[0.6rem] tracking-[0.14em] uppercase text-content-tertiary mb-2">{label}</div>
       <div className="text-[2rem] font-bold text-content-light leading-none font-serif">{value}</div>
-      <div className={`font-mono text-[0.6rem] mt-1 ${deltaColor}`}>{delta}</div>
+      <div className={`font-mono text-[0.6rem] mt-2.5 ${deltaColor}`}>{delta}</div>
     </div>
   );
 }
@@ -65,17 +65,17 @@ export const OverviewTab = () => {
         <div className="bg-auth-app border border-border-primary rounded-lg p-5">
           <div className="text-[0.78rem] font-semibold text-content-light mb-4">Trust &amp; Safety</div>
 
-          <ProgressBar 
-            label="Trust Score" 
-            value={TRUST_SAFETY_CONFIG.trustScore.value} 
-            displayVal={TRUST_SAFETY_CONFIG.trustScore.display} 
-            color={TRUST_SAFETY_CONFIG.trustScore.color} 
+          <ProgressBar
+            label="Trust Score"
+            value={TRUST_SAFETY_CONFIG.trustScore.value}
+            displayVal={TRUST_SAFETY_CONFIG.trustScore.display}
+            color={TRUST_SAFETY_CONFIG.trustScore.color}
           />
-          <ProgressBar 
-            label="Unpaid Lots" 
-            value={(TRUST_SAFETY_CONFIG.unpaidLots.value / TRUST_SAFETY_CONFIG.unpaidLots.max) * 100} 
-            displayVal={TRUST_SAFETY_CONFIG.unpaidLots.display} 
-            color={TRUST_SAFETY_CONFIG.unpaidLots.color} 
+          <ProgressBar
+            label="Unpaid Lots"
+            value={(TRUST_SAFETY_CONFIG.unpaidLots.value / TRUST_SAFETY_CONFIG.unpaidLots.max) * 100}
+            displayVal={TRUST_SAFETY_CONFIG.unpaidLots.display}
+            color={TRUST_SAFETY_CONFIG.unpaidLots.color}
           />
 
           <div className="font-mono text-[0.58rem] text-content-tertiary mb-4 -mt-2">

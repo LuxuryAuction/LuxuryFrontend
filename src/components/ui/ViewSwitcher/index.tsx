@@ -8,9 +8,17 @@ interface ViewSwitcherProps {
   variant: ViewVariant;
   onChange: (variant: ViewVariant) => void;
   className?: string;
+  gridAriaLabel?: string;
+  listAriaLabel?: string;
 }
 
-export const ViewSwitcher = ({ variant, onChange, className = "" }: ViewSwitcherProps) => {
+export const ViewSwitcher = ({
+  variant,
+  onChange,
+  className = "",
+  gridAriaLabel = "Grid view",
+  listAriaLabel = "List view",
+}: ViewSwitcherProps) => {
   return (
     <div className={`flex items-center w-fit gap-2 bg-surface-secondary p-1 rounded-xl border border-border-primary ${className}`}>
       <button
@@ -19,7 +27,7 @@ export const ViewSwitcher = ({ variant, onChange, className = "" }: ViewSwitcher
           ? "bg-surface-primary text-brand-primary shadow-sm"
           : "text-content-tertiary hover:text-content-primary"
           }`}
-        aria-label="Grid view"
+        aria-label={gridAriaLabel}
       >
         <GridIcon />
       </button>
@@ -29,7 +37,7 @@ export const ViewSwitcher = ({ variant, onChange, className = "" }: ViewSwitcher
           ? "bg-surface-primary text-brand-primary shadow-sm"
           : "text-content-tertiary hover:text-content-primary"
           }`}
-        aria-label="List view"
+        aria-label={listAriaLabel}
       >
         <ListIcon />
       </button>

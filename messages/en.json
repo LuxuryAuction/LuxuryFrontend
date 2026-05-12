@@ -1,0 +1,132 @@
+{
+  "Meta": {
+    "title": "BidVault | Premium Auction",
+    "description": "High-end auction platform for exclusive lots."
+   },
+  "HomePage": {
+    "hello": "Hello Auction",
+    "createAccount": "Create Account",
+    "pricingTiming": "Pricing & Timing",
+    "password": "Password"
+  },
+  "LocaleSwitcher": {
+    "label": "Language",
+    "en": "English",
+    "ua": "Ukrainian"
+  },
+  "Sidebar": {
+    "aria": {
+      "mainNav": "Main navigation",
+      "closeNav": "Close navigation",
+      "expandSidebar": "Expand sidebar",
+      "collapseSidebar": "Collapse sidebar"
+    },
+    "groups": {
+      "auth": "Auth",
+      "main": "Main",
+      "direction": "Direction",
+      "sellers": "Sellers",
+      "admin": "Admin",
+      "systemControl": "System Control",
+      "financeSupport": "Finance & Support",
+      "enforcement": "Enforcement",
+      "return": "Return"
+    },
+    "nav": {
+      "login": "Login",
+      "register": "Register",
+      "profile": "Profile",
+      "categories": "Categories",
+      "createLot": "Create Lot",
+      "myLots": "My Lots",
+      "myBids": "My Bids",
+      "notifications": "Notifications",
+      "verifiedSellers": "Verified Sellers",
+      "directionInfo": "Direction & Info",
+      "auctionRules": "Rules",
+      "trustSafety": "Trust & Safety",
+      "chats": "Chats",
+      "dashboard": "Dashboard"
+    },
+    "adminNav": {
+      "dashboard": "Dashboard",
+      "categories": "Categories",
+      "lotMonitoring": "Lot Monitoring",
+      "userManagement": "User Management",
+      "ordersPayments": "Orders & Payments",
+      "disputes": "Disputes",
+      "reports": "Reports",
+      "banRegistry": "Ban Registry",
+      "backToApp": "Back to App"
+    },
+    "comingSoon": "Coming soon",
+    "comingSoonWithLabel": "{label} (coming soon)",
+    "user": {
+      "verifiedSeller": "Verified Seller",
+      "member": "Member",
+      "systemAdministrator": "System Administrator",
+      "administrator": "Administrator"
+    }
+  },
+  "CategoriesPage": {
+    "error": "Error loading categories. Please try again.",
+    "eyebrow": "Spring Sale 2026",
+    "title": "Auction categories",
+    "description": "Choose a category to browse active lots and place your bids.",
+    "emptyTitle": "No categories",
+    "emptyDescription": "There are no categories available at the moment. Please check back later.",
+    "viewLots": "View lots",
+    "activeLots": "{count} active lots"
+  },
+  "CategoryLotsPage": {
+    "eyebrow": "Auctions",
+    "description": "Browse lots in this category, filter results, and place your bids.",
+    "searchPlaceholder": "Search lots…",
+    "filters": "Filters",
+    "noLotsTitle": "No lots found",
+    "noLotsDescription": "Try adjusting your filters or check back later for new arrivals.",
+    "noLotsBrowseCategories": "Browse categories",
+    "tabs": {
+      "all": "All lots",
+      "live": "Active",
+      "upcoming": "Upcoming",
+      "ended": "Ended"
+    },
+    "filtersPanel": {
+      "title": "Search filters",
+      "reset": "Reset",
+      "sexLabel": "Sex / gender",
+      "sizeLabel": "Item size",
+      "conditionLabel": "Condition (rating)",
+      "priceRangeLabel": "Price range (₴)",
+      "optionAll": "All",
+      "apply": "Apply filters"
+    },
+    "aria": {
+      "gridView": "Grid view",
+      "listView": "List view"
+    }
+  },
+  "MyLotsPage": {
+    "eyebrow": "Management",
+    "title": "My auction lots",
+    "descriptionLoading": "Loading your inventory…",
+    "descriptionWithCount": "You have {count} items in your inventory.",
+    "searchPlaceholder": "Search in my lots…",
+    "tabs": {
+      "all": "All lots",
+      "active": "Active",
+      "draft": "Drafts",
+      "ended": "Ended"
+    },
+    "emptySearchTitle": "No lots found",
+    "emptySearchDescription": "There are no lots matching your search.",
+    "emptyTitle": "No auctions yet",
+    "emptyDescription": "You have not created any auction lots yet.",
+    "placeLot": "Create listing",
+    "aria": {
+      "gridView": "Grid view",
+      "listView": "List view"
+    }
+  }
+}

@@ -23,7 +23,7 @@ export const BiddingPanel = ({
   totalParticipants,
   onPlaceBid,
 }: BiddingPanelProps) => {
-  const [timeLeft, setTimeLeft] = useState("");
+  const [timeLeft, setTimeLeft] = useState("----");
   const [bidAmount, setBidAmount] = useState(currentPrice + minStep);
   const [isUrgent, setIsUrgent] = useState(false);
 
@@ -55,9 +55,11 @@ export const BiddingPanel = ({
     return () => clearInterval(timer);
   }, [endTime]);
 
-  useEffect(() => {
+  const [prevPrice, setPrevPrice] = useState(currentPrice);
+  if (currentPrice !== prevPrice) {
+    setPrevPrice(currentPrice);
     setBidAmount(currentPrice + minStep);
-  }, [currentPrice, minStep]);
+  }
 
   return (
     <div className="flex flex-col">

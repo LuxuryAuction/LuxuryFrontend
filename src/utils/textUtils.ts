@@ -13,15 +13,33 @@ export const formatCurrency = (amount: string | number, symbolPosition: "before"
   return symbolPosition === "before" ? `₴${formattedNumber}` : `${formattedNumber} ₴`;
 };
 
-export const formatDateTime = (date: string | Date | undefined) => {
-  if (!date || date === undefined) {
+const pad2 = (n: number) => String(n).padStart(2, "0");
+
+export type FormatDateTimeVariant = "compact" | "locale";
+
+export const formatDateTime = (
+  date: string | Date | undefined,
+  variant: FormatDateTimeVariant = "compact",
+) => {
+  if (!date) {
     return "N/A";
   }
   const d = new Date(date);
-  const time = d.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
-  const datePart = d.toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
-  
-  return `${time} ${datePart}`;
+  if (Number.isNaN(d.getTime())) {
+    return "N/A";
+  }
+  if (variant === "locale") {
+    const time = d.toLocaleTimeString("uk-UA", { hour: "2-digit", minute: "2-digit" });
+    const datePart = d.toLocaleDateString("uk-UA", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    return `${time} ${datePart}`;
+  }
+  const datePart = `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}`;
+  const timePart = `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+  return `${datePart} ${timePart}`;
 };
 
 export const formatDisplayValue = (value: string | undefined | null | unknown): string => {

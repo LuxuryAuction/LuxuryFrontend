@@ -32,6 +32,36 @@ module.exports = {
           primary: "#0b0c0f",
           app: "#07080a",
         },
+        admin: {
+          shell: "#06070a",
+          canvas: "#080a0f",
+          panel: "#0c0e14",
+          inset: "#10131c",
+          accent: "#06b6d4",
+          "accent-hi": "#67e8f9",
+          "accent-lo": "#22d3ee",
+          primary: "#06b6d4",
+          secondary: "#22d3ee",
+          tertiary: "#67e8f9",
+          success: "#22d3ee",
+          warning: "#06b6d4",
+          info: "#38bdf8",
+          danger: "#fb7185",
+        },
+      },
+
+      backgroundImage: {
+        "admin-radial-accent":
+          "radial-gradient(ellipse at top right, rgb(6 182 212 / 0.15), transparent 50%)",
+      },
+
+      boxShadow: {
+        "admin-accent": "0 0 20px rgb(6 182 212 / 0.1)",
+        "admin-accent-lg": "0 0 20px rgb(6 182 212 / 0.12)",
+      },
+
+      dropShadow: {
+        "admin-chart": "0 0 10px rgb(6 182 212 / 0.45)",
       },
 
       keyframes: {
@@ -58,6 +88,11 @@ module.exports = {
         bvShimmer: {
           "100%": { transform: "translateX(100%)" },
         },
+        shimmer: {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
       },
 
       animation: {
@@ -67,6 +102,7 @@ module.exports = {
         bvFloat: "bvFloat 3s ease-in-out infinite",
         bvPulseSoft: "bvPulseSoft 2s ease-in-out infinite",
         bvShimmer: "bvShimmer 2s infinite",
+        shimmer: "shimmer 3s ease infinite",
       },
     },
   },

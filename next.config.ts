@@ -1,7 +1,16 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+import path from "path";
+
+const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["192.168.0.104", "192.168.0.109", "192.168.50.54"],
+  turbopack: {
+    resolveAlias: {
+      "next-intl/config": "./src/i18n/request.ts",
+    },
+  },
   images: {
     remotePatterns: [
       {
@@ -18,7 +27,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-    webpack(config) {
+  webpack(config) {
     const fileLoaderRule = config.module.rules.find((rule: any) => rule.test?.test?.(".svg"));
 
     config.module.rules.push(
@@ -38,10 +47,13 @@ const nextConfig: NextConfig = {
 
     fileLoaderRule.exclude = /\.svg$/i;
 
+    if (!config.resolve) config.resolve = {};
+    if (!config.resolve.alias) config.resolve.alias = {};
     config.resolve.alias.canvas = false;
+    config.resolve.alias["next-intl/config"] = path.join(process.cwd(), "src/i18n/request.ts");
 
     return config;
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { CategoryCard } from "./components/CategoryCard";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { useGetCategories } from "@/src/hooks/useCategory";
@@ -7,20 +8,23 @@ import NoData from "@/src/components/ui/NoData";
 import { CategoriesSkeletonList } from "./components/CategorySkeleton";
 
 export const CategoriesView = () => {
-  const { categories, isLoading, error } = useGetCategories()
+  const t = useTranslations("CategoriesPage");
+  const { categories, isLoading, error } = useGetCategories();
 
   if (error) {
-    return <div className="p-5 md:p-7 text-center text-red-500">
-      Error loading categories. Please try again.
-    </div>
+    return (
+      <div className="p-5 md:p-7 text-center text-red-500">
+        {t("error")}
+      </div>
+    );
   }
 
   return (
     <div className="p-5 md:p-7">
       <PageHeader
-        label="Spring Sale 2026"
-        title="Auction Categories"
-        description="Choose a category to browse active lots and place your bids."
+        label={t("eyebrow")}
+        title={t("title")}
+        description={t("description")}
       />
       {isLoading ? (
         <CategoriesSkeletonList />
@@ -36,10 +40,7 @@ export const CategoriesView = () => {
           ))}
         </div>
       ) : (
-        <NoData
-          title="No Categories"
-          description="There are no categories available at the moment. Please check back later."
-        />
+        <NoData title={t("emptyTitle")} description={t("emptyDescription")} />
       )}
     </div>
   );

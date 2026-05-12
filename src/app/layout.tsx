@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { ToastProvider } from "@/src/components/ui/Toast";
 import "./globals.css";
@@ -14,11 +13,6 @@ const jetbrains = JetBrains_Mono({
   variable: "--font-mono",
 });
 
-export const metadata: Metadata = {
-  title: "BidVault | Premium Auction",
-  description: "High-end auction platform for exclusive lots.",
-};
-
 export const viewport = {
   width: "device-width",
   initialScale: 1,
@@ -32,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${jetbrains.variable} font-sans h-full overflow-hidden`}
       >

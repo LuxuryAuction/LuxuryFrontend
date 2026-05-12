@@ -7,7 +7,8 @@ export type NavBadge = {
 
 export type NavItem = {
   id: string;
-  label: string;
+  /** Message key under `Sidebar` (e.g. `nav.login`). */
+  labelKey: string;
   href: string;
   icon: React.ReactNode;
   badge?: NavBadge;
@@ -15,7 +16,8 @@ export type NavItem = {
 };
 
 export type NavGroup = {
-  title: string;
+  /** Message key under `Sidebar` (e.g. `groups.auth`). */
+  titleKey: string;
   items: NavItem[];
 };
 

@@ -1,15 +1,13 @@
-import { filterApiParams } from "@/src/utils/apiUtils";
 import { api } from "../apiService";
-import { ICategory } from "./types";
+import { ICategory, ICategoryUpdatePayload } from "./types";
 import { API_ENDPOINTS } from "@/src/constants/api";
 
 export const categoryService = {
   getCategories: async (): Promise<ICategory[]> => {
-    // const params = filterApiParams({ userId });
-    const response = await api.get<ICategory[]>(
-      API_ENDPOINTS.CATEGORIES.LIST,
-      // params,
-    );
-    return response
+    return api.get<ICategory[]>(API_ENDPOINTS.CATEGORIES.LIST);
+  },
+
+  updateCategory: async (id: number, payload: ICategoryUpdatePayload): Promise<ICategory> => {
+    return api.patch<ICategory>(API_ENDPOINTS.CATEGORIES.BY_ID(id), payload);
   },
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { WarningIcon } from "@/public/assets/icons";
+import { Alert } from "@/src/components/ui/Alert";
 import { useState } from "react";
 
 interface AuctionRulesStrictSectionProps {
@@ -37,16 +37,11 @@ const AuctionRulesStrictSection = ({ rules }: AuctionRulesStrictSectionProps) =>
         </div>
       </div>
 
-      <div className="mb-6 flex gap-4 items-start rounded-2xl border border-red-500/20 bg-red-950/20 px-5 py-4">
-        <div className="mt-0.5 shrink-0 flex h-8 w-8 items-center justify-center rounded-xl border border-red-500/30 bg-red-500/15 text-red-400">
-          <WarningIcon className="w-4 h-4" />
-        </div>
-        <p className="text-[12px] leading-relaxed text-red-200/45">
-          Перед тим як зробити ставку або опублікувати лот — уважно прочитайте кожен пункт.
-          Незнання правил не звільняє від відповідальності.
-          Порушники отримують <span className="text-red-400/90 font-semibold">блокування без попередження</span>.
-        </p>
-      </div>
+      <Alert variant="strict" className="mb-6">
+        Перед тим як зробити ставку або опублікувати лот — уважно прочитайте кожен пункт.
+        Незнання правил не звільняє від відповідальності.
+        Порушники отримують <span>блокування без попередження</span>.
+      </Alert>
 
       <div className="relative">
         <div

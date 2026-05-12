@@ -3,11 +3,12 @@
 import { ArrowDownIcon, HamburgerIcon, NotificationIcon } from "@/public/assets/icons";
 import { Avatar } from "@/src/components/common/Avatar";
 import { Select } from "@/src/components/ui/Select";
-import { usePathname, useRouter } from "next/navigation";
+import { useLocale } from "next-intl";
+import { usePathname, useRouter } from "@/src/i18n/navigation";
+import { routing } from "@/src/i18n/routing";
 import { useToast } from "@/src/components/ui/Toast";
 import { languages, userOptions } from "./config";
 import { capitalize } from "@/src/utils/textUtils";
-import { useState } from "react";
 import { useAuth } from "@/src/hooks/useAuth";
 
 interface TopBarProps {
@@ -22,15 +23,21 @@ function useBreadcrumb() {
   const segments = pathname.split("/").filter(Boolean);
   const crumbs = ["BidVault", ...segments.map(capitalize)];
   const pageTitle = segments.length > 0 ? capitalize(segments[segments.length - 1]) : "Home";
-  return { crumbs, pageTitle };
+  return { crumbs, pageTitle, pathname };
 }
 
 export const TopBar = ({ toggleDrawer, userName, userAvatar }: TopBarProps) => {
-  const { crumbs, pageTitle } = useBreadcrumb();
+  const { crumbs, pageTitle, pathname } = useBreadcrumb();
   const router = useRouter();
+  const locale = useLocale();
   const { showToast } = useToast();
-  const [lang, setLang] = useState("en");
   const { logout } = useAuth();
+
+  const handleLocaleChange = (next: string) => {
+    if (routing.locales.includes(next as (typeof routing.locales)[number])) {
+      router.replace(pathname, { locale: next });
+    }
+  };
 
   const handleUserAction = async (action: string) => {
     switch (action) {
@@ -73,12 +80,12 @@ export const TopBar = ({ toggleDrawer, userName, userAvatar }: TopBarProps) => {
       <div className="flex items-center gap-3">
         <Select
           options={languages}
-          value={lang}
-          onChange={setLang}
+          value={locale}
+          onChange={handleLocaleChange}
           align="right"
           renderTrigger={(isOpen) => (
             <button className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-[#2a2e3a] bg-[#13151a] text-xs font-medium text-[#8892a8] hover:text-[#e8eaf0] hover:border-[#353a4a] transition-all cursor-pointer ${isOpen ? "border-brand-primary/50 text-[#e8eaf0]" : ""}`}>
-              <span className="uppercase">{lang}</span>
+              <span className="uppercase">{locale}</span>
               <ArrowDownIcon className={`w-3 h-3 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
             </button>
           )}

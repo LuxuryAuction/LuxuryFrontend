@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/src/i18n/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -25,7 +25,6 @@ import { useCreateLot } from "@/src/hooks/useLots";
 
 export const CreateLotView = () => {
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const { createLot, isLoading: isCreating } = useCreateLot();
@@ -60,29 +59,6 @@ export const CreateLotView = () => {
       setSubmitted(true);
     } catch (error) {
       console.error("Failed to create lot:", error);
-    }
-  };
-
-  const onSaveDraft = async () => {
-    const data = watch();
-    try {
-      await createLot({
-        name: data.title || "Untitled Draft",
-        description: data.description || "",
-        categoryId: Number(data.categoryId) || 1,
-        startingPrice: Number(data.startingPrice) || 0,
-        priceStep: Number(data.minBidIncrement) || 10,
-        startDate: data.startDate ? new Date(data.startDate).toISOString() : new Date().toISOString(),
-        draft: true,
-        sex: data.sex || "Unisex",
-        condition: data.condition || "New",
-        size: data.size || "Universal",
-        imageUrls: ["https://picsum.photos/800/800"], // mock
-      });
-      reset(INITIAL_FORM);
-      alert("Draft saved successfully!");
-    } catch (error) {
-      console.error("Failed to save draft:", error);
     }
   };
 
@@ -308,14 +284,15 @@ export const CreateLotView = () => {
             <div className="flex flex-wrap items-center justify-end gap-3">
               <Button
                 type="button"
-                variant="secondary"
+                variant="admin-danger"
                 size="sm"
                 onClick={() => reset(INITIAL_FORM)}
-                className="opacity-60 hover:opacity-100 transition-opacity"
+                className="w-auto!"
               >
                 Reset
               </Button>
-              <Button
+
+              {/* <Button
                 type="button"
                 variant="secondary"
                 size="sm"
@@ -323,7 +300,7 @@ export const CreateLotView = () => {
                 isLoading={isCreating}
               >
                 Save Draft
-              </Button>
+              </Button> */}
               <Button
                 type="submit"
                 variant="primary"
@@ -352,7 +329,7 @@ export const CreateLotView = () => {
       </button>
 
       {previewOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#0b0c0f]/80 backdrop-blur-sm animate-bvCatFadeUp">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-[#0b0c0f]/80 backdrop-blur-sm animate-bvCatFadeUp">
           <div className="relative w-full max-w-[340px]">
             <button
               type="button"

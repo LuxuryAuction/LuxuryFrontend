@@ -1,7 +1,12 @@
+"use client";
+
 import Image from "next/image";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/src/i18n/navigation";
 import { ArrowRightIcon } from "@/public/assets/icons";
 import { ICategory } from "@/src/services/CategoriesService/types";
+
+const MOCK_ACTIVE_LOT_COUNT = 12;
 
 interface CategoryCardProps {
   category: ICategory;
@@ -9,6 +14,7 @@ interface CategoryCardProps {
 }
 
 export const CategoryCard = ({ category, index }: CategoryCardProps) => {
+  const t = useTranslations("CategoriesPage");
 
   return (
     <Link
@@ -34,7 +40,7 @@ export const CategoryCard = ({ category, index }: CategoryCardProps) => {
 
         <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-[5px] rounded-full font-mono text-[9px] tracking-[0.12em] uppercase bg-[rgba(9,11,16,0.75)] border border-[rgba(42,46,58,0.8)] text-content-secondary">
           <span className="w-[4px] h-[4px] rounded-full shrink-0 bg-brand-primary" />
-          Активно лотів MOCKED
+          {t("activeLots", { count: MOCK_ACTIVE_LOT_COUNT })}
         </div>
 
 
@@ -51,7 +57,7 @@ export const CategoryCard = ({ category, index }: CategoryCardProps) => {
 
         <div className="flex items-center justify-between mt-3.5 pt-3 border-t border-border-primary/50">
           <span className="font-mono text-[10px] tracking-widest uppercase transition-colors duration-150 text-content-tertiary">
-            View lots
+            {t("viewLots")}
           </span>
           <ArrowRightIcon className="w-4 h-4 transition-all duration-200 group-hover:translate-x-1 text-content-tertiary" />
         </div>

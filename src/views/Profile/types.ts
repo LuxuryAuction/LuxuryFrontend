@@ -1,4 +1,3 @@
-export type TabId = "overview" | "my-lots" | "auctions" | "payments" | "trust";
 
 export interface ActivityItem {
   icon: string;

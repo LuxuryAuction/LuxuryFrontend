@@ -1,15 +1,18 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { LotCard } from "@/src/components/ui/LotCard";
 import { ViewSwitcher, ViewVariant } from "@/src/components/ui/ViewSwitcher";
 import { Tabs } from "@/src/components/ui/Tabs";
 import { Input } from "@/src/components/ui/Input";
 import { useIsMobile } from "@/src/hooks/useIsMobile";
 import { Pagination } from "@/src/components/ui/Pagination";
-import { EmptyBoxIcon } from "@/public/assets/icons";
 import { useGetUserLots } from "@/src/hooks/useLots";
+import { LotsGridSkeleton } from "@/src/views/Auction/components/LotsGridSkeleton";
 import NoData from "@/src/components/ui/NoData";
+import Button from "@/src/components/ui/Button";
+import { useRouter } from "@/src/i18n/navigation";
+import { ArrowRightIcon, LightningIcon } from "@/public/assets/icons";
 
 const MY_LOTS_FILTER_TABS = [
   { id: "all", label: "All Lots" },
@@ -24,6 +27,7 @@ export const MyLotsTab = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const isMobile = useIsMobile();
+  const router = useRouter();
 
   const params = useMemo(() => ({
     status: activeTab !== "all" ? activeTab : undefined,
@@ -66,11 +70,7 @@ export const MyLotsTab = () => {
         </div>
       </div>
       {isLoadingLots ? (
-        <div className="flex flex-col items-center justify-center py-20 gap-4">
-          <p className="text-content-tertiary font-mono text-[10px] uppercase tracking-widest animate-pulse">
-            Loading your auction lots...
-          </p>
-        </div>
+        <LotsGridSkeleton />
       ) : items.length > 0 ? (
         <>
           <div className={
@@ -99,7 +99,17 @@ export const MyLotsTab = () => {
         <NoData
           title={search ? "No lots found" : "No auctions yet"}
           description={search ? "There are no lots matching your search." : "You haven't created any auction lots yet."}
-          icon={<EmptyBoxIcon className="text-content-tertiary" />}
+          icon={<LightningIcon className="text-brand-primary/40 w-12 h-12" />}
+          action={!search && (
+            <Button
+              variant="nexus"
+              size="md"
+              rightIcon={<ArrowRightIcon className="w-3 h-3" />}
+              onClick={() => router.push("/user/create-lot")}
+            >
+              Place Lot
+            </Button>
+          )}
         />
       )}
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/src/i18n/navigation";
 import Image from "next/image";
 import { ILot } from "@/src/services/LotsService/types";
 import { LIVE_STATUSES, ENDED_STATUSES, STATUS_CFG } from "../constants";

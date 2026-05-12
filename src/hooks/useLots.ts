@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { lotsService } from "../services/LotsService";
 import { ILotListResponse, ILotListParams, ILotDetails, ILot, ICreateLotRequest } from "../services/LotsService/types";
+import { MOCK_BIDS_DATA, type IMockBid } from "../views/Auction/MyBids/mockBids";
 
 export const useGetLots = (params?: ILotListParams) => {
   const [data, setData] = useState<ILotListResponse>();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchLots = useCallback(async () => {
@@ -36,7 +37,7 @@ export const useGetLots = (params?: ILotListParams) => {
 
 export const useGetUserLots = (params: ILotListParams) => {
   const [data, setData] = useState<ILot[]>();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchUserLots = useCallback(async () => {
@@ -63,6 +64,35 @@ export const useGetUserLots = (params: ILotListParams) => {
     isLoading,
     error,
     refetch: fetchUserLots,
+  };
+};
+
+export const useGetUserBids = (params: ILotListParams) => {
+  const [data, setData] = useState<IMockBid[]>(MOCK_BIDS_DATA);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchUserBids = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setData(MOCK_BIDS_DATA);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Failed to fetch user bids"));
+    } finally {
+      setIsLoading(false);
+    }
+  }, [params]);
+
+  useEffect(() => {
+    fetchUserBids();
+  }, [params]);
+
+  return {
+    data,
+    isLoading,
+    error,
+    refetch: fetchUserBids,
   };
 };
 

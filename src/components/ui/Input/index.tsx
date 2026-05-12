@@ -24,8 +24,18 @@ function formatDate(date: Date) {
 }
 
 type InputSize = "xs" | "sm" | "md" | "lg";
-type InputVariant = "primary" | "secondary" | "ghost";
+export type InputVariant = "primary" | "secondary" | "ghost" | "admin";
 type InputType = "text" | "password" | "search" | "email" | "date" | "textarea" | "currency";
+
+function inputAccentClass(variant: InputVariant | undefined) {
+  return variant === "admin" ? "text-admin-accent" : "text-brand-primary";
+}
+
+function inputFocusClass(variant: InputVariant | undefined) {
+  return variant === "admin"
+    ? "focus:border-admin-accent focus:ring-1 focus:ring-admin-accent/25"
+    : "focus:border-brand-primary";
+}
 
 type InputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -61,6 +71,8 @@ const variantClasses: Record<InputVariant, string> = {
   primary: "border border-border-primary bg-surface-secondary",
   secondary: "border border-transparent bg-surface-primary",
   ghost: "border border-border-secondary bg-transparent",
+  admin:
+    "border border-white/6 bg-white/2 backdrop-blur-xl text-white/90 placeholder:text-white/40",
 };
 
 type BaseInputProps = Omit<
@@ -79,18 +91,25 @@ function BaseInput({
   error,
   className = "",
   onChange,
+  value,
+  defaultValue,
+  type = "text",
   ...props
 }: BaseInputProps) {
   return (
     <input
       {...props}
+      type={type}
+      value={value}
+      defaultValue={value !== undefined ? undefined : defaultValue}
       onChange={(e) => onChange?.(e.target.value)}
       className={`
         ${sizeClasses[inputSize]}
         w-full rounded-lg
         ${variantClasses[variant]}
-        text-content-primary placeholder:text-content-tertiary
-        outline-none transition-colors focus:border-brand-primary
+        ${variant === "admin" ? "" : "text-content-primary placeholder:text-content-tertiary"}
+        outline-none transition-colors
+        ${inputFocusClass(variant)}
         ${error ? "border-state-danger" : ""}
         ${className}
       `}
@@ -161,10 +180,18 @@ function SearchField({
   const [internal, setInternal] = useState<string>((value || props.defaultValue || "") as string);
   const debounced = useDebounceValue(internal, debounceDelay);
 
+  useEffect(() => {
+
+    if (value !== undefined && value !== internal && (value === "" || !internal)) {
+      setInternal(value as string);
+    }
+  }, [value]);
+
   const hasValue = internal.length > 0;
 
   useEffect(() => {
     if (isEditing !== false) {
+      onChange?.(debounced);
       onSearch?.(debounced);
       onDebounceChange?.(debounced);
     }
@@ -176,6 +203,7 @@ function SearchField({
     setInternal("");
     onChange?.("");
     onSearch?.("");
+    onDebounceChange?.("");
   };
 
   return (
@@ -189,7 +217,10 @@ function SearchField({
         placeholder={placeholder ?? "Search..."}
         onChange={(v) => {
           setInternal(v);
-          onChange?.(v);
+          if (v === "") {
+            onChange?.("");
+            onDebounceChange?.("");
+          }
         }}
         onKeyDown={(e) => e.key === "Enter" && trigger()}
         className={`pr-24 ${className}`}
@@ -199,7 +230,7 @@ function SearchField({
         <button
           type="button"
           onClick={clear}
-          className="absolute right-10 top-1/2 -translate-y-1/2 text-xs text-gray-400"
+          className={`absolute right-10 top-1/2 -translate-y-1/2 text-xs cursor-pointer ${variant === "admin" ? "text-white/45 hover:text-white/70" : "text-gray-400"}`}
         >
           ✕
         </button>
@@ -208,10 +239,12 @@ function SearchField({
       <button
         type="button"
         onClick={trigger}
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-primary"
+        className={`absolute right-3 top-1/2 -translate-y-1/2 ${inputAccentClass(variant)}`}
       >
         {loading ? (
-          <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand-primary border-t-transparent" />
+          <div
+            className={`h-4 w-4 animate-spin rounded-full border-2 border-t-transparent ${variant === "admin" ? "border-admin-accent" : "border-brand-primary"}`}
+          />
         ) : (
           <SearchIcon />
         )}
@@ -243,8 +276,9 @@ function EmailField({
         placeholder={placeholder ?? "Email"}
         className={`pr-10 ${className}`}
       />
-      {/* icon */}
-      <div className="absolute right-3 top-1/2 -translate-y-1/2 text-content-tertiary">
+      <div
+        className={`absolute right-3 top-1/2 -translate-y-1/2 ${variant === "admin" ? "text-white/40" : "text-content-tertiary"}`}
+      >
         <EmailIcon />
       </div>
     </div>
@@ -262,12 +296,10 @@ function DateField({
   ...props
 }: BaseInputProps) {
   const [isOpen, setIsOpen] = useState(false);
-  
   const initialDate = value && typeof value === "string" ? new Date(value) : new Date();
   // Ensure invalid dates don't break the component
   const validInitialDate = isNaN(initialDate.getTime()) ? new Date() : initialDate;
   const [currentMonth, setCurrentMonth] = useState(validInitialDate);
-  
   const containerRef = useRef<HTMLDivElement>(null);
   useClickOutside(containerRef, () => setIsOpen(false));
 
@@ -307,28 +339,34 @@ function DateField({
           className={`pr-10 cursor-pointer ${className}`}
           placeholder={props.placeholder || "YYYY-MM-DD"}
         />
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-content-tertiary">
+        <div
+          className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${variant === "admin" ? "text-white/40" : "text-content-tertiary"}`}
+        >
           <CalendarIcon />
         </div>
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 mt-2 p-4 bg-surface-secondary border border-border-primary rounded-xl shadow-lg w-[280px] animate-in fade-in zoom-in-95 duration-200">
+        <div
+          className={`absolute z-50 mt-2 w-[280px] rounded-xl border p-4 shadow-lg animate-in fade-in zoom-in-95 duration-200 ${variant === "admin" ? "border-white/10 bg-admin-panel text-white/90" : "border-border-primary bg-surface-secondary"}`}
+        >
           <div className="flex items-center justify-between mb-4">
             <button
               type="button"
               onClick={prevMonth}
-              className="p-1.5 hover:bg-surface-primary rounded-lg text-content-secondary transition-colors cursor-pointer"
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${variant === "admin" ? "text-white/55 hover:bg-white/10 hover:text-white/90" : "hover:bg-surface-primary text-content-secondary"}`}
             >
               &lt;
             </button>
-            <div className="font-medium text-sm text-content-primary capitalize">
+            <div
+              className={`font-medium text-sm capitalize ${variant === "admin" ? "text-white/85" : "text-content-primary"}`}
+            >
               {currentMonth.toLocaleString("en-US", { month: "long", year: "numeric" })}
             </div>
             <button
               type="button"
               onClick={nextMonth}
-              className="p-1.5 hover:bg-surface-primary rounded-lg text-content-secondary transition-colors cursor-pointer"
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${variant === "admin" ? "text-white/55 hover:bg-white/10 hover:text-white/90" : "hover:bg-surface-primary text-content-secondary"}`}
             >
               &gt;
             </button>
@@ -336,7 +374,10 @@ function DateField({
 
           <div className="grid grid-cols-7 gap-1 mb-2">
             {DAYS_OF_WEEK.map((day) => (
-              <div key={day} className="text-center text-xs font-medium text-content-tertiary py-1">
+              <div
+                key={day}
+                className={`py-1 text-center text-xs font-medium ${variant === "admin" ? "text-white/45" : "text-content-tertiary"}`}
+              >
                 {day}
               </div>
             ))}
@@ -350,7 +391,8 @@ function DateField({
               const day = i + 1;
               const isSelected = value === formatDate(new Date(year, month, day));
               const isToday = formatDate(new Date()) === formatDate(new Date(year, month, day));
-              
+              const isAdmin = variant === "admin";
+
               return (
                 <button
                   key={day}
@@ -361,11 +403,17 @@ function DateField({
                   }}
                   className={`
                     h-8 w-8 rounded-full flex items-center justify-center text-sm transition-all cursor-pointer
-                    ${isSelected 
-                      ? "bg-brand-primary text-black font-medium" 
+                    ${isSelected
+                      ? isAdmin
+                        ? "bg-admin-accent font-medium text-admin-canvas"
+                        : "bg-brand-primary text-black font-medium"
                       : isToday
-                        ? "bg-surface-primary text-brand-primary font-medium border border-brand-primary/20"
-                        : "text-content-primary hover:bg-surface-primary hover:text-brand-primary"
+                        ? isAdmin
+                          ? "border border-admin-accent/30 bg-white/5 font-medium text-admin-accent-hi"
+                          : "bg-surface-primary text-brand-primary font-medium border border-brand-primary/20"
+                        : isAdmin
+                          ? "text-white/80 hover:bg-white/10 hover:text-admin-accent-hi"
+                          : "text-content-primary hover:bg-surface-primary hover:text-brand-primary"
                     }
                   `}
                 >
@@ -406,7 +454,7 @@ function CurrencyField({
           if (e.key === "-" || e.key === "e") e.preventDefault();
         }}
       />
-      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-brand-primary">
+      <div className={`absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none ${inputAccentClass(variant)}`}>
         <HryvniaIcon />
       </div>
     </div>
@@ -481,8 +529,11 @@ export function Input({
             rows={props.rows ?? 3}
             value={props.value}
             onChange={(e) => props.onChange?.(e.target.value)}
-            className={`w-full rounded-lg border bg-surface-secondary text-content-primary placeholder:text-content-tertiary text-sm px-4 py-3 outline-none resize-none transition-colors focus:border-brand-primary leading-relaxed
-            ${error ? "border-state-danger" : "border-border-primary"}`}
+            className={`w-full resize-none rounded-lg border px-4 py-3 text-sm leading-relaxed outline-none transition-colors
+            ${variant === "admin"
+                ? `border-white/6 bg-white/2 text-white/90 placeholder:text-white/40 backdrop-blur-xl ${inputFocusClass("admin")} ${error ? "border-state-danger" : ""}`
+                : `border bg-surface-secondary text-content-primary placeholder:text-content-tertiary focus:border-brand-primary ${error ? "border-state-danger" : "border-border-primary"}`
+              }`}
           />
         );
 
@@ -514,7 +565,7 @@ export function Input({
       {label && (
         <label
           htmlFor={inputId}
-          className="font-mono text-[0.62rem] uppercase tracking-widest text-content-tertiary flex items-start gap-1"
+          className={`font-mono text-[0.62rem] uppercase tracking-widest flex items-start gap-1 ${variant === "admin" ? "text-white/45" : "text-content-tertiary"}`}
         >
           <span>{label}</span>
           {required && (

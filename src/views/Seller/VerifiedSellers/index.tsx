@@ -4,9 +4,9 @@ import React from "react";
 import { MOCK_SELLERS } from "./sellerConfig";
 import { SellerCard } from "./components/SellerCard";
 import { TierLegend } from "./components/TierLegend";
-import { Disclaimer } from "./components/Disclaimer";
 import { FilterBar } from "./components/FilterBar";
 import { PageHeader } from "@/src/components/ui/PageHeader";
+import { Alert } from "@/src/components/ui/Alert";
 import { ISeller } from "./types";
 
 interface VerifiedSellersViewProps {
@@ -26,12 +26,17 @@ export const VerifiedSellersView = ({
           actions={<TierLegend />}
         />
 
-        <Disclaimer />
+        <Alert variant="error" className="mb-7">
+          Галочка показує лише кількість продажів на аукціоні. Вона{" "}
+          <span>не гарантує чесності продавця</span> та{" "}
+          <span>не є офіційною верифікацією</span>. Завжди перевіряйте репутацію, читайте відгуки та
+          використовуйте механізм escrow. <span>Ваші гроші — це ваша відповідальність.</span>
+        </Alert>
 
         <FilterBar />
 
         {sellers.length > 0 ? (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col">
             {sellers.map((seller, i) => (
               <SellerCard key={seller.id} seller={seller} index={i} />
             ))}

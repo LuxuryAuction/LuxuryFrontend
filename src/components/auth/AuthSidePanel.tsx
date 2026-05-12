@@ -2,15 +2,14 @@ import React from "react";
 
 interface AuthSidePanelProps {
   title: React.ReactNode;
-  subtitle?: React.ReactNode;
 }
 
-const AuthSidePanel: React.FC<AuthSidePanelProps> = ({ title, subtitle }) => {
+const AuthSidePanel: React.FC<AuthSidePanelProps> = ({ title }) => {
   return (
     <div className="flex-1 border-r border-border-primary items-center justify-center relative overflow-hidden hidden lg:flex h-full">
       {/* Background radial glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(240,164,0,0.06)_0%,_transparent_60%)] pointer-events-none" />
-      
+
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Layer 1: Forward Marquee */}
         <div className="absolute top-[5%] left-0 w-[200%] overflow-hidden opacity-40">
@@ -56,11 +55,6 @@ const AuthSidePanel: React.FC<AuthSidePanelProps> = ({ title, subtitle }) => {
         <div className="text-[5.2rem] leading-[0.95] font-extrabold tracking-tight text-white mb-6 drop-shadow-2xl">
           {title}
         </div>
-        {subtitle && (
-          <div className="text-sm text-content-tertiary">
-            {subtitle}
-          </div>
-        )}
       </div>
     </div>
   );

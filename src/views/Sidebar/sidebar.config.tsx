@@ -1,3 +1,4 @@
+import { AdminDashboardIcon } from "@/public/assets/icons";
 import { NavGroup, SidebarUser } from "./types";
 
 function Ico({ children }: { children: React.ReactNode }) {
@@ -94,6 +95,9 @@ const Icons = {
     </Ico>
   ),
 
+  /** Admin Command Center — окремий asset `admin-dashboard-icon.svg`. */
+  adminDashboard: <AdminDashboardIcon className="h-full w-full" aria-hidden />,
+
   eye: (
     <Ico>
       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
@@ -176,73 +180,55 @@ const Icons = {
 
 export const NAV_GROUPS: NavGroup[] = [
   {
-    title: "Auth",
+    titleKey: "groups.auth",
     items: [
-      { id: "login", label: "Login", href: "/login", icon: Icons.login },
-      { id: "register", label: "Register", href: "/register", icon: Icons.register },
+      { id: "login", labelKey: "nav.login", href: "/login", icon: Icons.login },
+      { id: "register", labelKey: "nav.register", href: "/register", icon: Icons.register },
     ],
   },
 
   {
-    title: "Main",
+    titleKey: "groups.main",
     items: [
-      { id: "landing", label: "Landing Page", href: "/", icon: Icons.home },
-      { id: "create-lot", label: "Create Lot", href: "/user/create-lot", icon: Icons.plus },
-      { id: "categories", label: "Categories", href: "/user/categories", icon: Icons.categories },
-      { id: "profile", label: "Profile", href: "/user/profile", icon: Icons.user },
+      { id: "profile", labelKey: "nav.profile", href: "/user/profile", icon: Icons.user },
+      { id: "categories", labelKey: "nav.categories", href: "/user/categories", icon: Icons.categories },
+      { id: "create-lot", labelKey: "nav.createLot", href: "/user/create-lot", icon: Icons.plus },
 
-      { id: "my-lots", label: "My Lots", href: "/user/lots", icon: Icons.file },
+      { id: "my-lots", labelKey: "nav.myLots", href: "/user/lots", icon: Icons.file },
+      { id: "my-bids", labelKey: "nav.myBids", href: "/user/my-bids", icon: Icons.chart },
       {
         id: "notifications",
-        label: "Notifications",
+        labelKey: "nav.notifications",
         href: "/user/notifications",
         icon: Icons.bell,
         badge: { count: 5, variant: "danger" },
       },
-      { id: "trust", label: "Trust & Safety", href: "/trust", icon: Icons.shield, disabled: false },
-      { id: "verified-sellers", label: "Verified Sellers", href: "/user/verified-sellers", icon: Icons.users },
+      { id: "verified-sellers", labelKey: "nav.verifiedSellers", href: "/user/verified-sellers", icon: Icons.users },
     ],
   },
   {
-    title: "Direction",
+    titleKey: "groups.direction",
     items: [
-      { id: "info", label: "Direction & Info", href: "/user/info", icon: Icons.info },
+      { id: "info", labelKey: "nav.directionInfo", href: "/user/info", icon: Icons.info },
       {
         id: "auction-rules",
-        label: "Rules",
+        labelKey: "nav.auctionRules",
         href: "/user/auction-rules",
         icon: Icons.rules,
       },
+      { id: "trust", labelKey: "nav.trustSafety", href: "/user/trust", icon: Icons.shield },
     ],
   },
   {
-    title: "Sellers",
+    titleKey: "groups.sellers",
     items: [
-      { id: "chats", label: "Chats", href: "/user/chats", icon: Icons.chat },
+      { id: "chat", labelKey: "nav.chats", href: "/user/chat", icon: Icons.chat },
     ],
   },
   {
-    title: "Admin",
+    titleKey: "groups.admin",
     items: [
-      { id: "dashboard", label: "Dashboard", href: "/test/profile", icon: Icons.dashboard, disabled: true },
-      {
-        id: "monitoring",
-        label: "Lot Monitoring",
-        href: "/admin/lots",
-        icon: Icons.eye,
-        badge: { count: 3, variant: "warning" },
-        disabled: true,
-      },
-      { id: "orders", label: "Orders", href: "/admin/orders", icon: Icons.list, disabled: true },
-      { id: "bans", label: "Banned Users", href: "/admin/bans", icon: Icons.ban, disabled: true },
-      { id: "reports", label: "Reports", href: "/admin/reports", icon: Icons.chart, disabled: true },
-    ],
-  },
-  {
-    title: "Optional",
-    items: [
-      { id: "dispute", label: "Disputes", href: "/disputes", icon: Icons.chat, disabled: true },
-      { id: "payments", label: "Escrow / Pay", href: "/payments", icon: Icons.card, disabled: true },
+      { id: "dashboard", labelKey: "nav.dashboard", href: "/admin/dashboard", icon: Icons.home },
     ],
   },
 ];
@@ -252,3 +238,35 @@ export const DEFAULT_USER: SidebarUser = {
   role: "User · Verified",
   href: "/user/profile",
 };
+
+export const ADMIN_NAV_GROUPS: NavGroup[] = [
+  {
+    titleKey: "groups.systemControl",
+    items: [
+      { id: "dashboard", labelKey: "adminNav.dashboard", href: "/admin/dashboard", icon: Icons.adminDashboard },
+      { id: "categories", labelKey: "adminNav.categories", href: "/admin/categories", icon: Icons.categories },
+      { id: "monitoring", labelKey: "adminNav.lotMonitoring", href: "/admin/lots", icon: Icons.eye, badge: { count: 12, variant: "warning" }, disabled: true },
+      { id: "users", labelKey: "adminNav.userManagement", href: "/admin/users", icon: Icons.users },
+    ],
+  },
+  {
+    titleKey: "groups.financeSupport",
+    items: [
+      { id: "orders", labelKey: "adminNav.ordersPayments", href: "/admin/orders", icon: Icons.list, disabled: true },
+      { id: "disputes", labelKey: "adminNav.disputes", href: "/admin/disputes", icon: Icons.chat, badge: { count: 3, variant: "danger" }, disabled: true },
+    ],
+  },
+  {
+    titleKey: "groups.enforcement",
+    items: [
+      { id: "reports", labelKey: "adminNav.reports", href: "/admin/reports", icon: Icons.file, disabled: true },
+      { id: "bans", labelKey: "adminNav.banRegistry", href: "/admin/bans", icon: Icons.ban, disabled: true },
+    ],
+  },
+  {
+    titleKey: "groups.return",
+    items: [
+      { id: "exit", labelKey: "adminNav.backToApp", href: "/user/lots", icon: Icons.home },
+    ],
+  },
+];

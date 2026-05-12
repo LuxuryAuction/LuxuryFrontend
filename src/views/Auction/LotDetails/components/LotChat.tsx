@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar } from "@/src/components/common/Avatar";
-import Link from "next/link";
+import { Link } from "@/src/i18n/navigation";
 import { getTimeAgo } from "@/src/utils/textUtils";
 import { IChatMessage } from "../types";
 import { useState } from "react";
@@ -71,7 +71,7 @@ export const LotChat = ({ messages, onSendMessage }: LotChatProps) => {
                       {getTimeAgo(msg.timestamp)}
                     </span>
                   </div>
-                  <div className={`p-3.5 mt-1 rounded-2xl text-[13px] leading-relaxed shadow-sm break-words
+                  <div className={`p-3.5 mt-1 rounded-2xl text-[13px] leading-relaxed shadow-sm wrap-break-words
                   ${isMe ? "rounded-tr-sm bg-surface-tertiary border border-border-primary text-content-primary" :
                       isSeller ? "rounded-tl-sm bg-brand-primary/10 border border-brand-primary/20 text-content-primary" :
                         "rounded-tl-sm bg-surface-primary/40 border border-border-primary/50 text-content-secondary"}
@@ -108,7 +108,7 @@ export const LotChat = ({ messages, onSendMessage }: LotChatProps) => {
               }
             }}
           >
-            <SendIcon className="w-4 h-4 translate-x-[-1px] translate-y-[1px]" />
+            <SendIcon className="w-4 h-4 translate-x-px translate-y-px" />
           </button>
         </div>
       </div>

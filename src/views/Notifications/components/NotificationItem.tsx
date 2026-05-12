@@ -2,7 +2,7 @@
 
 import { INotification, NotificationType } from "../types";
 import { getTimeAgo } from "@/src/utils/textUtils";
-import Link from "next/link";
+import { Link } from "@/src/i18n/navigation";
 
 const TYPE_CONFIG: Record<NotificationType, { icon: string; color: string; bg: string }> = {
   outbid: { icon: "⚡", color: "text-[#f0a500]", bg: "bg-[#f0a500]/10" },

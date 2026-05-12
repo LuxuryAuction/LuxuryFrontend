@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/src/i18n/navigation";
 import { LIVE_STATUSES, ENDED_STATUSES, STATUS_CFG } from "../constants";
 import { Countdown } from "./Countdown";
 import { StatusBadge } from "./StatusBadge";

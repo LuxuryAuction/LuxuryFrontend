@@ -1,22 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { TabId } from "./types";
 import { ProfileHeader } from "./ProfileHeader";
 import { OverviewTab } from "./OverviewTab";
 import { MyLotsTab } from "./MyLotsTab";
+import { MyBidsTab } from "./MyBidsTab";
 import Tabs from "@/src/components/ui/Tabs";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
 
 export const ProfilePage = () => {
-  const [activeTab, setActiveTab] = useState<TabId>("overview");
-  const { data: profile, isLoading, error } = useUserProfile();
+  const [activeTab, setActiveTab] = useState("overview");
+  const { data: profile, isLoading } = useUserProfile();
 
   const tabsConfig = [
-    { id: "overview" as TabId, label: "Overview" },
-    { id: "my-lots" as TabId, label: "My Auction Lots" },
-    { id: "payments" as TabId, label: "Payments" },
-    { id: "trust" as TabId, label: "Trust & Safety" },
+    { id: "overview", label: "Overview" },
+    { id: "lots", label: "Lots" },
+    { id: "bids", label: "Bids" },
+    { id: "payments", label: "Payments" },
   ];
 
   if (isLoading || !profile) {
@@ -35,8 +35,9 @@ export const ProfilePage = () => {
       />
 
       {activeTab === "overview" && <OverviewTab />}
-      {(activeTab === "my-lots" || activeTab === "auctions") && <MyLotsTab />}
-      {(activeTab === "payments" || activeTab === "trust") && (
+      {activeTab === "lots" && <MyLotsTab />}
+      {activeTab === "bids" && <MyBidsTab />}
+      {activeTab === "payments" && (
         <div className="bg-[#13151a] border border-[#2a2e3a] rounded-[12px] p-10 text-center text-[#555b6e] font-mono text-[0.75rem]">
           {activeTab} — coming soon
         </div>

@@ -1,6 +1,3 @@
-export const CATEGORY_FILTER_TABS = [
-  { id: "all", label: "All Lots" },
-  { id: "live", label: "Active" },
-  { id: "upcoming", label: "Upcoming" },
-  { id: "ended", label: "Ended" },
-];
+export const CATEGORY_FILTER_TAB_IDS = ["all", "live", "upcoming", "ended"] as const;
+
+export type CategoryFilterTabId = (typeof CATEGORY_FILTER_TAB_IDS)[number];

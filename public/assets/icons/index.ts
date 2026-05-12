@@ -32,6 +32,10 @@ import SendIcon from "./send-icon.svg"
 import OpenLinkIcon from "./open-link-icon.svg";
 import WarningIcon from "./warning-icon.svg";
 import PhotoIcon from "./photo-icon.svg";
+import AdminSparkTrendUpIcon from "./admin-spark-trend-up.svg";
+import AdminSparkTrendDownIcon from "./admin-spark-trend-down.svg";
+import AdminDashboardIcon from "./admin-dashboard-icon.svg";
+import DotsVerticalIcon from "./dots-vertical-icon.svg";
 
 export {
   SearchIcon,
@@ -68,4 +72,8 @@ export {
   OpenLinkIcon,
   WarningIcon,
   PhotoIcon,
+  AdminSparkTrendUpIcon,
+  AdminSparkTrendDownIcon,
+  AdminDashboardIcon,
+  DotsVerticalIcon,
 }

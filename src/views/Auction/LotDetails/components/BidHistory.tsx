@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar } from "@/src/components/common/Avatar";
-import Link from "next/link";
+import { Link } from "@/src/i18n/navigation";
 import { formatCurrency, getTimeAgo } from "@/src/utils/textUtils";
 import { IBid } from "../types";
 
@@ -31,7 +31,7 @@ export const BidHistory = ({ bids }: BidHistoryProps) => {
           <div
             key={bid.id}
             className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${bid.isLeading
-              ? "bg-brand-primary/[0.05] border-brand-primary/30 shadow-[0_4px_20px_rgba(240,165,0,0.05)]"
+              ? "bg-brand-primary/0.05 border-brand-primary/30 shadow-[0_4px_20px_rgba(240,165,0,0.05)]"
               : "bg-surface-primary/40 border-border-primary/50 hover:bg-surface-primary/60"
               }`}
             style={{ animationDelay: `${i * 50}ms` }}
