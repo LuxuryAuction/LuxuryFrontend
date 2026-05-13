@@ -32,7 +32,7 @@ const Login = () => {
         password: values.password,
       });
       showToast("success", "Welcome back! You have successfully signed in.", "bottom-right");
-      router.push("/user/profile");
+      router.push("/user/categories");
     } catch (err: any) {
       showToast("error", err.message || "Failed to sign in. Please try again.", "bottom-right");
     }

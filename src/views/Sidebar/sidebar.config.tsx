@@ -18,23 +18,6 @@ function Ico({ children }: { children: React.ReactNode }) {
 }
 
 const Icons = {
-  login: (
-    <Ico>
-      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-      <polyline points="10 17 15 12 10 7" />
-      <line x1="15" y1="12" x2="3" y2="12" />
-    </Ico>
-  ),
-
-  register: (
-    <Ico>
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <line x1="19" y1="8" x2="19" y2="14" />
-      <line x1="22" y1="11" x2="16" y2="11" />
-    </Ico>
-  ),
-
   home: (
     <Ico>
       <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -179,14 +162,6 @@ const Icons = {
 };
 
 export const NAV_GROUPS: NavGroup[] = [
-  {
-    titleKey: "groups.auth",
-    items: [
-      { id: "login", labelKey: "nav.login", href: "/login", icon: Icons.login },
-      { id: "register", labelKey: "nav.register", href: "/register", icon: Icons.register },
-    ],
-  },
-
   {
     titleKey: "groups.main",
     items: [

@@ -1,6 +1,7 @@
 import { Inter, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import { ToastProvider } from "@/src/components/ui/Toast";
+import { Providers } from "@/src/components/Providers";
 import "./globals.css";
 
 const inter = Inter({
@@ -31,9 +32,11 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jetbrains.variable} font-sans h-full overflow-hidden`}
       >
-        <ToastProvider>
-          {children}
-        </ToastProvider>
+        <Providers>
+          <ToastProvider>
+            {children}
+          </ToastProvider>
+        </Providers>
         <Script
           id="widget-wfp-script"
           src="https://secure.wayforpay.com/server/pay-widget.js"

@@ -1,11 +1,14 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { authService } from "../services/AuthService";
 import { ILoginRequest, IRegisterRequest } from "../services/AuthService/types";
 import { setSession, clearSession } from "../utils/session";
+import { setAuth, clearAuth } from "../store/slices/authSlice";
 
 export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const dispatch = useDispatch();
 
   const login = async (payload: ILoginRequest) => {
     setIsLoading(true);
@@ -13,6 +16,13 @@ export const useAuth = () => {
     try {
       const responseData = await authService.login(payload);
       setSession(responseData);
+      
+      dispatch(setAuth({
+        userId: responseData.userId,
+        userName: responseData.userName,
+        userRole: responseData.userRole,
+      }));
+
       return responseData;
     } catch (err) {
       const authError = err instanceof Error ? err : new Error("Failed to login");
@@ -46,6 +56,7 @@ export const useAuth = () => {
       console.error("Logout request failed, clearing session anyway:", err);
     } finally {
       clearSession();
+      dispatch(clearAuth());
       setIsLoading(false);
     }
   };

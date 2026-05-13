@@ -5,6 +5,7 @@ import path from "path";
 const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
+  outputFileTracingRoot: process.cwd(),
   allowedDevOrigins: ["192.168.0.104", "192.168.0.109", "192.168.50.54"],
   turbopack: {
     resolveAlias: {

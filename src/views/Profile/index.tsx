@@ -10,11 +10,18 @@ import { ProfileSkeleton } from "./components/ProfileSkeleton";
 import Tabs from "@/src/components/ui/Tabs";
 import { Alert } from "@/src/components/ui/Alert";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
+import { RootState } from "@/src/store";
+import { useSelector } from "react-redux";
 
 export const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const { data: profile, isLoading } = useUserProfile();
+  const { userId, userName, userRole, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth
+  );
 
+  console.log(userId, userName, userRole, isAuthenticated);
+  
   const tabsConfig = [
     { id: "overview", label: "Overview" },
     { id: "lots", label: "Lots" },

@@ -21,5 +21,8 @@ export interface IAuthTokens {
   accessTokenExpiresAt: string;
   refreshToken: string;
   refreshTokenExpiresAt: string;
+  userId: number;
+  userName: string;
+  userRole: string;
 }
 

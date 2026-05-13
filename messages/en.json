@@ -22,7 +22,6 @@
       "collapseSidebar": "Collapse sidebar"
     },
     "groups": {
-      "auth": "Auth",
       "main": "Main",
       "direction": "Direction",
       "sellers": "Sellers",
@@ -33,8 +32,6 @@
       "return": "Return"
     },
     "nav": {
-      "login": "Login",
-      "register": "Register",
       "profile": "Profile",
       "categories": "Categories",
       "createLot": "Create Lot",
