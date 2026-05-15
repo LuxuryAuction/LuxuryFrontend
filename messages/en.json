@@ -186,5 +186,47 @@
       "paymentSuccess": "Payment successful! Creating lot...",
       "createFailed": "Failed to create lot"
     }
+  },
+  "LotCard": {
+    "finalPrice": "Final price",
+    "currentBid": "Current bid",
+    "step": "Step",
+    "by": "by",
+    "size": "Size: {size}",
+    "bids": "{count, plural, =1 {1 bid} other {# bids}}",
+    "ended": "Ended"
+  },
+  "CommandBanner": {
+    "systemSecure": "System Secure",
+    "commandCenter": "Command Center",
+    "generateReport": "Generate Report",
+    "systemSettings": "System Settings",
+    "reportDownloading": "Report Downloading",
+    "settingsUnderDevelopment": "Settings under development"
+  },
+  "TopBar": {
+    "home": "Home",
+    "logoutSuccess": "Successfully logged out. See you soon!",
+    "userOptions": {
+      "profile": "Profile",
+      "settings": "Settings",
+      "logout": "Logout"
+    }
+  },
+  "BiddingPanel": {
+    "participants": "{count, plural, =1 {1 participant} other {# participants}}",
+    "bids": "{count, plural, =1 {1 bid} other {# bids}}",
+    "currentBid": "Current Bid",
+    "start": "Start",
+    "step": "Step",
+    "nextMin": "Next min",
+    "yourBid": "Your Bid",
+    "placeBid": "Place Bid"
+  },
+  "BidHistory": {
+    "title": "Bid History",
+    "total": "{count} total",
+    "highest": "Highest"
   }
 }
+ 

@@ -186,5 +186,46 @@
       "paymentSuccess": "Оплата успішна! Створюємо лот...",
       "createFailed": "Не вдалося створити лот"
     }
+  },
+  "LotCard": {
+    "finalPrice": "Кінцева ціна",
+    "currentBid": "Поточна ставка",
+    "step": "Крок",
+    "by": "від",
+    "size": "Розмір: {size}",
+    "bids": "{count, plural, =1 {1 ставка} few {# ставки} other {# ставок}}",
+    "ended": "Завершено"
+  },
+  "CommandBanner": {
+    "systemSecure": "Систему захищено",
+    "commandCenter": "Командний центр",
+    "generateReport": "Згенерувати звіт",
+    "systemSettings": "Налаштування системи",
+    "reportDownloading": "Завантаження звіту",
+    "settingsUnderDevelopment": "Налаштування в розробці"
+  },
+  "TopBar": {
+    "home": "Головна",
+    "logoutSuccess": "Ви успішно вийшли з системи. До зустрічі!",
+    "userOptions": {
+      "profile": "Профіль",
+      "settings": "Налаштування",
+      "logout": "Вихід"
+    }
+  },
+  "BiddingPanel": {
+    "participants": "{count, plural, =1 {1 учасник} few {# учасники} other {# учасників}}",
+    "bids": "{count, plural, =1 {1 ставка} few {# ставки} other {# ставок}}",
+    "currentBid": "Поточна ставка",
+    "start": "Старт",
+    "step": "Крок",
+    "nextMin": "Мін. наступна",
+    "yourBid": "Ваша ставка",
+    "placeBid": "Зробити ставку"
+  },
+  "BidHistory": {
+    "title": "Історія ставок",
+    "total": "Всього: {count}",
+    "highest": "Найвища"
   }
 }

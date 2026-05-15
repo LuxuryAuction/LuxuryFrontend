@@ -4,12 +4,14 @@ import { Avatar } from "@/src/components/common/Avatar";
 import { Link } from "@/src/i18n/navigation";
 import { formatCurrency, getTimeAgo } from "@/src/utils/textUtils";
 import { IBid } from "../types";
+import { useTranslations } from "next-intl";
 
 interface BidHistoryProps {
   bids: IBid[];
 }
 
 export const BidHistory = ({ bids }: BidHistoryProps) => {
+  const t = useTranslations("BidHistory");
   return (
     <div className="flex flex-col gap-5 p-6 rounded-[16px] bg-surface-secondary/50 border border-border-primary relative overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-linear-to-r from-brand-primary/40 to-transparent" />
@@ -18,11 +20,11 @@ export const BidHistory = ({ bids }: BidHistoryProps) => {
         <div className="flex items-center gap-2">
           <div className="h-px w-4 bg-brand-primary/50" />
           <h2 className="text-[10px] font-mono font-bold uppercase tracking-widest text-content-tertiary">
-            Bid History
+            {t("title")}
           </h2>
         </div>
         <span className="text-[10px] font-mono text-content-tertiary opacity-60">
-          {bids.length} total
+          {t("total", { count: bids.length })}
         </span>
       </div>
 
@@ -62,7 +64,7 @@ export const BidHistory = ({ bids }: BidHistoryProps) => {
                 <div className="flex items-center gap-1 mt-0.5">
                   <span className="w-1 h-1 rounded-full bg-brand-primary animate-pulse" />
                   <span className="text-[8px] font-black uppercase text-brand-primary tracking-widest">
-                    Highest
+                    {t("highest")}
                   </span>
                 </div>
               )}

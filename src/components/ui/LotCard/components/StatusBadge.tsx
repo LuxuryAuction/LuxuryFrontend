@@ -8,7 +8,7 @@ export const StatusBadge = ({ status }: { status: LotStatus }) => {
 
   return (
     <span
-      className="inline-flex items-center gap-1 px-2 py-[3px] rounded-full font-mono text-[9px] font-medium uppercase tracking-widest whitespace-nowrap"
+      className="inline-flex items-center gap-1 px-2 py-[2px] mt0- rounded-full font-mono text-[9px] font-medium uppercase whitespace-nowrap"
       style={{
         background: c.bg,
         border: `1px solid ${c.border}`,
@@ -24,7 +24,7 @@ export const StatusBadge = ({ status }: { status: LotStatus }) => {
           }}
         />
       )}
-      {c.label}
+      <span className="mt-0.5">{c.label}</span>
     </span>
   );
 };

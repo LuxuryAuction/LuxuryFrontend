@@ -26,6 +26,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "picsum.photos",
       },
+      {
+        protocol: "https",
+        hostname: "ibb.co",
+      },
+      {
+        protocol: "https",
+        hostname: "i.ibb.co",
+      },
     ],
   },
   webpack(config) {

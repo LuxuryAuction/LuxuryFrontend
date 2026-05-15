@@ -9,8 +9,10 @@ import { Countdown } from "./Countdown";
 import { ImgPlaceholder } from "./ImgPlaceholder";
 import { ArrowRightIcon, ParticipantsIcon } from "@/public/assets/icons";
 import { formatCurrency } from "@/src/utils/textUtils";
+import { useTranslations } from "next-intl";
 
 export const ListVariant = ({ lot, showCategory = true }: { lot: ILot; showCategory?: boolean }) => {
+  const t = useTranslations("LotCard");
   const c = STATUS_CFG[lot.status];
   const isLive = LIVE_STATUSES.includes(lot.status);
   const isEnded = ENDED_STATUSES.includes(lot.status);
@@ -62,11 +64,11 @@ export const ListVariant = ({ lot, showCategory = true }: { lot: ILot; showCateg
           )}
           {lot.size && (
             <span className="px-1.5 py-0.5 rounded-full bg-surface-primary border border-border-primary font-mono text-[8px] uppercase text-content-tertiary tracking-wider">
-              Size: {lot.size}
+              {t("size", { size: lot.size })}
             </span>
           )}
           <span className="text-[10px] text-content-tertiary ml-1">
-            by @{lot.sellerUsername}
+            {t("by")} @{lot.sellerUsername}
           </span>
         </div>
       </div>
@@ -83,7 +85,7 @@ export const ListVariant = ({ lot, showCategory = true }: { lot: ILot; showCateg
           {isLive && (
             <Countdown endsAt={lot.endDate} />
           )}
-          <span>{lot.totalBids} bids</span>
+          <span>{t("bids", { count: lot.totalBids })}</span>
           <span className="flex items-center gap-1">
             <ParticipantsIcon className="w-[10px] h-[10px]" />
             {lot.totalParticipants}

@@ -2,17 +2,19 @@
 
 import { useToast } from "@/src/components/ui/Toast";
 import { useCurrentUtcTime } from "@/src/hooks/useTime";
+import { useTranslations } from "next-intl";
 
 export const CommandBanner = () => {
+  const t = useTranslations("CommandBanner");
   const { showToast } = useToast();
   const currentTime = useCurrentUtcTime();
 
   const generateReport = () => {
-    showToast("success", "Report Downloading")
+    showToast("success", t("reportDownloading"));
   }
 
   const openSystemSettings = () => {
-    showToast("error", "Settings under development")
+    showToast("error", t("settingsUnderDevelopment"));
   }
 
   return (
@@ -24,10 +26,10 @@ export const CommandBanner = () => {
         <div>
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-admin-accent/20 bg-admin-accent/10 px-3 py-1">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-admin-accent-lo" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-admin-accent-lo">System Secure</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-admin-accent-lo">{t("systemSecure")}</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">
-            Command Center
+            {t("commandCenter")}
           </h1>
           <p className="text-sm font-mono tracking-wider text-admin-accent/60">
             {currentTime}
@@ -40,14 +42,14 @@ export const CommandBanner = () => {
             className="rounded-xl border border-white/10 bg-white/3 px-6 py-3 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-white/10 cursor-pointer"
             onClick={generateReport}
           >
-            Generate Report
+            {t("generateReport")}
           </button>
           <button
             type="button"
             className="cursor-pointer rounded-xl border border-admin-accent/20 bg-admin-accent/10 px-6 py-3 text-xs font-bold uppercase tracking-widest text-admin-accent-lo shadow-admin-accent transition-colors hover:bg-admin-accent/20 hover:text-admin-accent-hi"
             onClick={openSystemSettings}
           >
-            System Settings
+            {t("systemSettings")}
           </button>
         </div>
       </div>

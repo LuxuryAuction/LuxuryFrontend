@@ -2,16 +2,18 @@
 
 import { useState, useEffect } from "react";
 
+import { useTranslations } from "next-intl";
 import { ClockIcon } from "@/public/assets/icons";
 
 export const Countdown = ({ endsAt }: { endsAt: string }) => {
+  const t = useTranslations("LotCard");
   const [label, setLabel] = useState("--:--:--");
 
   useEffect(() => {
     const tick = () => {
       const diff = new Date(endsAt).getTime() - Date.now();
       if (diff <= 0) {
-        setLabel("Ended");
+        setLabel(t("ended"));
         return;
       }
       const s = Math.floor(diff / 1000);
@@ -34,7 +36,7 @@ export const Countdown = ({ endsAt }: { endsAt: string }) => {
 
   return (
     <div className="flex items-center gap-1.5 px-2 py-1 rounded-sm bg-black/40 border border-border-primary backdrop-blur-sm">
-      <ClockIcon className="w-[10px] h-[10px] text-brand-primary" />
+      <ClockIcon className="w-[11px] h-[11px] text-brand-primary" />
       <span className="font-mono text-[10px] font-semibold text-content-primary">
         {label}
       </span>

@@ -3,7 +3,7 @@
 import { ArrowDownIcon, HamburgerIcon, NotificationIcon } from "@/public/assets/icons";
 import { Avatar } from "@/src/components/common/Avatar";
 import { Select } from "@/src/components/ui/Select";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/src/i18n/navigation";
 import { routing } from "@/src/i18n/routing";
 import { useToast } from "@/src/components/ui/Toast";
@@ -19,14 +19,16 @@ interface TopBarProps {
 
 
 function useBreadcrumb() {
+  const t = useTranslations("TopBar");
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
   const crumbs = ["BidVault", ...segments.map(capitalize)];
-  const pageTitle = segments.length > 0 ? capitalize(segments[segments.length - 1]) : "Home";
+  const pageTitle = segments.length > 0 ? capitalize(segments[segments.length - 1]) : t("home");
   return { crumbs, pageTitle, pathname };
 }
 
 export const TopBar = ({ toggleDrawer, userName, userAvatar }: TopBarProps) => {
+  const t = useTranslations("TopBar");
   const { crumbs, pageTitle, pathname } = useBreadcrumb();
   const router = useRouter();
   const locale = useLocale();
@@ -43,7 +45,7 @@ export const TopBar = ({ toggleDrawer, userName, userAvatar }: TopBarProps) => {
     switch (action) {
       case "logout":
         await logout();
-        showToast("success", "Successfully logged out. See you soon!", "bottom-right");
+        showToast("success", t("logoutSuccess"), "bottom-right");
         router.push("/login");
         break;
       case "profile":
@@ -102,7 +104,7 @@ export const TopBar = ({ toggleDrawer, userName, userAvatar }: TopBarProps) => {
         </button>
 
         <Select
-          options={userOptions}
+          options={userOptions.map(opt => ({ ...opt, label: t(`userOptions.${opt.value}`) }))}
           onChange={handleUserAction}
           align="right"
           renderTrigger={(isOpen) => (

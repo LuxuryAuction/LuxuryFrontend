@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ClockIcon, ShieldIcon, CreditCardIcon, CheckIcon } from "@/public/assets/icons";
 import { formatCurrency } from "@/src/utils/textUtils";
+import { useTranslations } from "next-intl";
 
 interface BiddingPanelProps {
   currentPrice: number;
@@ -26,6 +27,8 @@ export const BiddingPanel = ({
   const [timeLeft, setTimeLeft] = useState("----");
   const [bidAmount, setBidAmount] = useState(currentPrice + minStep);
   const [isUrgent, setIsUrgent] = useState(false);
+  const t = useTranslations("BiddingPanel");
+  const tLotCard = useTranslations("LotCard");
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -34,7 +37,7 @@ export const BiddingPanel = ({
       const diff = end - now;
 
       if (diff <= 0) {
-        setTimeLeft("Ended");
+        setTimeLeft(tLotCard("ended"));
         setIsUrgent(false);
         clearInterval(timer);
       } else {
@@ -77,16 +80,16 @@ export const BiddingPanel = ({
             <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#22c55e]">Live</span>
           </div>
           <div className="flex items-center gap-3 text-[10px] font-mono text-content-tertiary">
-            <span>{totalParticipants} participants</span>
+            <span>{t("participants", { count: totalParticipants })}</span>
             <div className="w-px h-3 bg-border-primary/60" />
-            <span>{totalBids} bids</span>
+            <span>{t("bids", { count: totalBids })}</span>
           </div>
         </div>
 
         <div className="px-6 py-5 z-10">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-content-tertiary">
-              Current Bid
+              {t("currentBid")}
             </span>
             <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg ${isUrgent ? "bg-red-500/10" : "bg-surface-tertiary/80"}`}>
               <ClockIcon className={`w-3 h-3 ${isUrgent ? "text-red-400" : "text-brand-primary"}`} />
@@ -104,17 +107,17 @@ export const BiddingPanel = ({
 
           <div className="flex items-center gap-3 mt-3 pt-3 border-t border-border-primary/30">
             <div className="flex flex-col gap-0.5 flex-1">
-              <span className="text-[9px] font-mono uppercase tracking-widest text-content-tertiary">Start</span>
+              <span className="text-[9px] font-mono uppercase tracking-widest text-content-tertiary">{t("start")}</span>
               <span className="text-[13px] font-bold font-mono text-content-secondary">₴{startingBid.toLocaleString()}</span>
             </div>
             <div className="w-px h-8 bg-border-primary/40" />
             <div className="flex flex-col gap-0.5 flex-1">
-              <span className="text-[9px] font-mono uppercase tracking-widest text-content-tertiary">Step</span>
+              <span className="text-[9px] font-mono uppercase tracking-widest text-content-tertiary">{t("step")}</span>
               <span className="text-[13px] font-bold font-mono text-content-secondary">+₴{minStep.toLocaleString()}</span>
             </div>
             <div className="w-px h-8 bg-border-primary/40" />
             <div className="flex flex-col gap-0.5 flex-1">
-              <span className="text-[9px] font-mono uppercase tracking-widest text-content-tertiary">Next min</span>
+              <span className="text-[9px] font-mono uppercase tracking-widest text-content-tertiary">{t("nextMin")}</span>
               <span className="text-[13px] font-bold font-mono text-brand-primary">₴{(currentPrice + minStep).toLocaleString()}</span>
             </div>
           </div>
@@ -125,7 +128,7 @@ export const BiddingPanel = ({
         <div className="flex flex-col gap-5 p-6 relative z-10">
           <div className="flex flex-col gap-2">
             <label className="text-[10px] font-mono uppercase tracking-widest text-content-tertiary pl-1">
-              Your Bid
+              {t("yourBid")}
             </label>
             <div className="flex items-center gap-2 p-1.5 pl-4 rounded-xl bg-surface-primary border border-border-primary focus-within:border-brand-primary/50 focus-within:shadow-[0_0_0_4px_rgba(240,165,0,0.06)] transition-all">
               <span className="text-content-tertiary/60 font-bold text-lg select-none">₴</span>
@@ -161,7 +164,7 @@ export const BiddingPanel = ({
           >
             <div className="absolute inset-0 -translate-x-[150%] bg-linear-to-r from-transparent via-white/40 to-transparent group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out skew-x-[-20deg]" />
             <span className="relative z-10 flex items-center justify-center gap-2">
-              Place Bid <span className="opacity-50 font-normal">—</span> {formatCurrency(bidAmount, "before")}
+              {t("placeBid")} <span className="opacity-50 font-normal">—</span> {formatCurrency(bidAmount, "before")}
             </span>
           </button>
 

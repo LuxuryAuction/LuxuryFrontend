@@ -8,8 +8,10 @@ import { ImageCarousel } from "./ImageCarousel";
 import { ParticipantsIcon } from "@/public/assets/icons";
 import { formatCurrency } from "@/src/utils/textUtils";
 import { ILot } from "@/src/services/LotsService/types";
+import { useTranslations } from "next-intl";
 
 export const GridVariant = ({ lot, showCategory = true }: { lot: ILot; showCategory?: boolean }) => {
+  const t = useTranslations("LotCard");
   const c = STATUS_CFG[lot.status];
   const isLive = LIVE_STATUSES.includes(lot.status);
   const isEnded = ENDED_STATUSES.includes(lot.status);
@@ -48,7 +50,7 @@ export const GridVariant = ({ lot, showCategory = true }: { lot: ILot; showCateg
           </div>
 
           <span className="px-2 py-1 rounded-sm font-mono text-[10px] bg-black/50 border border-white/10 text-content-secondary backdrop-blur-md">
-            {lot.totalBids} bid{lot.totalBids !== 1 ? "s" : ""}
+            {t("bids", { count: lot.totalBids })}
           </span>
         </div>
       </div>
@@ -66,18 +68,18 @@ export const GridVariant = ({ lot, showCategory = true }: { lot: ILot; showCateg
 
         <div className="flex flex-wrap gap-1.5 mb-3">
           {lot.condition && (
-            <span className="px-2 py-0.5 rounded-full bg-surface-primary border border-border-primary font-mono text-[9px] uppercase text-content-secondary tracking-wider">
-              {lot.condition}
+            <span className="px-2 py-0.5 rounded-full bg-brand-primary/5 border border-brand-primary/20 font-mono text-[9px] uppercase text-brand-primary tracking-wider">
+              {lot.condition}/10
             </span>
           )}
           {lot.sex && (
-            <span className="px-2 py-0.5 rounded-full bg-brand-primary/5 border border-brand-primary/20 font-mono text-[9px] uppercase text-brand-primary tracking-wider">
+                <span className="px-2 py-0.5 rounded-full bg-surface-primary border border-border-primary font-mono text-[9px] uppercase text-content-secondary tracking-wider">
               {lot.sex}
             </span>
           )}
           {lot.size && (
             <span className="px-2 py-0.5 rounded-full bg-surface-primary border border-border-primary font-mono text-[9px] uppercase text-content-secondary tracking-wider">
-              Size: {lot.size}
+              {t("size", { size: lot.size })}
             </span>
           )}
         </div>
@@ -95,7 +97,7 @@ export const GridVariant = ({ lot, showCategory = true }: { lot: ILot; showCateg
 
         <div className="text-[11px] mb-4 text-content-tertiary font-medium flex items-center justify-between">
           <span>
-            by <span className="text-content-secondary">@{lot.sellerUsername}</span>
+            {t("by")} <span className="text-content-secondary">@{lot.sellerUsername}</span>
           </span>
           {lot.startsAt && (
             <span className="font-mono text-[9px] uppercase tracking-wider opacity-60">
@@ -108,21 +110,20 @@ export const GridVariant = ({ lot, showCategory = true }: { lot: ILot; showCateg
         <div className="flex items-end justify-between pt-4 mt-auto border-t border-border-primary/50">
           <div>
             <div className="font-mono text-[8px] tracking-[0.14em] uppercase mb-1 text-content-tertiary">
-              {isEnded ? "Final price" : "Current bid"}
+              {isEnded ? t("finalPrice") : t("currentBid")}
             </div>
             <div
               className={`font-mono text-[15px] font-bold leading-none ${isEnded ? "text-green-400" : "text-brand-primary"
                 }`}
             >
-              {/* {formatCurrency(lot.currentBid)} */}
-              {formatCurrency(666)}
+              {formatCurrency(lot.currentPrice)}
             </div>
           </div>
 
           <div className="flex flex-col gap-1 text-right">
             <div className="flex flex-col mt-auto">
               <span className="font-mono text-[8px] tracking-[0.14em] uppercase text-content-tertiary">
-                Step
+                {t("step")}
               </span>
               <span className="font-mono text-[12px] font-semibold text-content-secondary">
                 {formatCurrency(lot.priceStep)}
