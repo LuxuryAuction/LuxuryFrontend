@@ -48,6 +48,12 @@ module.exports = {
           info: "#38bdf8",
           danger: "#fb7185",
         },
+        state: {
+          danger: "#ef4444",
+          success: "#22c55e",
+          warning: "#f59e0b",
+          info: "#3b82f6",
+        },
       },
 
       backgroundImage: {

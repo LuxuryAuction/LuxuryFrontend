@@ -133,8 +133,7 @@ function BaseInput({
         ${variantClasses[variant]}
         ${variant === "admin" ? "" : "text-content-primary placeholder:text-content-tertiary"}
         outline-none transition-colors
-        ${inputFocusClass(variant)}
-        ${error ? "border-state-danger" : ""}
+        ${error ? "!border-state-danger focus:!border-state-danger focus:ring-1 focus:ring-state-danger/25" : inputFocusClass(variant)}
         ${className}
       `}
     />
@@ -615,8 +614,8 @@ export function Input({
             onChange={(e) => props.onChange?.(e.target.value)}
             className={`w-full resize-none rounded-lg border px-4 py-3 text-sm leading-relaxed outline-none transition-colors
             ${variant === "admin"
-                ? `border-white/6 bg-white/2 text-white/90 placeholder:text-white/40 backdrop-blur-xl ${inputFocusClass("admin")} ${error ? "border-state-danger" : ""}`
-                : `border bg-surface-secondary text-content-primary placeholder:text-content-tertiary focus:border-brand-primary ${error ? "border-state-danger" : "border-border-primary"}`
+                ? `border-white/6 bg-white/2 text-white/90 placeholder:text-white/40 backdrop-blur-xl ${error ? "!border-state-danger focus:!border-state-danger focus:ring-1 focus:ring-state-danger/25" : inputFocusClass("admin")}`
+                : `bg-surface-secondary text-content-primary placeholder:text-content-tertiary ${error ? "!border-state-danger focus:!border-state-danger focus:ring-1 focus:ring-state-danger/25" : "border-border-primary focus:border-brand-primary"}`
               }`}
           />
         );
@@ -649,7 +648,7 @@ export function Input({
       {label && (
         <label
           htmlFor={inputId}
-          className={`font-mono text-[0.62rem] uppercase tracking-widest flex items-start gap-1 ${variant === "admin" ? "text-white/45" : "text-content-tertiary"}`}
+          className={`font-mono text-[0.62rem] uppercase tracking-widest flex items-start gap-1 ${error ? "!text-state-danger" : variant === "admin" ? "text-white/45" : "text-content-tertiary"}`}
         >
           <span>{label}</span>
           {required && (

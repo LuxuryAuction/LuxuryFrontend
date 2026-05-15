@@ -15,7 +15,6 @@ export const DELIVERY_OPTIONS = [
   { value: "nova-poshta", label: "📦 Nova Poshta" },
   { value: "ukr-poshta", label: "📮 Ukrposhta" },
   { value: "both", label: "📦/📮 Nova Poshta & Ukrposhta" },
-  { value: "pickup", label: "🤝 Local Pickup" },
 ];
 
 export const SEX_OPTIONS = [

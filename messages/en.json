@@ -125,5 +125,66 @@
       "gridView": "Grid view",
       "listView": "List view"
     }
+  },
+  "CreateLot": {
+    "deliveryOptions": {
+      "nova-poshta": "📦 Nova Poshta",
+      "ukr-poshta": "📮 Ukrposhta",
+      "both": "📦/📮 Nova Poshta & Ukrposhta",
+      "pickup": "Pickup"
+    },
+    "pageHeader": {
+      "label": "New listing",
+      "title": "Create a lot",
+      "description": "Fill out the details below to list your item for auction. All fields marked with * are required."
+    },
+    "section1": {
+      "title": "Basic information",
+      "description": "Describe your item clearly to attract buyers",
+      "lotTitle": "Lot title",
+      "lotTitlePlaceholder": "e.g. Vintage Rolex Submariner 1969",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Describe the origin, condition, features, contents...",
+      "category": "Category",
+      "categoryPlaceholder": "Select category",
+      "loadingCategories": "Loading...",
+      "condition": "Condition",
+      "conditionPlaceholder": "Select condition",
+      "sex": "Sex / gender",
+      "size": "Size",
+      "optional": "Optional",
+      "deliveryMethod": "Delivery method",
+      "deliveryMethodPlaceholder": "Select delivery method"
+    },
+    "section2": {
+      "title": "Pricing",
+      "description": "Set starting price and minimum bid increment",
+      "startingPrice": "Starting price (₴)",
+      "minBidIncrement": "Min. bid increment (₴)"
+    },
+    "section3": {
+      "title": "Auction schedule",
+      "description": "Determine when your auction will start",
+      "startDateTime": "Start date & time"
+    },
+    "section4": {
+      "title": "Photos",
+      "description": "Upload up to 8 high-quality photos. The first photo will be the main one."
+    },
+    "agreements": "By publishing this lot, you confirm that you have read and agree to our <privacyPolicy>Privacy Policy</privacyPolicy> and auction rules.",
+    "buttons": {
+      "reset": "Reset",
+      "publishing": "Publishing...",
+      "processingPayment": "Processing payment...",
+      "publishLot": "Publish",
+      "publishLotWithPrice": "Publish ({price})",
+      "livePreview": "Live preview",
+      "close": "Close ✕"
+    },
+    "toasts": {
+      "paymentFailed": "Payment failed. Please try again.",
+      "paymentSuccess": "Payment successful! Creating lot...",
+      "createFailed": "Failed to create lot"
+    }
   }
 }

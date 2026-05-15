@@ -125,5 +125,66 @@
       "gridView": "Сітка",
       "listView": "Список"
     }
+  },
+  "CreateLot": {
+    "deliveryOptions": {
+      "nova-poshta": "Нова Пошта",
+      "ukr-poshta": "Укрпошта",
+      "both": "Нова Пошта та Укрпошта",
+      "pickup": "Самовивіз"
+    },
+    "pageHeader": {
+      "label": "Нова публікація",
+      "title": "Створити лот",
+      "description": "Заповніть деталі нижче, щоб виставити товар на аукціон. Усі поля, позначені *, є обов'язковими."
+    },
+    "section1": {
+      "title": "Основна інформація",
+      "description": "Опишіть ваш товар чітко, щоб привабити покупців",
+      "lotTitle": "Назва лота",
+      "lotTitlePlaceholder": "напр. Adidas Germany",
+      "descriptionLabel": "Опис",
+      "descriptionPlaceholder": "Опишіть походження, стан, особливості, дефекти",
+      "category": "Категорія",
+      "categoryPlaceholder": "Оберіть категорію",
+      "loadingCategories": "Завантаження...",
+      "condition": "Стан",
+      "conditionPlaceholder": "Оберіть стан",
+      "sex": "Стать",
+      "size": "Розмір",
+      "optional": "Необов'язково",
+      "deliveryMethod": "Спосіб доставки",
+      "deliveryMethodPlaceholder": "Оберіть спосіб доставки"
+    },
+    "section2": {
+      "title": "Ціна",
+      "description": "Встановіть стартову ціну та мінімальний крок ставки",
+      "startingPrice": "Початкова ціна (₴)",
+      "minBidIncrement": "Мін. крок ставки (₴)"
+    },
+    "section3": {
+      "title": "Розклад аукціону",
+      "description": "Визначте час початку вашого аукціону",
+      "startDateTime": "Дата та час початку"
+    },
+    "section4": {
+      "title": "Фотографії",
+      "description": "Завантажте до 8 якісних фото. Перше фото буде головним."
+    },
+    "agreements": "Публікуючи цей лот, ви підтверджуєте, що прочитали та погоджуєтеся з нашою <privacyPolicy>Політикою конфіденційності</privacyPolicy> та правилами аукціону.",
+    "buttons": {
+      "reset": "Очистити",
+      "publishing": "Публікуємо…",
+      "processingPayment": "Обробка платежу…",
+      "publishLot": "Опублікувати",
+      "publishLotWithPrice": "Опублікувати ({price})",
+      "livePreview": "Попередній перегляд",
+      "close": "Закрити ✕"
+    },
+    "toasts": {
+      "paymentFailed": "Оплата не пройшла. Будь ласка, спробуйте ще раз.",
+      "paymentSuccess": "Оплата успішна! Створюємо лот...",
+      "createFailed": "Не вдалося створити лот"
+    }
   }
 }

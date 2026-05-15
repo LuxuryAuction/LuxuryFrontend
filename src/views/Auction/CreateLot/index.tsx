@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { Link } from "@/src/i18n/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { Input } from "@/src/components/ui/Input";
@@ -16,7 +17,7 @@ import { CONDITION_OPTIONS, DELIVERY_OPTIONS, SEX_OPTIONS, SIZE_OPTIONS } from "
 import { Section } from "./components/Section";
 import { ImageUpload } from "./components/ImageUpload";
 import { PreviewCard } from "./components/PreviewCard";
-import { EyeIcon } from "@/public/assets/icons";
+import { EyeIcon, EmptyBoxIcon } from "@/public/assets/icons";
 
 import { createLotSchema } from "@/src/schemas/createLot.schema";
 import { LotPublished } from "./components/LotPublished";
@@ -28,6 +29,7 @@ import { formatCurrency } from "@/src/utils/textUtils";
 import { useToast } from "@/src/components/ui/Toast";
 
 export const CreateLotView = () => {
+  const t = useTranslations("CreateLot");
   const [submitted, setSubmitted] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [agreed, setAgreed] = useState(false);
@@ -36,12 +38,22 @@ export const CreateLotView = () => {
   const { categories, isLoading: isLoadingCategories } = useGetCategories();
   const { showToast } = useToast();
 
-  const categoryOptions = useMemo(() => 
-    categories.map(cat => ({ 
-      value: String(cat.id), 
-      label: `${cat.name} (${formatCurrency(cat.postingPrice)})` 
+  const categoryOptions = useMemo(() =>
+    categories.map(cat => ({
+      value: String(cat.id),
+      label: `${cat.name} (${formatCurrency(cat.postingPrice)})`
     })),
     [categories]
+  );
+
+  const deliveryOptions = useMemo(() =>
+    DELIVERY_OPTIONS.map(opt => {
+      return {
+        value: opt.value,
+        label: t(`deliveryOptions.${opt.value}`) as string,
+      };
+    }),
+    [t]
   );
 
   const {
@@ -68,11 +80,11 @@ export const CreateLotView = () => {
       console.log("WayForPay Result:", paymentResult);
 
       if (paymentResult.status !== "approved") {
-        showToast("error", "Payment was not successful. Please try again.");
+        showToast("error", t("toasts.paymentFailed"));
         return;
       }
 
-      showToast("success", "Payment successful! Creating lot...");
+      showToast("success", t("toasts.paymentSuccess"));
 
       await createLot({
         name: data.title,
@@ -91,7 +103,7 @@ export const CreateLotView = () => {
       setSubmitted(true);
     } catch (error) {
       console.error("Failed to create lot:", error);
-      const message = error instanceof Error ? error.message : "Failed to create lot";
+      const message = error instanceof Error ? error.message : t("toasts.createFailed");
       showToast("error", message);
     }
   };
@@ -107,23 +119,23 @@ export const CreateLotView = () => {
   return (
     <div className="p-5 md:p-7 max-w-4xl mx-auto relative">
       <PageHeader
-        label="New Listing"
-        title="Create Lot"
-        description="Fill in the details below to list your item for auction. All fields marked with * are required."
+        label={t("pageHeader.label")}
+        title={t("pageHeader.title")}
+        description={t("pageHeader.description")}
       />
 
       <div className="mt-6">
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Section step={1} title="Basic Information" description="Describe your item clearly to attract bidders">
+          <Section step={1} title={t("section1.title")} description={t("section1.description")}>
             <div className="space-y-4">
               <Controller
                 control={control}
                 name="title"
                 render={({ field }) => (
                   <Input
-                    label="Lot Title"
+                    label={t("section1.lotTitle")}
                     required
-                    placeholder="e.g. Vintage Rolex Submariner 1969"
+                    placeholder={t("section1.lotTitlePlaceholder")}
                     value={field.value}
                     onChange={field.onChange}
                     error={errors.title?.message}
@@ -137,10 +149,10 @@ export const CreateLotView = () => {
                 render={({ field }) => (
                   <Input
                     type="textarea"
-                    label="Description"
+                    label={t("section1.descriptionLabel")}
                     required
                     rows={5}
-                    placeholder="Describe provenance, condition details, notable features, included accessories…"
+                    placeholder={t("section1.descriptionPlaceholder")}
                     value={field.value}
                     onChange={field.onChange}
                     error={errors.description?.message}
@@ -154,12 +166,12 @@ export const CreateLotView = () => {
                   name="categoryId"
                   render={({ field }) => (
                     <Select
-                      label="Category"
+                      label={t("section1.category")}
                       required
                       options={categoryOptions}
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder={isLoadingCategories ? "Loading categories..." : "Select category"}
+                      placeholder={isLoadingCategories ? t("section1.loadingCategories") : t("section1.categoryPlaceholder")}
                       error={errors.categoryId?.message}
                     />
                   )}
@@ -169,12 +181,12 @@ export const CreateLotView = () => {
                   name="condition"
                   render={({ field }) => (
                     <Select
-                      label="Condition"
+                      label={t("section1.condition")}
                       required
                       options={CONDITION_OPTIONS}
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder="Select condition"
+                      placeholder={t("section1.conditionPlaceholder")}
                       error={errors.condition?.message}
                     />
                   )}
@@ -187,11 +199,11 @@ export const CreateLotView = () => {
                   name="sex"
                   render={({ field }) => (
                     <Select
-                      label="Sex"
+                      label={t("section1.sex")}
                       options={SEX_OPTIONS}
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder="Optional"
+                      placeholder={t("section1.optional")}
                       error={errors.sex?.message}
                     />
                   )}
@@ -201,11 +213,11 @@ export const CreateLotView = () => {
                   name="size"
                   render={({ field }) => (
                     <Select
-                      label="Size"
+                      label={t("section1.size")}
                       options={SIZE_OPTIONS}
                       value={field.value}
                       onChange={field.onChange}
-                      placeholder="Optional"
+                      placeholder={t("section1.optional")}
                       error={errors.size?.message}
                     />
                   )}
@@ -217,12 +229,12 @@ export const CreateLotView = () => {
                 name="delivery"
                 render={({ field }) => (
                   <Select
-                    label="Delivery Method"
+                    label={t("section1.deliveryMethod")}
                     required
-                    options={DELIVERY_OPTIONS}
+                    options={deliveryOptions}
                     value={field.value}
                     onChange={field.onChange}
-                    placeholder="Select delivery method"
+                    placeholder={t("section1.deliveryMethodPlaceholder")}
                     error={errors.delivery?.message}
                   />
                 )}
@@ -230,7 +242,7 @@ export const CreateLotView = () => {
             </div>
           </Section>
 
-          <Section step={2} title="Pricing" description="Set your starting price, bid increment and optional buy-now">
+          <Section step={2} title={t("section2.title")} description={t("section2.description")}>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Controller
                 control={control}
@@ -238,7 +250,7 @@ export const CreateLotView = () => {
                 render={({ field }) => (
                   <Input
                     type="currency"
-                    label="Starting Price (₴)"
+                    label={t("section2.startingPrice")}
                     required
                     placeholder="0.00"
                     value={field.value}
@@ -253,7 +265,7 @@ export const CreateLotView = () => {
                 render={({ field }) => (
                   <Input
                     type="currency"
-                    label="Min. Bid Increment (₴)"
+                    label={t("section2.minBidIncrement")}
                     placeholder="10.00"
                     value={field.value}
                     onChange={field.onChange}
@@ -264,7 +276,7 @@ export const CreateLotView = () => {
             </div>
           </Section>
 
-          <Section step={3} title="Auction Schedule" description="Define when your auction starts">
+          <Section step={3} title={t("section3.title")} description={t("section3.description")}>
             <Controller
               control={control}
               name="startDate"
@@ -272,7 +284,7 @@ export const CreateLotView = () => {
                 <div className="max-w-sm">
                   <Input
                     type="date"
-                    label="Start Date & Time"
+                    label={t("section3.startDateTime")}
                     required
                     min="2025-05-01"
                     max="2099-12-31"
@@ -285,7 +297,7 @@ export const CreateLotView = () => {
             />
           </Section>
 
-          <Section step={4} title="Photos" description="Upload up to 8 high-quality images. First image will be the cover.">
+          <Section step={4} title={t("section4.title")} description={t("section4.description")}>
             <Controller
               control={control}
               name="images"
@@ -303,11 +315,13 @@ export const CreateLotView = () => {
               <Checkbox
                 label={
                   <span className="text-xs text-content-tertiary leading-relaxed block">
-                    By publishing this lot, you confirm that you have read and agree to our{" "}
-                    <Link href="/privacy-policy" className="text-brand-primary hover:underline font-medium">
-                      Privacy Policy
-                    </Link>
-                    {" "}and auction terms of service.
+                    {t.rich("agreements", {
+                      privacyPolicy: (chunks) => (
+                        <Link href="/privacy-policy" className="text-brand-primary hover:underline font-medium">
+                          {chunks}
+                        </Link>
+                      )
+                    })}
                   </span>
                 }
                 checked={agreed}
@@ -323,7 +337,7 @@ export const CreateLotView = () => {
                 onClick={() => reset(INITIAL_FORM)}
                 className="w-auto!"
               >
-                Reset
+                {t("buttons.reset")}
               </Button>
 
               {/* <Button
@@ -340,13 +354,13 @@ export const CreateLotView = () => {
                 variant="primary"
                 size="sm"
                 isLoading={isCreating || isPaying}
-                loadingText={isPaying ? "Processing Payment…" : "Publishing…"}
+                loadingText={isPaying ? t("buttons.processingPayment") : t("buttons.publishing")}
                 disabled={!agreed}
               >
                 {formValues.categoryId ? (
-                  <>Publish Lot ({formatCurrency(categories.find(cat => cat.id === Number(formValues.categoryId))?.postingPrice || 0)})</>
+                  <>{t("buttons.publishLotWithPrice", { price: formatCurrency(categories.find(cat => cat.id === Number(formValues.categoryId))?.postingPrice || 0) })}</>
                 ) : (
-                  <>Publish Lot</>
+                  <>{t("buttons.publishLot")}</>
                 )}
               </Button>
             </div>
@@ -363,7 +377,7 @@ export const CreateLotView = () => {
           <span className="absolute inline-flex h-full w-full rounded-full bg-brand-primary opacity-20 group-hover:animate-ping" />
           <EyeIcon />
         </div>
-        <span className="font-semibold text-sm tracking-wide">Live Preview</span>
+        <span className="font-semibold text-sm tracking-wide">{t("buttons.livePreview")}</span>
       </button>
 
       {previewOpen && (
@@ -374,7 +388,7 @@ export const CreateLotView = () => {
               onClick={() => setPreviewOpen(false)}
               className="absolute -top-10 right-0 text-white opacity-60 hover:opacity-100 transition-opacity flex items-center gap-2 text-sm font-mono tracking-wider uppercase cursor-pointer"
             >
-              Close ✕
+              {t("buttons.close")}
             </button>
             <PreviewCard form={formValues} categories={categories} />
           </div>
