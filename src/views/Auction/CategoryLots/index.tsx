@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { LotCard } from "@/src/components/ui/LotCard";
@@ -16,6 +16,7 @@ import { useRouter } from "@/src/i18n/navigation";
 import { FiltersPopover } from "./components/FiltersPopover";
 import NoData from "@/src/components/ui/NoData";
 import { useGetLots } from "@/src/hooks/useLots";
+import { usePaginationScroll } from "@/src/hooks/usePaginationScroll";
 import { LotsGridSkeleton } from "@/src/views/Auction/components/LotsGridSkeleton";
 import { CATEGORY_FILTER_TAB_IDS } from "./categoryConfig";
 
@@ -44,7 +45,7 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
   const params = useMemo(() => ({
     categoryId: Number(categoryId),
     page,
-    pageSize: 10,
+    pageSize: 20,
     search: search || undefined,
     sex,
     status: activeTab,
@@ -66,6 +67,7 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
 
   useClickOutside(filtersRef, () => setShowFilters(false));
 
+  usePaginationScroll(page);
   const filterTabs = useMemo(
     () =>
       CATEGORY_FILTER_TAB_IDS.map((id) => ({
@@ -170,9 +172,9 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
 
             <Pagination
               currentPage={page}
-              totalPages={data?.totalCount || 1}
+              totalPages={data?.totalPages || 1}
               onPageChange={setPage}
-              className="mt-12"
+              className="mt-8 md:mt-12"
             />
           </>
         ) : (

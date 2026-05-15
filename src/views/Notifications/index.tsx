@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { MOCK_NOTIFICATIONS } from "./notifications.config";
 import { INotification } from "./types";
 import PageHeader from "@/src/components/ui/PageHeader";
@@ -13,6 +13,7 @@ import { Button } from "@/src/components/ui/Button";
 import { NoData } from "@/src/components/ui/NoData";
 import { useToast } from "@/src/components/ui/Toast";
 import { Pagination } from "@/src/components/ui/Pagination";
+import { usePaginationScroll } from "@/src/hooks/usePaginationScroll";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -24,7 +25,9 @@ export const NotificationsView = () => {
   const { showToast } = useToast();
   const [notifications, setNotifications] = useState<INotification[]>(MOCK_NOTIFICATIONS);
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [page, setCurrentPage] = useState(1);
+
+  usePaginationScroll(page);
 
   const unreadCount = useMemo(() => notifications.filter(n => !n.isRead).length, [notifications]);
 
@@ -50,9 +53,9 @@ export const NotificationsView = () => {
   }, [notifications, activeTab]);
 
   const paginatedNotifications = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const start = (page - 1) * ITEMS_PER_PAGE;
     return filteredNotifications.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredNotifications, currentPage]);
+  }, [filteredNotifications, page]);
 
   const totalPages = Math.ceil(filteredNotifications.length / ITEMS_PER_PAGE);
 
@@ -126,7 +129,7 @@ export const NotificationsView = () => {
       </div>
 
       <Pagination
-        currentPage={currentPage}
+        currentPage={page}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
         className="mt-5"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { LotCard } from "@/src/components/ui/LotCard";
 import { ViewSwitcher, ViewVariant } from "@/src/components/ui/ViewSwitcher";
 import { Tabs } from "@/src/components/ui/Tabs";
@@ -13,6 +13,7 @@ import NoData from "@/src/components/ui/NoData";
 import Button from "@/src/components/ui/Button";
 import { useRouter } from "@/src/i18n/navigation";
 import { ArrowRightIcon, LightningIcon } from "@/public/assets/icons";
+import { usePaginationScroll } from "@/src/hooks/usePaginationScroll";
 
 const MY_LOTS_FILTER_TABS = [
   { id: "all", label: "All Lots" },
@@ -26,6 +27,9 @@ export const MyLotsTab = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+
+  usePaginationScroll(page);
+
   const isMobile = useIsMobile();
   const router = useRouter();
 

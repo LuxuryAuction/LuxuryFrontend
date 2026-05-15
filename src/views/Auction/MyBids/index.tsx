@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs } from "@/src/components/ui/Tabs";
 import { Input } from "@/src/components/ui/Input";
 import { Pagination } from "@/src/components/ui/Pagination";
@@ -11,12 +11,15 @@ import { FILTER_TABS } from "./constants";
 import { BidCard } from "./components/BidCard";
 import { LightningIcon } from "@/public/assets/icons";
 import { Alert } from "@/src/components/ui/Alert";
+import { usePaginationScroll } from "@/src/hooks/usePaginationScroll";
 
 
 export const MyBidsView = () => {
   const [activeTab, setActiveTab] = useState("all");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+
+  usePaginationScroll(page);
 
 
   const winningCount = 3

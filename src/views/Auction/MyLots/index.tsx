@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { LotCard } from "@/src/components/ui/LotCard";
@@ -12,6 +12,7 @@ import { LightningIcon } from "@/public/assets/icons";
 import { useIsMobile } from "@/src/hooks/useIsMobile";
 import NoData from "@/src/components/ui/NoData";
 import { useGetUserLots } from "@/src/hooks/useLots";
+import { usePaginationScroll } from "@/src/hooks/usePaginationScroll";
 import { LotsGridSkeleton } from "@/src/views/Auction/components/LotsGridSkeleton";
 import Button from "@/src/components/ui/Button";
 import { useRouter } from "@/src/i18n/navigation";
@@ -32,6 +33,8 @@ export const MyLotsView = () => {
   const [page, setPage] = useState(1);
   const isMobile = useIsMobile();
   const router = useRouter();
+
+  usePaginationScroll(page);
 
   const filterTabs = useMemo(
     () =>
@@ -119,7 +122,7 @@ export const MyLotsView = () => {
               currentPage={page}
               totalPages={3}
               onPageChange={setPage}
-              className="mt-12"
+              className="mt-8 md:mt-12"
             />
           </>
         ) : (
