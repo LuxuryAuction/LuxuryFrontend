@@ -11,9 +11,9 @@ const intlMiddleware = createMiddleware(routing);
  */
 function isMatchingPath(pathname: string, routes: string[]) {
   const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}(\/|$)/, "/");
-  return routes.some(route => 
-    pathWithoutLocale === route || pathWithoutLocale.startsWith(route + "/")
-  );
+  // return routes.some(route => 
+  //   pathWithoutLocale === route || pathWithoutLocale.startsWith(route + "/")
+  // );
 }
 
 export function proxy(request: NextRequest) {
@@ -22,32 +22,32 @@ export function proxy(request: NextRequest) {
   const userRole = request.cookies.get("userRole")?.value;
   const accessToken = request.cookies.get("accessToken")?.value;
 
-  // 1. Admin Access Control
-  if (isMatchingPath(pathname, ADMIN_ROUTES)) {
-    if (userRole !== "admin") {
-      const url = request.nextUrl.clone();
-      url.pathname = "/login"; 
-      return NextResponse.redirect(url);
-    }
-  }
+  // // 1. Admin Access Control
+  // if (isMatchingPath(pathname, ADMIN_ROUTES)) {
+  //   if (userRole !== "admin") {
+  //     const url = request.nextUrl.clone();
+  //     url.pathname = "/login"; 
+  //     return NextResponse.redirect(url);
+  //   }
+  // }
 
-  // 2. Protected Routes (require authentication)
-  if (isMatchingPath(pathname, PROTECTED_ROUTES)) {
-    if (!accessToken) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/login";
-      return NextResponse.redirect(url);
-    }
-  }
+  // // 2. Protected Routes (require authentication)
+  // if (isMatchingPath(pathname, PROTECTED_ROUTES)) {
+  //   if (!accessToken) {
+  //     const url = request.nextUrl.clone();
+  //     url.pathname = "/login";
+  //     return NextResponse.redirect(url);
+  //   }
+  // }
 
-  // 3. Auth Routes (redirect logged-in users away from login/register)
-  if (isMatchingPath(pathname, AUTH_ROUTES)) {
-    if (accessToken) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/user/categories";
-      return NextResponse.redirect(url);
-    }
-  }
+  // // 3. Auth Routes (redirect logged-in users away from login/register)
+  // if (isMatchingPath(pathname, AUTH_ROUTES)) {
+  //   if (accessToken) {
+  //     const url = request.nextUrl.clone();
+  //     url.pathname = "/user/categories";
+  //     return NextResponse.redirect(url);
+  //   }
+  // }
 
   return intlMiddleware(request);
 }

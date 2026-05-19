@@ -227,6 +227,28 @@
     "title": "Bid History",
     "total": "{count} total",
     "highest": "Highest"
+  },
+  "ReportModal": {
+    "title": "Report User",
+    "subtitle": "Filing a report against @{userName}",
+    "reportButton": "Report",
+    "reasonLabel": "Reason",
+    "reasonPlaceholder": "Describe the issue in detail — what happened, when, and why you believe this violates platform rules…",
+    "lotNumberLabel": "Lot Number",
+    "lotNumberPlaceholder": "e.g. LOT-0441",
+    "optional": "optional",
+    "proofsLabel": "Proofs",
+    "proofsPlaceholder": "Provide links to screenshots, chat messages, or any evidence supporting your report…",
+    "telegramLabel": "Telegram for feedback",
+    "telegramPlaceholder": "Your Username",
+    "cancel": "Cancel",
+    "submit": "Submit Report",
+    "submitting": "Submitting…",
+    "errors": {
+      "reasonRequired": "Please describe the reason for your report",
+      "proofsRequired": "Please provide at least one proof",
+      "telegramRequired": "Telegram contact is required for feedback"
+    }
   }
 }
  

@@ -227,5 +227,27 @@
     "title": "Історія ставок",
     "total": "Всього: {count}",
     "highest": "Найвища"
+  },
+  "ReportModal": {
+    "title": "Поскаржитися на користувача",
+    "subtitle": "Скарга на @{userName}",
+    "reportButton": "Скарга",
+    "reasonLabel": "Причина",
+    "reasonPlaceholder": "Опишіть проблему детально — що сталося, коли, і чому ви вважаєте, що це порушує правила платформи…",
+    "lotNumberLabel": "Номер лоту",
+    "lotNumberPlaceholder": "напр. LOT-0441",
+    "optional": "необов'язково",
+    "proofsLabel": "Докази",
+    "proofsPlaceholder": "Надайте посилання на скріншоти, повідомлення чату або будь-які докази на підтримку вашої скарги…",
+    "telegramLabel": "Telegram для зворотного зв'язку",
+    "telegramPlaceholder": "Ваш телеграм тег",
+    "cancel": "Скасувати",
+    "submit": "Надіслати скаргу",
+    "submitting": "Надсилаємо…",
+    "errors": {
+      "reasonRequired": "Будь ласка, опишіть причину скарги",
+      "proofsRequired": "Будь ласка, надайте хоча б один доказ",
+      "telegramRequired": "Telegram контакт обов'язковий для зворотного зв'язку"
+    }
   }
 }

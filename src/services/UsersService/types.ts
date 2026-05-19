@@ -1,4 +1,5 @@
 export interface IUserProfile {
+  id: number;
   name: string;
   userName: string;
   memberSince: string;

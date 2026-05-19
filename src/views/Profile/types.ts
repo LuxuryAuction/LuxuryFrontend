@@ -17,6 +17,7 @@ export interface LotRow {
 }
 
 export interface IProfile {
+  id: number;
   name: string;
   userName: string;
   memberSince: string;
