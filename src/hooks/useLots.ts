@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { lotsService } from "../services/LotsService";
 import { ILotListResponse, ILotListParams, ILotDetails, ILot, ICreateLotRequest } from "../services/LotsService/types";
-import { MOCK_BIDS_DATA, type IMockBid } from "../views/Auction/MyBids/mockBids";
 
 export const useGetLots = (params?: ILotListParams) => {
   const [data, setData] = useState<ILotListResponse>();
@@ -35,16 +34,22 @@ export const useGetLots = (params?: ILotListParams) => {
   };
 };
 
-export const useGetUserLots = (params: ILotListParams) => {
+export const useGetUserLots = (params: ILotListParams, userId?: number | string) => {
+
   const [data, setData] = useState<ILot[]>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchUserLots = useCallback(async () => {
+    if (userId == null) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
       setIsLoading(true);
 
-      const data = await lotsService.getUserLots(params);
+      const data = await lotsService.getUserLots(userId, params);
 
       setData(data);
       setError(null);
@@ -53,11 +58,11 @@ export const useGetUserLots = (params: ILotListParams) => {
     } finally {
       setIsLoading(false);
     }
-  }, [params]);
+  }, [params, userId]);
 
   useEffect(() => {
     fetchUserLots();
-  }, [params]);
+  }, [fetchUserLots]);
 
   return {
     data,
@@ -67,34 +72,6 @@ export const useGetUserLots = (params: ILotListParams) => {
   };
 };
 
-export const useGetUserBids = (params: ILotListParams) => {
-  const [data, setData] = useState<IMockBid[]>(MOCK_BIDS_DATA);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-
-  const fetchUserBids = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setData(MOCK_BIDS_DATA);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err : new Error("Failed to fetch user bids"));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [params]);
-
-  useEffect(() => {
-    fetchUserBids();
-  }, [params]);
-
-  return {
-    data,
-    isLoading,
-    error,
-    refetch: fetchUserBids,
-  };
-};
 
 export const useGetLot = (id?: number) => {
   const [data, setData] = useState<ILotDetails | null>(null);

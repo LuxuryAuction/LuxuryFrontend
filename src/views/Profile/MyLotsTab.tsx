@@ -22,7 +22,11 @@ const MY_LOTS_FILTER_TABS = [
   { id: "Completed", label: "Ended" },
 ];
 
-export const MyLotsTab = () => {
+interface MyLotsTabProps {
+  userId?: string;
+}
+
+export const MyLotsTab = ({ userId }: MyLotsTabProps) => {
   const [viewVariant, setViewVariant] = useState<ViewVariant>("grid");
   const [activeTab, setActiveTab] = useState("all");
   const [search, setSearch] = useState("");
@@ -38,7 +42,7 @@ export const MyLotsTab = () => {
     search: search || undefined,
   }), [activeTab, search]);
 
-  const { data: lots, isLoading: isLoadingLots } = useGetUserLots(params);
+  const { data: lots, isLoading: isLoadingLots } = useGetUserLots(params, userId);
 
   const items = lots || [];
 

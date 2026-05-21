@@ -208,6 +208,20 @@ export const NAV_GROUPS: NavGroup[] = [
   },
 ];
 
+export function getProfileHref(userId: number | null | undefined): string {
+  return userId != null ? `/user/profile/${userId}` : "/user/profile";
+}
+
+export function getUserNavGroups(userId: number | null | undefined): NavGroup[] {
+  const profileHref = getProfileHref(userId);
+  return NAV_GROUPS.map((group) => ({
+    ...group,
+    items: group.items.map((item) =>
+      item.id === "profile" ? { ...item, href: profileHref } : item
+    ),
+  }));
+}
+
 export const DEFAULT_USER: SidebarUser = {
   name: "Alex Kovalenko",
   role: "User · Verified",

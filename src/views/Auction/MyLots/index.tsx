@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
+import { useSelector } from "react-redux";
 import { useTranslations } from "next-intl";
+import { RootState } from "@/src/store";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { LotCard } from "@/src/components/ui/LotCard";
 import { Tabs } from "@/src/components/ui/Tabs";
@@ -26,6 +28,7 @@ const FILTER_TAB_IDS = [
 ];
 
 export const MyLotsView = () => {
+  const userId = useSelector((state: RootState) => state.auth.userId);
   const t = useTranslations("MyLotsPage");
   const [activeTab, setActiveTab] = useState("all");
   const [viewVariant, setViewVariant] = useState<ViewVariant>("grid");
@@ -50,7 +53,7 @@ export const MyLotsView = () => {
     search: search || undefined,
   }), [activeTab, search]);
 
-  const { data: lots, isLoading: isLoadingLots } = useGetUserLots(params);
+  const { data: lots, isLoading: isLoadingLots } = useGetUserLots(params, userId ?? undefined);
 
   const items = lots || [];
 

@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Tabs } from "@/src/components/ui/Tabs";
 import { Input } from "@/src/components/ui/Input";
 import { LightningIcon } from "@/public/assets/icons";
 import NoData from "@/src/components/ui/NoData";
+import { LotsGridSkeleton } from "@/src/views/Auction/components/LotsGridSkeleton";
+import { BidCard } from "@/src/views/Auction/MyBids/components/BidCard";
 
 const FILTER_TABS = [
   { id: "all", label: "All Bids" },
@@ -14,10 +16,21 @@ const FILTER_TABS = [
 ];
 
 
-export const MyBidsTab = () => {
+interface MyBidsTabProps {
+  userId?: string;
+}
+
+export const MyBidsTab = ({ userId }: MyBidsTabProps) => {
   const [activeTab, setActiveTab] = useState("all");
   const [search, setSearch] = useState("");
 
+  const params = useMemo(() => ({
+    status: activeTab !== "all" ? activeTab : undefined,
+    search: search || undefined,
+  }), [activeTab, search]);
+
+  const isLoading = true
+  const items = [];
 
   return (
     <div className="flex flex-col gap-6">
@@ -44,8 +57,14 @@ export const MyBidsTab = () => {
       </div>
 
       <div className="flex flex-col gap-3">
-        {false ? (
-          <></>
+        {isLoading ? (
+          <LotsGridSkeleton />
+        ) : items.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {items.map((bid, idx) => (
+              <BidCard key={bid.bidId} bid={bid} idx={idx} />
+            ))}
+          </div>
         ) : (
           <NoData
             title="No bids found"

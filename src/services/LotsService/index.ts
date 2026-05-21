@@ -18,17 +18,17 @@ export const lotsService = {
     return response;
   },
 
-  getUserLots: async (filters: ILotListParams): Promise<ILot[]> => {
+  getUserLots: async (userId: number | string, filters: ILotListParams): Promise<ILot[]> => {
     const params = filterApiParams(filters);
     const response = await api.get<ILot[]>(
-      API_ENDPOINTS.USERS.ME.MY_LOTS,
+      API_ENDPOINTS.LOTS.USER_LOTS(userId),
       params
     );
     return response;
   },
 
   createLot: async (data: ICreateLotRequest): Promise<ILot> => {
-    const response = await api.post<ILot>(API_ENDPOINTS.USERS.ME.MY_LOTS, data);
+    const response = await api.post<ILot>(API_ENDPOINTS.LOTS.LIST, data);
     return response;
   },
 };

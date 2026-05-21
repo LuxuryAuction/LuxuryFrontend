@@ -11,21 +11,31 @@ import { ReportModal } from "./components/ReportModal";
 import Tabs from "@/src/components/ui/Tabs";
 import { Alert } from "@/src/components/ui/Alert";
 import { useToast } from "@/src/components/ui/Toast";
-import { RootState } from "@/src/store";
+import { useGetProfile } from "@/src/hooks/useUserProfile";
+import { useParams } from "next/navigation";
 import { useSelector } from "react-redux";
+import { RootState } from "@/src/store";
 
 interface ProfilePageProps {
   id?: string;
 }
 
-export const ProfilePage = ({ id }: ProfilePageProps) => {
+export const ProfilePage = ({ id: idProp }: ProfilePageProps) => {
   const [activeTab, setActiveTab] = useState("overview");
   const [isReportOpen, setIsReportOpen] = useState(false);
 
-  const { userId } = useSelector((state: RootState) => state.auth);
   const { showToast } = useToast();
 
-  const isMe = !id || (userId !== null && String(userId) === String(id));
+  const params = useParams();
+  const profileId = (params.id as string | undefined) ?? idProp;
+  const authUserId = useSelector((state: RootState) => state.auth.userId);
+
+  const isMe =
+    profileId != null &&
+    authUserId != null &&
+    String(profileId) === String(authUserId);
+
+  const { data: profile, isLoading, error } = useGetProfile(profileId);
 
   const tabsConfig = isMe
     ? [
@@ -37,7 +47,6 @@ export const ProfilePage = ({ id }: ProfilePageProps) => {
     : [
       { id: "overview", label: "Overview" },
       { id: "lots", label: "Lots" },
-      { id: "bids", label: "Bids" },
     ];
 
   const handleReportSubmit = async (data: {
@@ -46,7 +55,7 @@ export const ProfilePage = ({ id }: ProfilePageProps) => {
     proofs: string;
     telegramContact: string;
   }) => {
-    console.log
+    console.log(data)
     try {
       showToast("success", "Report submitted successfully. Our team will review it shortly.");
     } catch {
@@ -54,22 +63,29 @@ export const ProfilePage = ({ id }: ProfilePageProps) => {
     }
   };
 
-  if (false) {
+  if (isLoading) {
     return <ProfileSkeleton />;
   }
+
+  if (error && !profile) {
+    return (
+      <div className="p-5 md:p-7 max-w-7xl mx-auto">
+        <Alert variant="error" title="Failed to load profile">
+          {error.message}
+        </Alert>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return null;
+  }
+
 
   return (
     <div className="p-5 md:p-7 max-w-7xl mx-auto">
       <ProfileHeader
-        profile={{
-          name: "Test User",
-          userName: "@testUser",
-          id: 123,
-          memberSince: "2022-01-01",
-          isVerified: true,
-          trustScore: 95,
-          balance: 1000,
-        }}
+        profile={profile}
         isMe={isMe}
         onReportClick={() => setIsReportOpen(true)}
       />
@@ -88,16 +104,16 @@ export const ProfilePage = ({ id }: ProfilePageProps) => {
       />
 
       {activeTab === "overview" && <OverviewTab />}
-      {activeTab === "lots" && <MyLotsTab />}
-      {activeTab === "bids" && <MyBidsTab />}
-      {activeTab === "balance" && isMe && <BalanceTab />}
+      {activeTab === "lots" && <MyLotsTab userId={profileId} />}
+      {activeTab === "bids" && isMe && <MyBidsTab userId={profileId} />}
+      {activeTab === "balance" && isMe && <BalanceTab balance={profile.balance} />}
 
       {!isMe && (
         <ReportModal
           isOpen={isReportOpen}
           onClose={() => setIsReportOpen(false)}
           onSubmit={handleReportSubmit}
-          userName="test"
+          userName={profile.userName}
         />
       )}
     </div>

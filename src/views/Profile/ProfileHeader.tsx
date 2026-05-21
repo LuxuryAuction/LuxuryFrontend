@@ -16,7 +16,7 @@ export const ProfileHeader = ({ profile, isMe = true, onReportClick }: ProfileHe
 
   return (
     <div className="relative bg-auth-app border border-border-primary rounded-lg px-4 md:px-8 py-5 md:py-6 flex flex-col lg:flex-row items-start lg:items-center gap-6 lg:gap-8 mb-6 overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-brand-primary via-[#e87c00] to-transparent opacity-80" />
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-linear-to-r from-brand-primary via-[#e87c00] to-transparent opacity-80" />
 
       <div className="flex items-center gap-4 md:gap-6 flex-1 min-w-0 w-full">
         <Avatar name={profile.name} size="lg" className="w-16 h-16 md:w-[72px] md:h-[72px] text-[1.4rem] shrink-0" />
@@ -34,7 +34,7 @@ export const ProfileHeader = ({ profile, isMe = true, onReportClick }: ProfileHe
             )}
           </div>
           <div className="flex flex-col md:flex-row gap-1 items-centergap-2 font-mono text-[0.65rem] md:text-[0.7rem] text-content-tertiary mt-0.5 mb-3">
-            {profile.userName} <span className="hidden md:block opacity-30 mx-1">·</span> <div>Member since {formatDateTime(profile.memberSince)}</div>
+            @{profile.userName} <span className="hidden md:block opacity-30 mx-1">·</span> <div>Member since {formatDateTime(profile.memberSince)}</div>
           </div>
           <div className="flex gap-2 flex-wrap items-center">
             {profile.isVerified && (
@@ -51,7 +51,7 @@ export const ProfileHeader = ({ profile, isMe = true, onReportClick }: ProfileHe
         {USER_STATS.map(({ val, label }) => (
           <div key={label} className="flex flex-col items-center">
             <div className="text-[1.2rem] md:text-[1.3rem] font-bold text-content-light leading-none">{val}</div>
-            <div className="font-mono text-[0.55rem] md:text-[0.58rem] tracking-[0.1em] uppercase text-content-tertiary mt-1.5">{label}</div>
+            <div className="font-mono text-[0.55rem] md:text-[0.58rem] tracking-widest uppercase text-content-tertiary mt-1.5">{label}</div>
           </div>
         ))}
       </div>

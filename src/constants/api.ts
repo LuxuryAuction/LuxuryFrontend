@@ -9,14 +9,9 @@ export const API_ENDPOINTS = {
     LOGOUT: 'auth/logout',
   },
   USERS: {
-    ME: {
-      PROFILE: 'users/me/profile',
-      MY_LOTS: 'users/me/lots',
-      NOTIFICATIONS: {
-        LIST: 'users/me/notifications',
-        READ: 'users/me/notifications/read',
-      },
-    }
+    PROFILE: (userId: number | string) => `users/${userId}/profile`,
+    NOTIFICATIONS: (userId: number | string) => `users/${userId}/notifications`,
+    NOTIFICATIONS_READ: (userId: number | string) => `users/${userId}/notifications/read`,
   },
   CATEGORIES: {
     LIST: "categories",
@@ -25,6 +20,7 @@ export const API_ENDPOINTS = {
   },
   LOTS:{
     LIST: 'lots',
-    GET_BY_ID: (id: number) => `lots/${id}`
+    GET_BY_ID: (id: number) => `lots/${id}`,
+    USER_LOTS: (userId: number | string) => `lots/user/${userId}`,
   }
 }

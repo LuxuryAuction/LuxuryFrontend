@@ -4,20 +4,23 @@ import { useTranslations } from "next-intl";
 import { useSidebar } from "@/src/hooks/useSidebar";
 import { Sidebar } from "@/src/views/Sidebar/Sidebar";
 import { ADMIN_NAV_GROUPS } from "@/src/views/Sidebar/sidebar.config";
-import { useUserProfile } from "@/src/hooks/useUserProfile";
+import { useGetProfile } from "@/src/hooks/useUserProfile";
 import { TopBar } from "@/src/views/TopBar";
+import { useSelector } from "react-redux";
+import { RootState } from "@/src/store";
 
 export default function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const userId = useSelector((state: RootState) => state.auth.userId);
   const t = useTranslations("Sidebar.user");
   const {
     isOpen, isCollapsed, isMounted, toggleDrawer, closeDrawer, toggleCollapse,
   } = useSidebar();
 
-  const { data: profile } = useUserProfile();
+  const { data: profile } = useGetProfile(userId ?? undefined);
 
   const marginClass = isMounted && isCollapsed ? "md:ml-16" : "md:ml-[248px]";
 
