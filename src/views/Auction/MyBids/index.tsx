@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Tabs } from "@/src/components/ui/Tabs";
 import { Input } from "@/src/components/ui/Input";
 import { Pagination } from "@/src/components/ui/Pagination";

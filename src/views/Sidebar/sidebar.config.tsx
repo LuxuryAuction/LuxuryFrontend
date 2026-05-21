@@ -212,9 +212,16 @@ export function getProfileHref(userId: number | null | undefined): string {
   return userId != null ? `/user/profile/${userId}` : "/user/profile";
 }
 
-export function getUserNavGroups(userId: number | null | undefined): NavGroup[] {
+export function getUserNavGroups(
+  userId: number | null | undefined,
+  userRole?: string | null,
+): NavGroup[] {
   const profileHref = getProfileHref(userId);
-  return NAV_GROUPS.map((group) => ({
+  const isAdmin = userRole === "admin";
+
+  return NAV_GROUPS.filter(
+    (group) => isAdmin || group.titleKey !== "groups.admin",
+  ).map((group) => ({
     ...group,
     items: group.items.map((item) =>
       item.id === "profile" ? { ...item, href: profileHref } : item

@@ -10,6 +10,9 @@ import { useToast } from "@/src/components/ui/Toast";
 import { languages, userOptions } from "./config";
 import { capitalize } from "@/src/utils/textUtils";
 import { useAuth } from "@/src/hooks/useAuth";
+import { useSelector } from "react-redux";
+import { RootState } from "@/src/store";
+import { getProfileHref } from "@/src/views/Sidebar/sidebar.config";
 
 interface TopBarProps {
   toggleDrawer: () => void;
@@ -34,6 +37,7 @@ export const TopBar = ({ toggleDrawer, userName, userAvatar }: TopBarProps) => {
   const locale = useLocale();
   const { showToast } = useToast();
   const { logout } = useAuth();
+  const userId = useSelector((state: RootState) => state.auth.userId);
 
   const handleLocaleChange = (next: string) => {
     if (routing.locales.includes(next as (typeof routing.locales)[number])) {
@@ -49,7 +53,7 @@ export const TopBar = ({ toggleDrawer, userName, userAvatar }: TopBarProps) => {
         router.push("/login");
         break;
       case "profile":
-        router.push("/user/profile");
+        router.push(getProfileHref(userId));
         break;
       case "settings":
         router.push("/user/settings");

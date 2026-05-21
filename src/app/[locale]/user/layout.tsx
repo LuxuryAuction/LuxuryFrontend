@@ -16,6 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const userId = useSelector((state: RootState) => state.auth.userId);
+  const userRole = useSelector((state: RootState) => state.auth.userRole);
   const t = useTranslations("Sidebar.user");
   const {
     isOpen, isCollapsed, isMounted, toggleDrawer, closeDrawer, toggleCollapse,
@@ -23,7 +24,7 @@ export default function RootLayout({
 
   const { data: profile } = useGetProfile(userId ?? undefined);
 
-  const navGroups = useMemo(() => getUserNavGroups(userId), [userId]);
+  const navGroups = useMemo(() => getUserNavGroups(userId, userRole), [userId, userRole]);
   const profileHref = getProfileHref(userId);
 
   const marginClass = isMounted && isCollapsed ? "md:ml-16" : "md:ml-[248px]";
