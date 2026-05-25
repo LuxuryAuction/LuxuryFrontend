@@ -2,6 +2,7 @@
 
 import { ChevronLeftIcon, ChevronRightIcon, PhotoIcon } from "@/public/assets/icons";
 import { formatDateTime } from "@/src/utils/textUtils";
+import { LotNumber } from "@/src/components/ui/LotNumber";
 import Image from "next/image";
 import { useState, useRef } from "react";
 
@@ -97,9 +98,7 @@ export const LotInfo = ({ title, description, images, attributes, lotNumber, cat
           </div>
 
           <div className="absolute top-4 left-4 flex items-center gap-2 z-20">
-            <span className="px-2.5 py-1 rounded-lg bg-black/50 backdrop-blur-md border border-white/10 text-[10px] font-mono font-bold text-white/90 uppercase tracking-widest">
-              {lotNumber}
-            </span>
+            <LotNumber lotNumber={lotNumber} variant="lg" tone="overlay" />
           </div>
 
           {images.length > 1 && (
@@ -125,7 +124,7 @@ export const LotInfo = ({ title, description, images, attributes, lotNumber, cat
             <button
               key={i}
               onClick={() => { setActiveImage(i); setIsZoomed(false); }}
-              className={`relative w-[72px] h-[72px] rounded-xl overflow-hidden border-2 transition-all duration-300 shrink-0 ${activeImage === i
+              className={`relative w-[72px] h-[72px] rounded-xl overflow-hidden border-2 transition-all duration-300 shrink-0 cursor-pointer ${activeImage === i
                 ? "border-brand-primary"
                 : "border-border-primary opacity-40 hover:opacity-80 hover:border-border-primary/80"
                 }`}
@@ -166,7 +165,7 @@ export const LotInfo = ({ title, description, images, attributes, lotNumber, cat
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-px bg-border-primary/40 rounded-[16px] border border-border-primary relative overflow-hidden">
+      <div className="grid grid-cols-2 gap-px bg-border-primary/40 rounded-[16px] border border-border-primary relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-linear-to-r from-brand-primary via-brand-primary/40 to-transparent opacity-60 z-10" />
 
         {attributes.map((attr, i) => (

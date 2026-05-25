@@ -10,7 +10,11 @@ import PageHeader from "@/src/components/ui/PageHeader";
 import { Tabs } from "@/src/components/ui/Tabs";
 import { SellerCard } from "./components/SellerCard";
 import { formatCurrency } from "@/src/utils/textUtils";
-import { useGetLot } from "@/src/hooks/useLots";
+import { formatConditionLabel } from "@/src/constants/itemCondition";
+import { formatSexDisplay } from "@/src/constants/lotSex";
+import { formatDeliveryDisplay } from "@/src/constants/lotDelivery";
+import { useTranslations } from "next-intl";
+import { useGetLot, usePlaceBid } from "@/src/hooks/useLots";
 
 interface LotDetailsViewProps {
   id?: string;
@@ -43,55 +47,36 @@ const MOCK_MESSAGES = [
   },
 ];
 
-const MOCK_BIDS = [
-  {
-    id: "b1",
-    userName: "Marcus Aurelius",
-    userAvatar: "https://i.pravatar.cc/150?u=marcus",
-    amount: 1450,
-    timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
-    isLeading: true,
-  },
-  {
-    id: "b2",
-    userName: "Hadrian",
-    userAvatar: "https://i.pravatar.cc/150?u=hadrian",
-    amount: 1350,
-    timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
-    isLeading: false,
-  },
-  {
-    id: "b3",
-    userName: "Nero Claudius",
-    userAvatar: "https://i.pravatar.cc/150?u=nero",
-    amount: 1200,
-    timestamp: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
-    isLeading: false,
-  },
-  {
-    id: "b4",
-    userName: "Trajan",
-    userAvatar: "https://i.pravatar.cc/150?u=trajan",
-    amount: 1100,
-    timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
-    isLeading: false,
-  },
-];
-
 export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
-  const { data: lot } = useGetLot(Number(id))
+  const lotId = Number(id);
+  const { data: lot, refetch } = useGetLot(lotId);
+  const { placeBid, isLoading: isPlacingBid } = usePlaceBid();
   const [activeTab, setActiveTab] = useState<"history" | "chat">("history");
   const { showToast } = useToast();
+  const tCondition = useTranslations("ItemCondition");
+  const tSex = useTranslations("ItemSex");
+  const tDelivery = useTranslations("LotDelivery");
+  const tLot = useTranslations("LotDetails");
 
-  const handlePlaceBid = (amount: number) => {
-    if (!lot) return;
+  const handlePlaceBid = async (amount: number) => {
+    if (!lot || Number.isNaN(lotId)) return;
 
     if (amount <= lot.currentPrice) {
       showToast("error", "Bid must be higher than current price");
       return;
     }
 
-    showToast("success", `You are now the leading bidder at ${formatCurrency(amount, "before")}!`);
+    try {
+      await placeBid(lotId, { amount });
+      await refetch();
+      showToast("success", `You are now the leading bidder at ${formatCurrency(amount, "before")}!`);
+    } catch (err) {
+      const message =
+        err && typeof err === "object" && "message" in err
+          ? String((err as { message: string }).message)
+          : "Failed to place bid";
+      showToast("error", message);
+    }
   };
 
   const handleSendMessage = (text: string) => {
@@ -103,6 +88,11 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
   if (!lot) {
     return <div>No data</div>
   }
+
+  const images =
+    lot.images.length > 0
+      ? [...lot.images].sort((a, b) => a.order - b.order).map((img) => img.url)
+      : lot.imageUrls;
 
   return (
     <div className="flex flex-col min-h-screen p-5 md:p-7 max-w-7xl mx-auto animate-bvCatFadeUp">
@@ -128,11 +118,15 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
           <LotInfo
             title={lot.name}
             description={lot.description}
-            images={lot.imageUrls}
+            images={images}
             attributes={[
-              { label: "Size", value: lot.size },
-              { label: "Condition", value: lot.condition },
-              { label: "Sex", value: lot.sex },
+              { label: tLot("size"), value: lot.size },
+              { label: tLot("condition"), value: formatConditionLabel(lot.condition, (key) => tCondition(key)) ?? lot.condition },
+              { label: tLot("sex"), value: formatSexDisplay(lot.sex, (key) => tSex(key)) ?? lot.sex },
+              {
+                label: tLot("deliveryMethod"),
+                value: formatDeliveryDisplay("both", (key) => tDelivery(key)) ?? lot.deliveryMethod,
+              }
             ]}
             lotNumber={lot.lotNumber}
             category={lot.category.name}
@@ -154,6 +148,7 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
               totalBids={lot.totalBids}
               totalParticipants={lot.totalParticipants}
               onPlaceBid={handlePlaceBid}
+              isPlacingBid={isPlacingBid}
             />
           </div>
 
@@ -171,7 +166,7 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
 
 
             <div className={activeTab === "history" ? "block" : "hidden lg:block"}>
-              <BidHistory bids={MOCK_BIDS} />
+              <BidHistory bids={lot.bidsHistory ?? []} />
             </div>
 
             <div className={activeTab === "chat" ? "block lg:hidden" : "hidden"}>

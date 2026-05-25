@@ -6,7 +6,6 @@ import { Link } from "@/src/i18n/navigation";
 import { ArrowRightIcon } from "@/public/assets/icons";
 import { ICategory } from "@/src/services/CategoriesService/types";
 
-const MOCK_ACTIVE_LOT_COUNT = 12;
 
 interface CategoryCardProps {
   category: ICategory;
@@ -40,7 +39,7 @@ export const CategoryCard = ({ category, index }: CategoryCardProps) => {
 
         <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-[5px] rounded-full font-mono text-[9px] tracking-[0.12em] uppercase bg-[rgba(9,11,16,0.75)] border border-[rgba(42,46,58,0.8)] text-content-secondary">
           <span className="w-[4px] h-[4px] rounded-full shrink-0 bg-brand-primary" />
-          <span className="mt-0.5">{t("activeLots", { count: MOCK_ACTIVE_LOT_COUNT })}</span>
+          <span>{t("activeLots", { count: category.liveLots })}</span>
         </div>
 
 

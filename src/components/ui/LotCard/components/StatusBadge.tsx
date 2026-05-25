@@ -1,10 +1,9 @@
 "use client";
 
-import { LotStatus, STATUS_CFG } from "../constants";
+import { LotStatus, getStatusConfig } from "../constants";
 
 export const StatusBadge = ({ status }: { status: LotStatus }) => {
-  const c = STATUS_CFG[status];
-  if (!c) return null;
+  const c = getStatusConfig(status);
 
   return (
     <span
@@ -24,7 +23,7 @@ export const StatusBadge = ({ status }: { status: LotStatus }) => {
           }}
         />
       )}
-      <span className="mt-0.5">{c.label}</span>
+      <span>{c.label}</span>
     </span>
   );
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useMemo, useEffect } from "react";
+import { useRef, useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { LotCard } from "@/src/components/ui/LotCard";
@@ -82,7 +82,7 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
       <main className="flex-1 min-w-0">
         <PageHeader
           label={t("eyebrow")}
-          title="Mock Category Name"
+          title={data?.categoryName ?? t("eyebrow")}
           description={t("description")}
         />
 

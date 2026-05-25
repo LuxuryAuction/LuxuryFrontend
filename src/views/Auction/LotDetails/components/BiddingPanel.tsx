@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ClockIcon, ShieldIcon, CreditCardIcon, CheckIcon } from "@/public/assets/icons";
 import { formatCurrency } from "@/src/utils/textUtils";
+import { LiveBadge } from "@/src/components/ui/LiveBadge";
 import { useTranslations } from "next-intl";
 
 interface BiddingPanelProps {
@@ -12,7 +13,8 @@ interface BiddingPanelProps {
   endTime: string;
   totalBids: number;
   totalParticipants: number;
-  onPlaceBid: (amount: number) => void;
+  onPlaceBid: (amount: number) => void | Promise<void>;
+  isPlacingBid?: boolean;
 }
 
 export const BiddingPanel = ({
@@ -23,6 +25,7 @@ export const BiddingPanel = ({
   totalBids,
   totalParticipants,
   onPlaceBid,
+  isPlacingBid = false,
 }: BiddingPanelProps) => {
   const [timeLeft, setTimeLeft] = useState("----");
   const [bidAmount, setBidAmount] = useState(currentPrice + minStep);
@@ -31,32 +34,34 @@ export const BiddingPanel = ({
   const tLotCard = useTranslations("LotCard");
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    const tick = () => {
       const end = new Date(endTime).getTime();
-      const now = new Date().getTime();
-      const diff = end - now;
+      const diff = end - Date.now();
 
       if (diff <= 0) {
         setTimeLeft(tLotCard("ended"));
         setIsUrgent(false);
-        clearInterval(timer);
-      } else {
-        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const s = Math.floor((diff % (1000 * 60)) / 1000);
-
-        if (d > 0) {
-          setTimeLeft(`${d}d ${h}h ${m}m`);
-        } else {
-          setTimeLeft(`${h}h ${m}m ${s}s`);
-        }
-
-        setIsUrgent(diff < 1000 * 60 * 60 * 2);
+        return;
       }
-    }, 10000);
+
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+      if (d > 0) {
+        setTimeLeft(`${d}d ${h}h ${m}m`);
+      } else {
+        setTimeLeft(`${h}h ${m}m ${s}s`);
+      }
+
+      setIsUrgent(diff < 1000 * 60 * 60 * 2);
+    };
+
+    tick();
+    const timer = setInterval(tick, 1000);
     return () => clearInterval(timer);
-  }, [endTime]);
+  }, [endTime, tLotCard]);
 
   const [prevPrice, setPrevPrice] = useState(currentPrice);
   if (currentPrice !== prevPrice) {
@@ -72,13 +77,7 @@ export const BiddingPanel = ({
         <div className="absolute -top-16 -right-16 w-40 h-40 bg-brand-primary/8 blur-[60px] pointer-events-none" />
 
         <div className="flex items-center justify-between px-6 p-5 border-b border-border-primary/40">
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22c55e] opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#22c55e]" />
-            </span>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#22c55e]">Live</span>
-          </div>
+          <LiveBadge variant="lg" tone="inline" />
           <div className="flex items-center gap-3 text-[10px] font-mono text-content-tertiary">
             <span>{t("participants", { count: totalParticipants })}</span>
             <div className="w-px h-3 bg-border-primary/60" />
@@ -158,9 +157,10 @@ export const BiddingPanel = ({
           </div>
 
           <button
+            type="button"
+            disabled={isPlacingBid}
             onClick={() => onPlaceBid(bidAmount)}
-            className="group relative w-full overflow-hidden rounded-xl bg-linear-to-r from-brand-primary to-[#ffb822] py-4 text-[13px] uppercase tracking-[0.15em] font-black text-black shadow-[0_8px_20px_rgba(240,165,0,0.25)] hover:shadow-[0_12px_25px_rgba(240,165,0,0.4)] active:scale-[0.98] transition-all duration-300 cursor-pointer"
-          // className="w-full py-3.5 rounded-xl border border-brand-primary/25 text-brand-primary text-[12px] font-bold uppercase tracking-widest hover:bg-brand-primary/5 hover:border-brand-primary/40 transition-all flex items-center justify-center gap-2 group cursor-pointer"
+            className="group relative w-full overflow-hidden rounded-xl bg-linear-to-r from-brand-primary to-[#ffb822] py-4 text-[13px] uppercase tracking-[0.15em] font-black text-black shadow-[0_8px_20px_rgba(240,165,0,0.25)] hover:shadow-[0_12px_25px_rgba(240,165,0,0.4)] active:scale-[0.98] transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <div className="absolute inset-0 -translate-x-[150%] bg-linear-to-r from-transparent via-white/40 to-transparent group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out skew-x-[-20deg]" />
             <span className="relative z-10 flex items-center justify-center gap-2">

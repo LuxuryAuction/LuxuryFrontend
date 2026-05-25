@@ -1,20 +1,30 @@
 "use client";
 
 import { Link } from "@/src/i18n/navigation";
-import { LIVE_STATUSES, ENDED_STATUSES, STATUS_CFG } from "../constants";
+import { LIVE_STATUSES, ENDED_STATUSES, getStatusConfig } from "../constants";
 import { Countdown } from "./Countdown";
 import { StatusBadge } from "./StatusBadge";
 import { ImageCarousel } from "./ImageCarousel";
 import { ParticipantsIcon } from "@/public/assets/icons";
 import { formatCurrency } from "@/src/utils/textUtils";
+import { formatConditionDisplay } from "@/src/constants/itemCondition";
+import { formatSexDisplay } from "@/src/constants/lotSex";
+import { formatDeliveryDisplay } from "@/src/constants/lotDelivery";
 import { ILot } from "@/src/services/LotsService/types";
+import { LotNumber } from "@/src/components/ui/LotNumber";
+import { LiveBadge } from "@/src/components/ui/LiveBadge";
 import { useTranslations } from "next-intl";
 
-export const GridVariant = ({ lot, showCategory = true }: { lot: ILot; showCategory?: boolean }) => {
+export const GridVariant = ({ lot, showCategory = true, categoryName }: { lot: ILot; showCategory?: boolean; categoryName?: string }) => {
   const t = useTranslations("LotCard");
-  const c = STATUS_CFG[lot.status];
+  const tSex = useTranslations("ItemSex");
+  const tDelivery = useTranslations("LotDelivery");
+  const c = getStatusConfig(lot.status);
   const isLive = LIVE_STATUSES.includes(lot.status);
   const isEnded = ENDED_STATUSES.includes(lot.status);
+  const conditionLabel = formatConditionDisplay(lot.condition);
+  const sexLabel = formatSexDisplay(lot.sex, (key) => tSex(key));
+  const deliveryLabel = formatDeliveryDisplay(lot.deliveryMethod, (key) => tDelivery(key));
 
   return (
     <Link
@@ -30,14 +40,16 @@ export const GridVariant = ({ lot, showCategory = true }: { lot: ILot; showCateg
       />
 
       <div className="relative overflow-hidden aspect-4/3">
-        <ImageCarousel images={lot.images} img={lot.images?.[0]} category={lot.category.name} />
+        <ImageCarousel images={lot.images} img={lot.images?.[0]} />
         <div className="absolute inset-0 bg-linear-to-t from-surface-primary/90 via-transparent to-black/10 pointer-events-none" />
 
         <div className="absolute top-3 left-3 right-3 flex items-start justify-between z-10">
-          <span className="px-2 py-1 rounded-sm font-mono text-[9px] tracking-widest uppercase bg-black/50 border border-white/10 text-content-secondary backdrop-blur-md">
-            #{lot.lotNumber}
-          </span>
-          <StatusBadge status={lot.status} />
+          <LotNumber lotNumber={lot.lotNumber} variant="md" tone="overlay" />
+          {isLive ? (
+            <LiveBadge variant="md" tone="overlay" />
+          ) : (
+            <StatusBadge status={lot.status} />
+          )}
         </div>
 
         <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between z-10">
@@ -56,9 +68,9 @@ export const GridVariant = ({ lot, showCategory = true }: { lot: ILot; showCateg
       </div>
 
       <div className="flex flex-col flex-1 p-4">
-        {showCategory && (
+        {showCategory && categoryName && (
           <span className="font-mono text-[9px] tracking-[0.18em] uppercase mb-1 text-content-tertiary">
-            {lot.category.name}
+            {categoryName}
           </span>
         )}
 
@@ -67,14 +79,14 @@ export const GridVariant = ({ lot, showCategory = true }: { lot: ILot; showCateg
         </h3>
 
         <div className="flex flex-wrap gap-1.5 mb-3">
-          {lot.condition && (
-            <span className="px-2 py-0.5 rounded-full bg-brand-primary/5 border border-brand-primary/20 font-mono text-[9px] uppercase text-brand-primary tracking-wider">
-              {lot.condition}/10
+          {conditionLabel && (
+            <span className="px-2 py-0.5 rounded-full bg-brand-primary/5 border border-brand-primary/20 font-mono text-[9px] text-brand-primary tracking-wider">
+              {conditionLabel}
             </span>
           )}
-          {lot.sex && (
-                <span className="px-2 py-0.5 rounded-full bg-surface-primary border border-border-primary font-mono text-[9px] uppercase text-content-secondary tracking-wider">
-              {lot.sex}
+          {sexLabel && (
+            <span className="px-2 py-0.5 rounded-full bg-surface-primary border border-border-primary font-mono text-[9px] uppercase text-content-secondary tracking-wider">
+              {sexLabel}
             </span>
           )}
           {lot.size && (
@@ -82,22 +94,22 @@ export const GridVariant = ({ lot, showCategory = true }: { lot: ILot; showCateg
               {t("size", { size: lot.size })}
             </span>
           )}
+          {deliveryLabel && (
+            <span className="px-2 py-0.5 rounded-full bg-surface-primary border border-border-primary font-mono text-[9px] text-content-secondary tracking-wider">
+              {deliveryLabel}
+            </span>
+          )}
         </div>
-        {/* 
         {lot.description && (
           <p className="text-[11px] text-content-tertiary mb-2 line-clamp-2">
             {lot.description}
           </p>
-        )} */}
-
-        <p className="text-[11px] text-content-tertiary mb-2 line-clamp-2">
-          Exceptional vintage Submariner with original meters first matte dial. Kept in a safe for 20 years, untouched case with thick lugs and chamfers.
-        </p>
+        )}
 
 
         <div className="text-[11px] mb-4 text-content-tertiary font-medium flex items-center justify-between">
           <span>
-            {t("by")} <span className="text-content-secondary">@{lot.sellerUsername}</span>
+            {t("by")} <span className="text-content-secondary">@{lot.seller.userName}</span>
           </span>
           {lot.startsAt && (
             <span className="font-mono text-[9px] uppercase tracking-wider opacity-60">

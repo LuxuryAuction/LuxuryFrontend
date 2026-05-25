@@ -6,7 +6,7 @@ const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: process.cwd(),
-  allowedDevOrigins: ["192.168.0.104", "192.168.0.109", "192.168.50.54"],
+  allowedDevOrigins: ["192.168.0.104", "192.168.0.109", "192.168.50.54", "192.168.50.255"],
   turbopack: {
     resolveAlias: {
       "next-intl/config": "./src/i18n/request.ts",
@@ -33,6 +33,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "i.ibb.co",
+      },
+      {
+        protocol: "https",
+        hostname: "**.r2.cloudflarestorage.com",
       },
     ],
   },

@@ -55,9 +55,6 @@ export const TopBar = ({ toggleDrawer, userName, userAvatar }: TopBarProps) => {
       case "profile":
         router.push(getProfileHref(userId));
         break;
-      case "settings":
-        router.push("/user/settings");
-        break;
     }
   };
 
@@ -108,7 +105,12 @@ export const TopBar = ({ toggleDrawer, userName, userAvatar }: TopBarProps) => {
         </button>
 
         <Select
-          options={userOptions.map(opt => ({ ...opt, label: t(`userOptions.${opt.value}`) }))}
+          options={userOptions.map((opt) => ({
+            ...opt,
+            label: opt.disabled
+              ? `${t(`userOptions.${opt.value}`)} (${t("comingSoon")})`
+              : t(`userOptions.${opt.value}`),
+          }))}
           onChange={handleUserAction}
           align="right"
           renderTrigger={(isOpen) => (

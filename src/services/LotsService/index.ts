@@ -1,7 +1,24 @@
 import { api } from "../apiService";
 import { API_ENDPOINTS } from "@/src/constants/api";
-import { ILotDetails, ILotListResponse, ILotListParams, ILot, ICreateLotRequest } from "./types";
+import { ILotDetails, ILotListResponse, ILotListParams, ILot, ICreateLotRequest, IPlaceBidRequest, ILotDetailsBid } from "./types";
 import { filterApiParams } from "@/src/utils/apiUtils";
+
+function buildCreateLotFormData(data: ICreateLotRequest): FormData {
+  const formData = new FormData();
+  formData.append("name", data.name);
+  formData.append("categoryId", String(data.categoryId));
+  formData.append("description", data.description);
+  formData.append("startingPrice", String(data.startingPrice));
+  formData.append("priceStep", String(data.priceStep));
+  formData.append("startDate", data.startDate);
+  formData.append("draft", String(data.draft));
+  formData.append("sex", data.sex);
+  formData.append("condition", data.condition);
+  formData.append("size", data.size);
+  formData.append("deliveryMethod", data.deliveryMethod);
+  data.images.forEach((file) => formData.append("images", file));
+  return formData;
+}
 
 export const lotsService = {
   getLots: async (params: ILotListParams): Promise<ILotListResponse> => {
@@ -18,17 +35,19 @@ export const lotsService = {
     return response;
   },
 
-  getUserLots: async (userId: number | string, filters: ILotListParams): Promise<ILot[]> => {
-    const params = filterApiParams(filters);
-    const response = await api.get<ILot[]>(
-      API_ENDPOINTS.LOTS.USER_LOTS(userId),
-      params
+  createLot: async (data: ICreateLotRequest): Promise<ILot> => {
+    const response = await api.post<ILot>(
+      API_ENDPOINTS.LOTS.LIST,
+      buildCreateLotFormData(data),
     );
     return response;
   },
 
-  createLot: async (data: ICreateLotRequest): Promise<ILot> => {
-    const response = await api.post<ILot>(API_ENDPOINTS.LOTS.LIST, data);
+  placeBid: async (lotId: number, data: IPlaceBidRequest): Promise<ILotDetailsBid> => {
+    const response = await api.post<ILotDetailsBid>(
+      API_ENDPOINTS.LOTS.PLACE_BID(lotId),
+      data,
+    );
     return response;
   },
 };

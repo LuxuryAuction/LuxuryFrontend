@@ -4,6 +4,7 @@ export interface ICategory {
   shortDescription: string;
   image: string;
   postingPrice: number;
+  liveLots: number;
   isFrozen: boolean;
 }
 

@@ -1,9 +1,9 @@
 "use client";
 
+import { useState } from "react";
 
-export const ImgPlaceholder = ({ category }: { category: string }) => {
-  const hue =
-    category.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0) % 360;
+export const ImgPlaceholder = () => {
+  const [hue] = useState(() => Math.floor(Math.random() * 360));
 
   return (
     <div

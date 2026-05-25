@@ -32,7 +32,7 @@ export default function AdminLayout({
         user={{
           name: profile?.name || t("administrator"),
           role: t("systemAdministrator"),
-          avatarUrl: undefined
+          avatarUrl: profile?.profileImageUrl,
         }}
         logoHref="/admin/dashboard"
         isCollapsed={isCollapsed}
@@ -46,7 +46,7 @@ export default function AdminLayout({
         <TopBar
           toggleDrawer={toggleDrawer}
           userName={profile?.name || t("administrator")}
-          userAvatar={undefined}
+          userAvatar={profile?.profileImageUrl}
         />
         <main className="w-full h-full p-4 md:p-8 overflow-x-hidden">{children}</main>
       </div>

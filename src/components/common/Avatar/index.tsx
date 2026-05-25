@@ -56,7 +56,7 @@ export const Avatar = ({
       `}
     >
       {src ? (
-        <Image src={src} alt={name} fill sizes="40px" className="object-cover" />
+        <Image src={src} alt={name} fill sizes="40px" className="object-cover" unoptimized />
       ) : (
         displayInitials
       )}

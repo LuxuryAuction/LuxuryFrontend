@@ -8,10 +8,9 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@/public/assets/icons";
 interface ImageCarouselProps {
   images?: string[];
   img?: string;
-  category: string;
 }
 
-export const ImageCarousel = ({ images, img, category }: ImageCarouselProps) => {
+export const ImageCarousel = ({ images, img }: ImageCarouselProps) => {
   const allImages = images?.length ? images : img ? [img] : [];
   const [index, setIndex] = useState(0);
   const dragStartX = useRef<number | null>(null);
@@ -69,7 +68,7 @@ export const ImageCarousel = ({ images, img, category }: ImageCarouselProps) => 
   if (count === 0) {
     return (
       <div className="absolute inset-0">
-        <ImgPlaceholder category={category} />
+        <ImgPlaceholder />
       </div>
     );
   }
@@ -79,7 +78,7 @@ export const ImageCarousel = ({ images, img, category }: ImageCarouselProps) => 
       <div className="absolute inset-0">
         <Image
           src={allImages[0]}
-          alt={category}
+          alt="category image"
           fill
           className="object-cover"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -111,7 +110,7 @@ export const ImageCarousel = ({ images, img, category }: ImageCarouselProps) => 
           >
             <Image
               src={src}
-              alt={`${category} ${i + 1}`}
+              alt={`category ${i + 1}`}
               fill
               className="object-cover pointer-events-none"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"

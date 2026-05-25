@@ -9,6 +9,7 @@ export type SelectOption = {
   label: string;
   value: string;
   icon?: React.ReactNode | React.ElementType;
+  disabled?: boolean;
 };
 
 type SelectSize = "xs" | "sm" | "md" | "lg";
@@ -106,13 +107,16 @@ function optionsListClass(variant: SelectVariant) {
   return `py-1.5 max-h-[200px] overflow-y-auto ${scroll}`;
 }
 
-function optionRowClass(variant: SelectVariant, isSelected: boolean) {
+function optionRowClass(variant: SelectVariant, isSelected: boolean, disabled?: boolean) {
   const base =
-    "group relative flex cursor-pointer items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200";
-  if (variant === "admin") {
-    return `${base} ${isSelected ? "bg-admin-accent/15 text-admin-accent-hi" : "text-white/80 hover:bg-admin-accent/10 hover:pl-5 hover:text-admin-accent-hi"}`;
+    "group relative flex items-center gap-3 px-4 py-2.5 text-sm transition-all duration-200";
+  if (disabled) {
+    return `${base} cursor-not-allowed opacity-40 text-content-tertiary`;
   }
-  return `${base} ${isSelected ? "bg-[#F0A50014] text-brand-primary" : "text-[#e8eaf0] hover:bg-[#F0A50014] hover:pl-5 hover:text-brand-primary"}`;
+  if (variant === "admin") {
+    return `${base} cursor-pointer ${isSelected ? "bg-admin-accent/15 text-admin-accent-hi" : "text-white/80 hover:bg-admin-accent/10 hover:pl-5 hover:text-admin-accent-hi"}`;
+  }
+  return `${base} cursor-pointer ${isSelected ? "bg-[#F0A50014] text-brand-primary" : "text-[#e8eaf0] hover:bg-[#F0A50014] hover:pl-5 hover:text-brand-primary"}`;
 }
 
 function optionBarClass(variant: SelectVariant, isSelected: boolean) {
@@ -219,14 +223,17 @@ export function Select({
           {options.map((option) => {
             const Icon = option.icon;
             const isSelected = value === option.value;
+            const isDisabled = !!option.disabled;
             return (
               <li
                 key={option.value}
+                title={isDisabled ? option.label : undefined}
                 onClick={() => {
+                  if (isDisabled) return;
                   onChange?.(option.value);
                   setIsOpen(false);
                 }}
-                className={optionRowClass(variant, isSelected)}
+                className={optionRowClass(variant, isSelected, isDisabled)}
               >
                 <span className={optionBarClass(variant, isSelected)} />
                 {Icon && (

@@ -36,7 +36,7 @@ export default function RootLayout({
         user={{
           name: profile?.name || "",
           role: profile?.isVerified ? t("verifiedSeller") : t("member"),
-          avatarUrl: undefined,
+          avatarUrl: profile?.profileImageUrl,
           href: profileHref,
         }}
         logoHref="/"
@@ -51,7 +51,7 @@ export default function RootLayout({
         <TopBar
           toggleDrawer={toggleDrawer}
           userName={profile?.name || ""}
-          userAvatar={undefined}
+          userAvatar={profile?.profileImageUrl}
         />
         <main className="w-full h-full">{children}</main>
       </div>

@@ -1,27 +1,28 @@
 import { useRouter } from "@/src/i18n/navigation";
 
 import { ArrowRightIcon, CheckIcon, CloseIcon } from "@/public/assets/icons";
-import { IMockBid } from "../mockBids";
-import { LotStatus } from "@/src/components/ui/LotCard/constants";
+import { IUserBid, UserBidStatus } from "@/src/services/UsersService/types";
 import { formatCurrency } from "@/src/utils/textUtils";
+import { getBidResult, getDisplayBidStatus } from "../utils";
 
-export const ResultPanel = ({ bid }: { bid: IMockBid }) => {
+export const ResultPanel = ({ bid }: { bid: IUserBid }) => {
   const router = useRouter();
-  const result = bid.result;
+  const lot = bid.lot;
+  const displayStatus = getDisplayBidStatus(bid);
+  const result = getBidResult(bid);
   const won = result?.outcome === "won";
-  const isActive = bid.status === LotStatus.Active;
-  const isOutbid = isActive && bid.bidStatus === "outbid";
+  const isOutbid = displayStatus === UserBidStatus.Outbid;
   const showResult = !!result;
 
   return (
     <div
       className={`flex items-center justify-between gap-3 px-4 py-3 border-t ${showResult
-        ? won
-          ? "bg-brand-primary/5 border-brand-primary/20"
-          : "bg-surface-primary/40 border-border-primary/30"
-        : isOutbid
-          ? "bg-[#ef4444]/5 border-[#ef4444]/20"
-          : "bg-surface-primary/20 border-border-primary/20"
+          ? won
+            ? "bg-brand-primary/5 border-brand-primary/20"
+            : "bg-surface-primary/40 border-border-primary/30"
+          : isOutbid
+            ? "bg-[#ef4444]/5 border-[#ef4444]/20"
+            : "bg-surface-primary/20 border-border-primary/20"
         }`}
     >
       <div className="flex items-center gap-3 min-w-0">
@@ -44,21 +45,19 @@ export const ResultPanel = ({ bid }: { bid: IMockBid }) => {
               <div className="text-[10px] font-mono text-content-tertiary truncate">
                 {won
                   ? `Final price: ${formatCurrency(result!.finalPrice)}`
-                  : `Won by @${result!.winnerUsername} · ${formatCurrency(result!.finalPrice)}`
-                }
+                  : `Won by · ${formatCurrency(result!.finalPrice)}`}
               </div>
             </div>
           </>
         ) : (
           <div className="min-w-0">
-            <div className={`text-xs font-bold ${isOutbid ? "text-[#ef4444]" : "text-content-secondary"}`}>
-              {isOutbid ? "Outbid" : "Bid status"}
+            <div className={`text-xs font-bold ${isOutbid ? "text-[#ef4444]" : "text-[#22c55e]"}`}>
+              {isOutbid ? "Outbid" : "Leading bidder"}
             </div>
             <div className="text-[10px] font-mono text-content-tertiary truncate">
               {isOutbid
-                ? `Leading bid: ${formatCurrency(bid.currentPrice)} · Your bid: ${formatCurrency(bid.myBid)}`
-                : `Current: ${formatCurrency(bid.currentPrice)} · Your bid: ${formatCurrency(bid.myBid)}`
-              }
+                ? `Leading bid: ${formatCurrency(bid.lotHighestBid)} · Your bid: ${formatCurrency(bid.userHighestBid)}`
+                : `Your bid: ${formatCurrency(bid.userHighestBid)} · Leading: ${formatCurrency(bid.lotHighestBid)}`}
             </div>
           </div>
         )}
@@ -69,7 +68,10 @@ export const ResultPanel = ({ bid }: { bid: IMockBid }) => {
           <div
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white text-[10px] font-bold uppercase tracking-widest transition-colors"
             style={{ backgroundColor: "#ef4444" }}
-            onClick={(e) => { e.stopPropagation(); router.push(`/user/auctions/${bid.category.id}/${bid.id}`); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/user/auctions/${lot.categoryId}/${lot.id}`);
+            }}
           >
             Raise Bid <ArrowRightIcon className="w-3 h-3" />
           </div>

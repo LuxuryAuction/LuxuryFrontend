@@ -4,13 +4,9 @@ export interface ILot {
   id: number;
   lotNumber: string;
   name: string;
+  categoryName: string;
+  description: string;
   categoryId: number;
-  category: {
-    id: number;
-    name: string;
-  };
-  sellerId: number;
-  sellerUsername: string;
   startingPrice: number;
   currentPrice: number;
   priceStep: number;
@@ -19,20 +15,26 @@ export interface ILot {
   status: LotStatus;
   sex: string;
   condition: string;
-  size: string | null;
+  size: string;
+  deliveryMethod?: string;
   totalBids: number;
   totalParticipants: number;
   images: string[];
   thumbnailUrl: string;
+  seller: ILotDetailsSeller;
 }
 
-export interface ILotDetailsSeller {
+export interface ILotDetailsUser {
   id: number;
   userName: string;
   firstName: string;
   lastName: string;
   score: number;
+  profileImageUrl: string;
+  totalSales: number | null;
 }
+
+export type ILotDetailsSeller = ILotDetailsUser;
 
 export interface ILotDetailsImage {
   id: number;
@@ -40,17 +42,23 @@ export interface ILotDetailsImage {
   order: number;
 }
 
+export interface ILotDetailsBid {
+  id: number;
+  lotId: number;
+  user: ILotDetailsUser;
+  amount: number;
+  createdAt: string;
+  isBestBid: boolean;
+}
+
 export interface ILotDetails {
   id: number;
   lotNumber: string;
   name: string;
-  categoryId: number;
   category: {
     id: number;
     name: string;
   };
-  sellerId: number;
-  sellerUsername: string;
   description: string;
   startingPrice: number;
   currentPrice: number;
@@ -61,14 +69,17 @@ export interface ILotDetails {
   sex: string;
   condition: string;
   size: string;
+  deliveryMethod?: string;
   totalBids: number;
   totalParticipants: number;
   imageUrls: string[];
+  bidsHistory: ILotDetailsBid[];
   seller: ILotDetailsSeller;
   images: ILotDetailsImage[];
 }
 
 export interface ILotListResponse {
+  categoryName: string;
   items: ILot[];
   page: number;
   pageSize: number;
@@ -79,6 +90,7 @@ export interface ILotListResponse {
 
 export interface ILotListParams {
   categoryId?: number;
+  userId?: number | string;
   sex?: string;
   status?: string;
   minPrice?: number;
@@ -86,6 +98,10 @@ export interface ILotListParams {
   search?: string;
   page?: number;
   pageSize?: number;
+}
+
+export interface IPlaceBidRequest {
+  amount: number;
 }
 
 export interface ICreateLotRequest {
@@ -99,5 +115,6 @@ export interface ICreateLotRequest {
   sex: string;
   condition: string;
   size: string;
-  imageUrls: string[];
+  deliveryMethod: string;
+  images: File[];
 }

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { lotsService } from "../services/LotsService";
-import { ILotListResponse, ILotListParams, ILotDetails, ILot, ICreateLotRequest } from "../services/LotsService/types";
+import { ILotListResponse, ILotListParams, ILotDetails, ICreateLotRequest, IPlaceBidRequest } from "../services/LotsService/types";
 
 export const useGetLots = (params?: ILotListParams) => {
   const [data, setData] = useState<ILotListResponse>();
@@ -36,7 +36,7 @@ export const useGetLots = (params?: ILotListParams) => {
 
 export const useGetUserLots = (params: ILotListParams, userId?: number | string) => {
 
-  const [data, setData] = useState<ILot[]>();
+  const [data, setData] = useState<ILotListResponse>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -49,7 +49,7 @@ export const useGetUserLots = (params: ILotListParams, userId?: number | string)
     try {
       setIsLoading(true);
 
-      const data = await lotsService.getUserLots(userId, params);
+      const data = await lotsService.getLots({ ...params, userId });
 
       setData(data);
       setError(null);
@@ -77,8 +77,8 @@ export const useGetLot = (id?: number) => {
   const [data, setData] = useState<ILotDetails | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchLot = async () => {
-    if (typeof id !== "number") return;
+  const fetchLot = useCallback(async () => {
+    if (typeof id !== "number" || Number.isNaN(id)) return;
 
     setIsLoading(true);
 
@@ -88,16 +88,42 @@ export const useGetLot = (id?: number) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchLot();
-  }, [id]);
+  }, [fetchLot]);
 
   return {
     data,
     isLoading,
     refetch: fetchLot,
+  };
+};
+
+export const usePlaceBid = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const placeBid = async (lotId: number, data: IPlaceBidRequest) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      return await lotsService.placeBid(lotId, data);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error("Failed to place bid");
+      setError(error);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return {
+    placeBid,
+    isLoading,
+    error,
   };
 };
 export const useCreateLot = () => {

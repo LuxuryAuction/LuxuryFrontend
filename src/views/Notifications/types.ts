@@ -1,11 +1,7 @@
-export type NotificationType = "bid" | "win" | "outbid" | "payment" | "system" | "approval" | "ended";
+import type { INotification } from "@/src/services/UsersService/types";
+import { NotificationType } from "@/src/services/UsersService/types";
 
-export interface INotification {
-  id: string;
-  type: NotificationType;
-  title: string;
-  message: string;
-  timestamp: string;
-  isRead: boolean;
-  actionUrl?: string;
-}
+export type { INotification };
+export { NotificationType };
+
+export type NotificationFilterTab = "all" | NotificationType;

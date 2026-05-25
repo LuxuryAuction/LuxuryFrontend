@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { LotCard } from "@/src/components/ui/LotCard";
 import { ViewSwitcher, ViewVariant } from "@/src/components/ui/ViewSwitcher";
 import { Tabs } from "@/src/components/ui/Tabs";
@@ -40,11 +40,13 @@ export const MyLotsTab = ({ userId }: MyLotsTabProps) => {
   const params = useMemo(() => ({
     status: activeTab !== "all" ? activeTab : undefined,
     search: search || undefined,
-  }), [activeTab, search]);
+    page,
+    pageSize: 20,
+  }), [activeTab, search, page]);
 
-  const { data: lots, isLoading: isLoadingLots } = useGetUserLots(params, userId);
+  const { data, isLoading: isLoadingLots } = useGetUserLots(params, userId);
 
-  const items = lots || [];
+  const items = data?.items ?? [];
 
   return (
     <div className="flex flex-col gap-6">
@@ -99,7 +101,7 @@ export const MyLotsTab = ({ userId }: MyLotsTabProps) => {
 
           <Pagination
             currentPage={page}
-            totalPages={3}
+            totalPages={data?.totalPages ?? 1}
             onPageChange={setPage}
           />
         </>

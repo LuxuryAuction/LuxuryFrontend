@@ -11,7 +11,10 @@ export const API_ENDPOINTS = {
   USERS: {
     PROFILE: (userId: number | string) => `users/${userId}/profile`,
     NOTIFICATIONS: (userId: number | string) => `users/${userId}/notifications`,
-    NOTIFICATIONS_READ: (userId: number | string) => `users/${userId}/notifications/read`,
+    NOTIFICATIONS_READ_ALL: (userId: number | string) => `users/${userId}/notifications/read`,
+    NOTIFICATION_READ: (userId: number | string, notificationId: number | string) =>
+      `users/${userId}/notifications/${notificationId}/read`,
+    BIDS: (userId: number | string) => `users/${userId}/bids`,
   },
   CATEGORIES: {
     LIST: "categories",
@@ -21,6 +24,6 @@ export const API_ENDPOINTS = {
   LOTS:{
     LIST: 'lots',
     GET_BY_ID: (id: number) => `lots/${id}`,
-    USER_LOTS: (userId: number | string) => `lots/user/${userId}`,
+    PLACE_BID: (id: number) => `lots/${id}/bids`,
   }
 }

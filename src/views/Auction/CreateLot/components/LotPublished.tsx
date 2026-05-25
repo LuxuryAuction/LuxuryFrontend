@@ -1,5 +1,6 @@
 import { TickIcon } from "@/public/assets/icons";
 import { Button } from "@/src/components/ui/Button";
+import { useRouter } from "@/src/i18n/navigation";
 
 interface LotPublishedProps {
   title: string;
@@ -8,6 +9,8 @@ interface LotPublishedProps {
 }
 
 export const LotPublished: React.FC<LotPublishedProps> = ({ title, reset, setSubmitted }) => {
+  const router = useRouter();
+
   return (
     <div className="p-5 md:p-7 flex flex-col items-center justify-center min-h-[60vh] gap-6 animate-bvCatFadeUp">
       <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-[#F0A50012] border border-[#F0A50030]">
@@ -23,7 +26,7 @@ export const LotPublished: React.FC<LotPublishedProps> = ({ title, reset, setSub
         <Button variant="secondary" size="sm" onClick={() => { reset(); setSubmitted(false); }}>
           Create Another
         </Button>
-        <Button variant="primary" size="sm">
+        <Button variant="primary" size="sm" onClick={() => router.push("/user/lots")}>
           View My Lots
         </Button>
       </div>

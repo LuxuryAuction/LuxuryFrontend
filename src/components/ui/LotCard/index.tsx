@@ -8,13 +8,14 @@ export interface LotCardProps {
   lot: ILot;
   variant?: ViewVariant;
   showCategory?: boolean;
+  categoryName?: string;
 }
 
 
-export const LotCard = ({ lot, variant = "grid", showCategory = true }: LotCardProps) => {
+export const LotCard = ({ lot, variant = "grid", showCategory = true, categoryName }: LotCardProps) => {
   return variant === "list"
-    ? <ListVariant lot={lot} showCategory={showCategory} />
-    : <GridVariant lot={lot} showCategory={showCategory} />;
+    ? <ListVariant lot={lot} showCategory={showCategory} categoryName={categoryName} />
+    : <GridVariant lot={lot} showCategory={showCategory} categoryName={categoryName} />;
 };
 
 export default LotCard;

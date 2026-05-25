@@ -51,11 +51,13 @@ export const MyLotsView = () => {
   const params = useMemo(() => ({
     status: activeTab !== "all" ? activeTab : undefined,
     search: search || undefined,
-  }), [activeTab, search]);
+    page,
+    pageSize: 20,
+  }), [activeTab, search, page]);
 
-  const { data: lots, isLoading: isLoadingLots } = useGetUserLots(params, userId ?? undefined);
+  const { data, isLoading: isLoadingLots } = useGetUserLots(params, userId ?? undefined);
 
-  const items = lots || [];
+  const items = data?.items ?? [];
 
   return (
     <div className="p-5 md:p-7 max-w-7xl mx-auto flex flex-col gap-8">
@@ -66,7 +68,7 @@ export const MyLotsView = () => {
           description={
             isLoadingLots
               ? t("descriptionLoading")
-              : t("descriptionWithCount", { count: items.length })
+              : t("descriptionWithCount", { count: data?.totalCount || 0 })
           }
         />
 
@@ -123,7 +125,7 @@ export const MyLotsView = () => {
 
             <Pagination
               currentPage={page}
-              totalPages={3}
+              totalPages={data?.totalPages ?? 1}
               onPageChange={setPage}
               className="mt-8 md:mt-12"
             />

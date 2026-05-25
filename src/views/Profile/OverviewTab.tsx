@@ -86,7 +86,7 @@ export const OverviewTab = () => {
             {TRUST_SAFETY_CONFIG.badges.map((label) => (
               <span
                 key={label}
-                className="inline-flex items-center px-[0.6rem] py-[0.25rem] rounded-full font-mono text-[0.6rem] tracking-widest uppercase bg-[rgba(34,197,94,0.12)] text-[#22c55e]"
+                className="inline-flex items-center px-[0.6rem] py-1 rounded-full font-mono text-[0.6rem] tracking-widest uppercase bg-[rgba(34,197,94,0.12)] text-[#22c55e]"
               >
                 {label}
               </span>

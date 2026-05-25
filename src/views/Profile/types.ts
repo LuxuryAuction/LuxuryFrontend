@@ -1,3 +1,6 @@
+import { IUserProfile } from "@/src/services/UsersService/types";
+
+export type IProfile = IUserProfile;
 
 export interface ActivityItem {
   icon: string;
@@ -14,14 +17,4 @@ export interface LotRow {
   timer: string;
   timerColor?: string;
   actions: { label: string; variant: "ghost" | "primary" | "danger" }[];
-}
-
-export interface IProfile {
-  id: number;
-  name: string;
-  userName: string;
-  memberSince: string;
-  isVerified: boolean;
-  trustScore: number;
-  balance?: number;
 }

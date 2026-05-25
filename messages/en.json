@@ -14,6 +14,28 @@
     "en": "English",
     "ua": "Ukrainian"
   },
+  "ItemSex": {
+    "male": "Male",
+    "female": "Female",
+    "unisex": "Unisex"
+  },
+  "LotDelivery": {
+    "nova-poshta": "Nova Poshta",
+    "ukr-poshta": "Ukrposhta",
+    "both": "Nova Poshta & Ukrposhta",
+    "pickup": "Pickup"
+  },
+  "ItemCondition": {
+    "Broken": "Broken",
+    "VeryPoor": "Very Poor",
+    "Poor": "Poor",
+    "Fair": "Fair",
+    "Good": "Good",
+    "VeryGood": "Very Good",
+    "Excellent": "Excellent",
+    "LikeNew": "Like New",
+    "New": "New"
+  },
   "Sidebar": {
     "aria": {
       "mainNav": "Main navigation",
@@ -127,12 +149,6 @@
     }
   },
   "CreateLot": {
-    "deliveryOptions": {
-      "nova-poshta": "📦 Nova Poshta",
-      "ukr-poshta": "📮 Ukrposhta",
-      "both": "📦/📮 Nova Poshta & Ukrposhta",
-      "pickup": "Pickup"
-    },
     "pageHeader": {
       "label": "New listing",
       "title": "Create a lot",
@@ -177,15 +193,19 @@
       "publishing": "Publishing...",
       "processingPayment": "Processing payment...",
       "publishLot": "Publish",
-      "publishLotWithPrice": "Publish ({price})",
-      "livePreview": "Live preview",
-      "close": "Close ✕"
+      "publishLotWithPrice": "Publish ({price})"
     },
     "toasts": {
       "paymentFailed": "Payment failed. Please try again.",
       "paymentSuccess": "Payment successful! Creating lot...",
       "createFailed": "Failed to create lot"
     }
+  },
+  "LotDetails": {
+    "size": "Size",
+    "condition": "Condition",
+    "sex": "Sex / gender",
+    "deliveryMethod": "Delivery"
   },
   "LotCard": {
     "finalPrice": "Final price",
@@ -206,6 +226,7 @@
   },
   "TopBar": {
     "home": "Home",
+    "comingSoon": "soon",
     "logoutSuccess": "Successfully logged out. See you soon!",
     "userOptions": {
       "profile": "Profile",
@@ -226,7 +247,10 @@
   "BidHistory": {
     "title": "Bid History",
     "total": "{count} total",
-    "highest": "Highest"
+    "highest": "Highest",
+    "emptyTitle": "No bids yet",
+    "emptyDescription": "Be the first to place a bid on this lot.",
+    "emptyHint": "Auction is open"
   },
   "ReportModal": {
     "title": "Report User",

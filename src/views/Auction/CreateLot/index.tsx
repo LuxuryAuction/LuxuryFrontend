@@ -12,12 +12,13 @@ import { Select } from "@/src/components/ui/Select";
 import { Button } from "@/src/components/ui/Button";
 
 import { ICreateLotFormData, INITIAL_FORM } from "./types";
-import { CONDITION_OPTIONS, DELIVERY_OPTIONS, SEX_OPTIONS, SIZE_OPTIONS } from "./createLotConfig";
+import { SIZE_OPTIONS } from "./createLotConfig";
+import { buildConditionOptions } from "@/src/constants/itemCondition";
+import { buildSexOptions } from "@/src/constants/lotSex";
+import { buildDeliveryOptions } from "@/src/constants/lotDelivery";
 
 import { Section } from "./components/Section";
 import { ImageUpload } from "./components/ImageUpload";
-import { PreviewCard } from "./components/PreviewCard";
-import { EyeIcon, EmptyBoxIcon } from "@/public/assets/icons";
 
 import { createLotSchema } from "@/src/schemas/createLot.schema";
 import { LotPublished } from "./components/LotPublished";
@@ -30,8 +31,10 @@ import { useToast } from "@/src/components/ui/Toast";
 
 export const CreateLotView = () => {
   const t = useTranslations("CreateLot");
+  const tCondition = useTranslations("ItemCondition");
+  const tSex = useTranslations("ItemSex");
+  const tDelivery = useTranslations("LotDelivery");
   const [submitted, setSubmitted] = useState(false);
-  const [previewOpen, setPreviewOpen] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const { createLot, isLoading: isCreating } = useCreateLot();
   const { pay, isLoading: isPaying } = useWayForPay();
@@ -46,14 +49,19 @@ export const CreateLotView = () => {
     [categories]
   );
 
-  const deliveryOptions = useMemo(() =>
-    DELIVERY_OPTIONS.map(opt => {
-      return {
-        value: opt.value,
-        label: t(`deliveryOptions.${opt.value}`) as string,
-      };
-    }),
-    [t]
+  const deliveryOptions = useMemo(
+    () => buildDeliveryOptions((key) => tDelivery(key)),
+    [tDelivery],
+  );
+
+  const conditionOptions = useMemo(
+    () => buildConditionOptions((key) => tCondition(key)),
+    [tCondition],
+  );
+
+  const sexOptions = useMemo(
+    () => buildSexOptions((key) => tSex(key)),
+    [tSex],
   );
 
   const {
@@ -94,10 +102,11 @@ export const CreateLotView = () => {
         priceStep: Number(data.minBidIncrement) || 10,
         startDate: new Date(data.startDate).toISOString(),
         draft: false,
-        sex: data.sex || "Unisex",
+        sex: data.sex || "unisex",
         condition: data.condition,
-        size: data.size || "Universal",
-        imageUrls: ["https://picsum.photos/800/800"], // mock for now
+        size: data.size || "onesize",
+        deliveryMethod: data.delivery,
+        images: data.images,
       });
 
       setSubmitted(true);
@@ -117,7 +126,7 @@ export const CreateLotView = () => {
   }
 
   return (
-    <div className="p-5 md:p-7 max-w-4xl mx-auto relative">
+    <div className="p-5 md:p-7 max-w-4xl mx-auto">
       <PageHeader
         label={t("pageHeader.label")}
         title={t("pageHeader.title")}
@@ -183,7 +192,7 @@ export const CreateLotView = () => {
                     <Select
                       label={t("section1.condition")}
                       required
-                      options={CONDITION_OPTIONS}
+                      options={conditionOptions}
                       value={field.value}
                       onChange={field.onChange}
                       placeholder={t("section1.conditionPlaceholder")}
@@ -200,7 +209,7 @@ export const CreateLotView = () => {
                   render={({ field }) => (
                     <Select
                       label={t("section1.sex")}
-                      options={SEX_OPTIONS}
+                      options={sexOptions}
                       value={field.value}
                       onChange={field.onChange}
                       placeholder={t("section1.optional")}
@@ -367,33 +376,6 @@ export const CreateLotView = () => {
           </div>
         </form>
       </div>
-
-      <button
-        type="button"
-        onClick={() => setPreviewOpen(true)}
-        className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40 group flex items-center justify-center gap-3 bg-[#1c1f27]/80 backdrop-blur-md border border-[#2a2e3a] hover:border-[#F0A50040] hover:bg-[#1c1f27] text-content-primary px-5 py-3 rounded-full shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_15px_50px_-10px_rgba(240,165,0,0.25)] cursor-pointer"
-      >
-        <div className="relative flex items-center justify-center">
-          <span className="absolute inline-flex h-full w-full rounded-full bg-brand-primary opacity-20 group-hover:animate-ping" />
-          <EyeIcon />
-        </div>
-        <span className="font-semibold text-sm tracking-wide">{t("buttons.livePreview")}</span>
-      </button>
-
-      {previewOpen && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-[#0b0c0f]/80 backdrop-blur-sm animate-bvCatFadeUp">
-          <div className="relative w-full max-w-[340px]">
-            <button
-              type="button"
-              onClick={() => setPreviewOpen(false)}
-              className="absolute -top-10 right-0 text-white opacity-60 hover:opacity-100 transition-opacity flex items-center gap-2 text-sm font-mono tracking-wider uppercase cursor-pointer"
-            >
-              {t("buttons.close")}
-            </button>
-            <PreviewCard form={formValues} categories={categories} />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -11,6 +11,7 @@ export const userOptions = [
     label: "Settings",
     value: "settings",
     icon: SettingsIcon,
+    disabled: true,
   },
   {
     label: "Logout",

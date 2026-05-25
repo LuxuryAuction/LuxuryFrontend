@@ -14,6 +14,28 @@
     "en": "Англійська",
     "ua": "Українська"
   },
+  "ItemSex": {
+    "male": "Чоловіча",
+    "female": "Жіноча",
+    "unisex": "Унісекс"
+  },
+  "LotDelivery": {
+    "nova-poshta": "Нова Пошта",
+    "ukr-poshta": "Укрпошта",
+    "both": "Нова Пошта та Укрпошта",
+    "pickup": "Самовивіз"
+  },
+  "ItemCondition": {
+    "Broken": "Зламаний",
+    "VeryPoor": "Дуже поганий",
+    "Poor": "Поганий",
+    "Fair": "Задовільний",
+    "Good": "Хороший",
+    "VeryGood": "Дуже хороший",
+    "Excellent": "Відмінний",
+    "LikeNew": "Як новий",
+    "New": "Новий"
+  },
   "Sidebar": {
     "aria": {
       "mainNav": "Головна навігація",
@@ -127,12 +149,6 @@
     }
   },
   "CreateLot": {
-    "deliveryOptions": {
-      "nova-poshta": "Нова Пошта",
-      "ukr-poshta": "Укрпошта",
-      "both": "Нова Пошта та Укрпошта",
-      "pickup": "Самовивіз"
-    },
     "pageHeader": {
       "label": "Нова публікація",
       "title": "Створити лот",
@@ -177,15 +193,19 @@
       "publishing": "Публікуємо…",
       "processingPayment": "Обробка платежу…",
       "publishLot": "Опублікувати",
-      "publishLotWithPrice": "Опублікувати ({price})",
-      "livePreview": "Попередній перегляд",
-      "close": "Закрити ✕"
+      "publishLotWithPrice": "Опублікувати ({price})"
     },
     "toasts": {
       "paymentFailed": "Оплата не пройшла. Будь ласка, спробуйте ще раз.",
       "paymentSuccess": "Оплата успішна! Створюємо лот...",
       "createFailed": "Не вдалося створити лот"
     }
+  },
+  "LotDetails": {
+    "size": "Розмір",
+    "condition": "Стан",
+    "sex": "Стать",
+    "deliveryMethod": "Доставка"
   },
   "LotCard": {
     "finalPrice": "Кінцева ціна",
@@ -206,6 +226,7 @@
   },
   "TopBar": {
     "home": "Головна",
+    "comingSoon": "розробка",
     "logoutSuccess": "Ви успішно вийшли з системи. До зустрічі!",
     "userOptions": {
       "profile": "Профіль",
@@ -226,7 +247,10 @@
   "BidHistory": {
     "title": "Історія ставок",
     "total": "Всього: {count}",
-    "highest": "Найвища"
+    "highest": "Найвища",
+    "emptyTitle": "Ставок ще немає",
+    "emptyDescription": "Станьте першим, хто зробить ставку на цей лот.",
+    "emptyHint": "Аукціон відкритий"
   },
   "ReportModal": {
     "title": "Поскаржитися на користувача",

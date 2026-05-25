@@ -71,3 +71,12 @@ export const getTimeAgo = (date: string | Date) => {
   if (diffInDays < 7) return `${diffInDays}d ago`;
   return past.toLocaleDateString('uk-UA', { day: 'numeric', month: 'short' });
 };
+
+export const getUserDisplayName = (user: {
+  firstName: string;
+  lastName: string;
+  userName: string;
+}) => {
+  const fullName = `${user.firstName} ${user.lastName}`.trim();
+  return fullName || user.userName;
+};

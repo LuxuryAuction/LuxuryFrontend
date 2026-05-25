@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Select } from "@/src/components/ui/Select";
 import { PriceSlider } from "@/src/components/ui/PriceSlider";
-import { SEX_OPTIONS, SIZE_OPTIONS, CONDITION_OPTIONS } from "../../CreateLot/createLotConfig";
+import { SIZE_OPTIONS } from "../../CreateLot/createLotConfig";
+import { buildConditionOptions } from "@/src/constants/itemCondition";
+import { buildSexOptions } from "@/src/constants/lotSex";
 
 interface FiltersPopoverProps {
   isOpen: boolean;
@@ -33,6 +35,16 @@ function FiltersPopoverPanel({
   initialFilters,
 }: FiltersPopoverPanelProps) {
   const t = useTranslations("CategoryLotsPage.filtersPanel");
+  const tCondition = useTranslations("ItemCondition");
+  const tSex = useTranslations("ItemSex");
+  const conditionOptions = useMemo(
+    () => buildConditionOptions((key) => tCondition(key)),
+    [tCondition],
+  );
+  const sexOptions = useMemo(
+    () => buildSexOptions((key) => tSex(key)),
+    [tSex],
+  );
   const [localSex, setLocalSex] = useState(initialFilters.sex);
   const [localSize, setLocalSize] = useState(initialFilters.size);
   const [localCondition, setLocalCondition] = useState(initialFilters.condition);
@@ -83,7 +95,7 @@ function FiltersPopoverPanel({
       <div className="px-5 pb-10 pt-5 space-y-4 ">
         <Select
           label={t("sexLabel")}
-          options={[{ value: "", label: t("optionAll") }, ...SEX_OPTIONS]}
+          options={[{ value: "", label: t("optionAll") }, ...sexOptions]}
           value={localSex}
           onChange={setLocalSex}
         />
@@ -95,7 +107,7 @@ function FiltersPopoverPanel({
         />
         <Select
           label={t("conditionLabel")}
-          options={[{ value: "", label: t("optionAll") }, ...CONDITION_OPTIONS]}
+          options={[{ value: "", label: t("optionAll") }, ...conditionOptions]}
           value={localCondition}
           onChange={setLocalCondition}
         />
