@@ -15,6 +15,8 @@ import { formatSexDisplay } from "@/src/constants/lotSex";
 import { formatDeliveryDisplay } from "@/src/constants/lotDelivery";
 import { useTranslations } from "next-intl";
 import { useGetLot, usePlaceBid } from "@/src/hooks/useLots";
+import { useSelector } from "react-redux";
+import { RootState } from "@/src/store";
 
 interface LotDetailsViewProps {
   id?: string;
@@ -57,36 +59,41 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
   const tSex = useTranslations("ItemSex");
   const tDelivery = useTranslations("LotDelivery");
   const tLot = useTranslations("LotDetails");
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const handlePlaceBid = async (amount: number) => {
     if (!lot || Number.isNaN(lotId)) return;
 
     if (amount <= lot.currentPrice) {
-      showToast("error", "Bid must be higher than current price");
+      showToast("error", tLot("toasts.bidTooLow"));
       return;
     }
 
     try {
       await placeBid(lotId, { amount });
       await refetch();
-      showToast("success", `You are now the leading bidder at ${formatCurrency(amount, "before")}!`);
+      showToast(
+        "success",
+        tLot("toasts.leadingBidder", { amount: formatCurrency(amount, "before") }),
+      );
     } catch (err) {
       const message =
         err && typeof err === "object" && "message" in err
           ? String((err as { message: string }).message)
-          : "Failed to place bid";
+          : tLot("toasts.placeBidFailed");
       showToast("error", message);
     }
   };
 
   const handleSendMessage = (text: string) => {
+    if (!isAuthenticated) return;
     console.log(text);
-    showToast('success', `Msg sent ${text}`)
+    showToast("success", tLot("toasts.messageSent"));
   };
 
 
   if (!lot) {
-    return <div>No data</div>
+    return <div>{tLot("noData")}</div>;
   }
 
   const images =
@@ -106,9 +113,13 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
               <span className="text-[13px] text-[#22c55e] font-semibold">Live Auction</span>
             </div>
             <div className="w-1 h-1 rounded-full bg-content-tertiary opacity-30" />
-            <span className="text-[13px] text-content-secondary font-mono">{lot.totalBids} Bids</span>
+            <span className="text-[13px] text-content-secondary font-mono">
+              {tLot("headerBids", { count: lot.totalBids })}
+            </span>
             <div className="w-1 h-1 rounded-full bg-content-tertiary opacity-30" />
-            <span className="text-[13px] text-content-secondary font-mono">{lot.totalParticipants} Participants</span>
+            <span className="text-[13px] text-content-secondary font-mono">
+              {tLot("headerParticipants", { count: lot.totalParticipants })}
+            </span>
           </div>
         }
       />
@@ -125,7 +136,10 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
               { label: tLot("sex"), value: formatSexDisplay(lot.sex, (key) => tSex(key)) ?? lot.sex },
               {
                 label: tLot("deliveryMethod"),
-                value: formatDeliveryDisplay("both", (key) => tDelivery(key)) ?? lot.deliveryMethod,
+                value:
+                  formatDeliveryDisplay(lot.deliveryMethod, (key) => tDelivery(key)) ??
+                  lot.deliveryMethod ??
+                  "—",
               }
             ]}
             lotNumber={lot.lotNumber}
@@ -147,6 +161,9 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
               endTime={lot.endDate}
               totalBids={lot.totalBids}
               totalParticipants={lot.totalParticipants}
+              status={lot.status}
+              bidsHistory={lot.bidsHistory ?? []}
+              sellerUserName={lot.seller.userName}
               onPlaceBid={handlePlaceBid}
               isPlacingBid={isPlacingBid}
             />
@@ -159,8 +176,8 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
               activeTab={activeTab}
               onChange={(tabId) => setActiveTab(tabId as "history" | "chat")}
               tabs={[
-                { id: "history", label: "Bids" },
-                { id: "chat", label: "Chat" },
+                { id: "history", label: tLot("tabBids") },
+                { id: "chat", label: tLot("tabChat") },
               ]}
             />
 

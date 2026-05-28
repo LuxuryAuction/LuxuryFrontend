@@ -37,6 +37,7 @@ import AdminSparkTrendDownIcon from "./admin-spark-trend-down.svg";
 import AdminDashboardIcon from "./admin-dashboard-icon.svg";
 import DotsVerticalIcon from "./dots-vertical-icon.svg";
 import FlagIcon from "./flag-icon.svg";
+import ChatIcon from "./chat-icon.svg";
 
 export {
   SearchIcon,
@@ -78,4 +79,5 @@ export {
   AdminDashboardIcon,
   DotsVerticalIcon,
   FlagIcon,
+  ChatIcon,
 }

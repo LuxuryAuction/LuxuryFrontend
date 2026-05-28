@@ -9,11 +9,20 @@ const intlMiddleware = createMiddleware(routing);
  * Helper to check if a pathname matches any of the provided routes, 
  * ignoring the locale prefix (e.g., /en/admin matches /admin).
  */
+function getPathWithoutLocale(pathname: string) {
+  return pathname.replace(/^\/[a-z]{2}(\/|$)/, "/");
+}
+
 function isMatchingPath(pathname: string, routes: string[]) {
-  const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}(\/|$)/, "/");
+  const pathWithoutLocale = getPathWithoutLocale(pathname);
   return routes.some(route => 
     pathWithoutLocale === route || pathWithoutLocale.startsWith(route + "/")
   );
+}
+
+function isHomePath(pathname: string) {
+  const pathWithoutLocale = getPathWithoutLocale(pathname);
+  return pathWithoutLocale === "/" || pathWithoutLocale === "";
 }
 
 export function proxy(request: NextRequest) {
@@ -21,6 +30,12 @@ export function proxy(request: NextRequest) {
   
   const userRole = request.cookies.get("userRole")?.value;
   const accessToken = request.cookies.get("accessToken")?.value;
+
+  if (isHomePath(pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
+  }
 
   // 1. Admin Access Control
   if (isMatchingPath(pathname, ADMIN_ROUTES)) {

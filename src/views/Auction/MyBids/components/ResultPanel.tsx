@@ -17,12 +17,12 @@ export const ResultPanel = ({ bid }: { bid: IUserBid }) => {
   return (
     <div
       className={`flex items-center justify-between gap-3 px-4 py-3 border-t ${showResult
-          ? won
-            ? "bg-brand-primary/5 border-brand-primary/20"
-            : "bg-surface-primary/40 border-border-primary/30"
-          : isOutbid
-            ? "bg-[#ef4444]/5 border-[#ef4444]/20"
-            : "bg-surface-primary/20 border-border-primary/20"
+        ? won
+          ? "bg-brand-primary/5 border-brand-primary/20"
+          : "bg-surface-primary/40 border-border-primary/30"
+        : isOutbid
+          ? "bg-[#ef4444]/5 border-[#ef4444]/20"
+          : "bg-surface-primary/20 border-border-primary/20"
         }`}
     >
       <div className="flex items-center gap-3 min-w-0">
@@ -70,7 +70,7 @@ export const ResultPanel = ({ bid }: { bid: IUserBid }) => {
             style={{ backgroundColor: "#ef4444" }}
             onClick={(e) => {
               e.stopPropagation();
-              router.push(`/user/auctions/${lot.categoryId}/${lot.id}`);
+              router.push(`/user/auctions/${lot.slug}/${lot.id}`);
             }}
           >
             Raise Bid <ArrowRightIcon className="w-3 h-3" />

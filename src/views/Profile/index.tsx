@@ -15,27 +15,25 @@ import { useGetProfile } from "@/src/hooks/useUserProfile";
 import { useParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/src/store";
+import { useTranslations } from "next-intl";
 
-interface ProfilePageProps {
-  id?: string;
-}
-
-export const ProfilePage = ({ id: idProp }: ProfilePageProps) => {
+export const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [isReportOpen, setIsReportOpen] = useState(false);
 
   const { showToast } = useToast();
+  const t = useTranslations("ProfilePage");
 
   const params = useParams();
-  const profileId = (params.id as string | undefined) ?? idProp;
-  const authUserId = useSelector((state: RootState) => state.auth.userId);
+  const profileUserName = params.userName as string | undefined;
+  const authUserName = useSelector((state: RootState) => state.auth.userName);
 
   const isMe =
-    profileId != null &&
-    authUserId != null &&
-    String(profileId) === String(authUserId);
+    profileUserName != null &&
+    authUserName != null &&
+    profileUserName.toLowerCase() === authUserName.toLowerCase();
 
-  const { data: profile, isLoading, error } = useGetProfile(profileId);
+  const { data: profile, isLoading, error } = useGetProfile(profileUserName);
 
   const tabsConfig = isMe
     ? [
@@ -86,13 +84,17 @@ export const ProfilePage = ({ id: idProp }: ProfilePageProps) => {
     <div className="p-5 md:p-7 max-w-7xl mx-auto">
       <ProfileHeader
         profile={profile}
+        profileUserName={profile.userName}
         isMe={isMe}
         onReportClick={() => setIsReportOpen(true)}
       />
 
-      {isMe && (
-        <Alert variant="warning" title="Outbid Alert" className="mb-6">
-          You are <span>outbid</span> on 1 lot. Raise your bid before the auction ends.
+      {isMe && profile.outbidLotsCount > 0 && (
+        <Alert variant="warning" title={t("outbidAlert.title")} className="mb-6">
+          {t.rich("outbidAlert.body", {
+            count: profile.outbidLotsCount,
+            outbid: (chunks) => <span>{chunks}</span>,
+          })}
         </Alert>
       )}
 
@@ -104,8 +106,8 @@ export const ProfilePage = ({ id: idProp }: ProfilePageProps) => {
       />
 
       {activeTab === "overview" && <OverviewTab />}
-      {activeTab === "lots" && <MyLotsTab userId={profileId} />}
-      {activeTab === "bids" && isMe && <MyBidsTab userId={profileId} />}
+      {activeTab === "lots" && <MyLotsTab userName={profileUserName} />}
+      {activeTab === "bids" && isMe && <MyBidsTab userName={profileUserName} />}
       {activeTab === "balance" && isMe && <BalanceTab balance={profile.balance} />}
 
       {!isMe && (

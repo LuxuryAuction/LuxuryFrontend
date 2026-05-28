@@ -6,6 +6,9 @@ import { getTimeAgo } from "@/src/utils/textUtils";
 import { IChatMessage } from "../types";
 import { useState } from "react";
 import { SendIcon } from "@/public/assets/icons";
+import { useTranslations } from "next-intl";
+import { useSelector } from "react-redux";
+import { RootState } from "@/src/store";
 
 interface LotChatProps {
   messages: IChatMessage[];
@@ -13,7 +16,18 @@ interface LotChatProps {
 }
 
 export const LotChat = ({ messages, onSendMessage }: LotChatProps) => {
+  const t = useTranslations("LotDetails.chat");
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const [newMessage, setNewMessage] = useState("");
+  const onlineCount = 12;
+
+  const trySend = () => {
+    if (!isAuthenticated || !onSendMessage) return;
+    const text = newMessage.trim();
+    if (!text) return;
+    onSendMessage(text);
+    setNewMessage("");
+  };
 
   return (
     <div className="flex flex-col gap-0 p-6 rounded-[16px] bg-surface-secondary/50 border border-border-primary relative overflow-hidden">
@@ -23,12 +37,14 @@ export const LotChat = ({ messages, onSendMessage }: LotChatProps) => {
         <div className="flex items-center gap-2">
           <div className="h-px w-4 bg-brand-primary/50" />
           <h2 className="text-[10px] font-mono font-bold uppercase tracking-widest text-content-tertiary">
-            Community Chat
+            {t("title")}
           </h2>
         </div>
         <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-surface-tertiary/50 border border-border-primary/50">
           <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse shadow-[0_0_5px_#22c55e]" />
-          <span className="text-[9px] text-content-secondary font-mono font-bold">12 online</span>
+          <span className="text-[9px] text-content-secondary font-mono font-bold">
+            {t("online", { count: onlineCount })}
+          </span>
         </div>
       </div>
 
@@ -41,8 +57,8 @@ export const LotChat = ({ messages, onSendMessage }: LotChatProps) => {
               </svg>
             </div>
             <div className="flex flex-col gap-1">
-              <span className="text-[13px] font-bold text-content-primary">No messages yet</span>
-              <span className="text-[11px] text-content-tertiary">Be the first to ask a question!</span>
+              <span className="text-[13px] font-bold text-content-primary">{t("emptyTitle")}</span>
+              <span className="text-[11px] text-content-tertiary">{t("emptyDescription")}</span>
             </div>
           </div>
         ) : (
@@ -52,18 +68,18 @@ export const LotChat = ({ messages, onSendMessage }: LotChatProps) => {
 
             return (
               <div key={msg.id} className={`flex gap-3 group w-full ${isMe ? "flex-row-reverse" : ""}`}>
-                <Link href={`/user/profile/${msg.userName}`} className="shrink-0 hover:opacity-80 transition-opacity cursor-pointer">
+                <Link href={`/user/profile/${encodeURIComponent(msg.userName)}`} className="shrink-0 hover:opacity-80 transition-opacity cursor-pointer">
                   <Avatar name={msg.userName} src={msg.userAvatar} size="sm" className="mt-1" />
                 </Link>
                 <div className={`flex flex-col gap-1 min-w-0 max-w-[85%] ${isMe ? "items-end" : "items-start"}`}>
                   <div className={`flex items-baseline gap-2 ${isMe ? "flex-row-reverse" : ""}`}>
                     <div className={`flex items-center gap-2 ${isMe ? "flex-row-reverse" : ""}`}>
-                      <Link href={`/user/profile/${msg.userName}`} className="text-[13px] font-bold text-content-primary hover:text-brand-primary transition-colors cursor-pointer hover:underline underline-offset-4">
+                      <Link href={`/user/profile/${encodeURIComponent(msg.userName)}`} className="text-[13px] font-bold text-content-primary hover:text-brand-primary transition-colors cursor-pointer hover:underline underline-offset-4">
                         {msg.userName}
                       </Link>
                       {isSeller && (
                         <span className="px-1.5 py-px rounded bg-brand-primary/10 text-brand-primary text-[9px] font-bold uppercase tracking-wider border border-brand-primary/20">
-                          Seller
+                          {t("sellerBadge")}
                         </span>
                       )}
                     </div>
@@ -85,32 +101,38 @@ export const LotChat = ({ messages, onSendMessage }: LotChatProps) => {
       </div>
 
       <div className="flex items-center gap-3 mt-1 pt-4 border-t border-border-primary/30 relative z-10">
-        <div className="flex-1 flex items-center gap-3 p-1.5 pl-4 rounded-xl bg-surface-tertiary/50 border border-border-primary focus-within:border-brand-primary/50 focus-within:bg-surface-primary transition-all group/input">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && newMessage.trim() && onSendMessage) {
-                onSendMessage(newMessage.trim());
-                setNewMessage("");
-              }
-            }}
-            placeholder="Ask the seller a question..."
-            className="flex-1 bg-transparent border-none outline-none text-content-primary text-[13px] placeholder:text-content-tertiary/70"
-          />
-          <button
-            className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-brand-primary text-black hover:bg-brand-primary/90 active:scale-95 transition-all shadow-[0_0_15px_rgba(240,165,0,0.15)] group-focus-within/input:shadow-[0_0_20px_rgba(240,165,0,0.3)] cursor-pointer"
-            onClick={() => {
-              if (newMessage.trim() && onSendMessage) {
-                onSendMessage(newMessage.trim());
-                setNewMessage("");
-              }
-            }}
+        {isAuthenticated ? (
+          <div className="flex-1 flex items-center gap-3 p-1.5 pl-4 rounded-xl bg-surface-tertiary/50 border border-border-primary focus-within:border-brand-primary/50 focus-within:bg-surface-primary transition-all group/input">
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  trySend();
+                }
+              }}
+              placeholder={t("placeholder")}
+              className="flex-1 bg-transparent border-none outline-none text-content-primary text-[13px] placeholder:text-content-tertiary/70"
+            />
+            <button
+              type="button"
+              disabled={!newMessage.trim()}
+              className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-brand-primary text-black hover:bg-brand-primary/90 active:scale-95 transition-all shadow-[0_0_15px_rgba(240,165,0,0.15)] group-focus-within/input:shadow-[0_0_20px_rgba(240,165,0,0.3)] cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
+              onClick={trySend}
+            >
+              <SendIcon className="w-4 h-4 translate-x-px translate-y-px" />
+            </button>
+          </div>
+        ) : (
+          <Link
+            href="/login"
+            className="flex-1 rounded-xl border border-border-primary bg-surface-tertiary/50 py-3.5 px-4 text-center text-[13px] font-semibold text-content-primary hover:border-brand-primary/40 hover:bg-surface-primary transition-all"
           >
-            <SendIcon className="w-4 h-4 translate-x-px translate-y-px" />
-          </button>
-        </div>
+            {t("loginToChat")}
+          </Link>
+        )}
       </div>
     </div>
   );

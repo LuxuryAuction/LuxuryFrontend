@@ -21,10 +21,10 @@ import { LotsGridSkeleton } from "@/src/views/Auction/components/LotsGridSkeleto
 import { CATEGORY_FILTER_TAB_IDS } from "./categoryConfig";
 
 interface CategoryLotsViewProps {
-  categoryId: string;
+  slug: string;
 }
 
-export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
+export const CategoryLotsView = ({ slug }: CategoryLotsViewProps) => {
   const t = useTranslations("CategoryLotsPage");
   const router = useRouter();
 
@@ -43,7 +43,7 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
   const filtersRef = useRef<HTMLDivElement>(null);
 
   const params = useMemo(() => ({
-    categoryId: Number(categoryId),
+    slug,
     page,
     pageSize: 20,
     search: search || undefined,
@@ -51,7 +51,7 @@ export const CategoryLotsView = ({ categoryId }: CategoryLotsViewProps) => {
     status: activeTab,
     minPrice,
     maxPrice,
-  }), [categoryId, page, search, sex, activeTab, minPrice, maxPrice]);
+  }), [slug, page, search, sex, activeTab, minPrice, maxPrice]);
 
   const { data, isLoading } = useGetLots(params);
 

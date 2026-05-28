@@ -4,11 +4,11 @@ import { ArrowDownIcon, HamburgerIcon, NotificationIcon } from "@/public/assets/
 import { Avatar } from "@/src/components/common/Avatar";
 import { Select } from "@/src/components/ui/Select";
 import { useLocale, useTranslations } from "next-intl";
-import { usePathname, useRouter } from "@/src/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/src/i18n/navigation";
 import { routing } from "@/src/i18n/routing";
 import { useToast } from "@/src/components/ui/Toast";
 import { languages, userOptions } from "./config";
-import { capitalize } from "@/src/utils/textUtils";
+import { capitalize, formatLotIdDisplay } from "@/src/utils/textUtils";
 import { useAuth } from "@/src/hooks/useAuth";
 import { useSelector } from "react-redux";
 import { RootState } from "@/src/store";
@@ -18,6 +18,7 @@ interface TopBarProps {
   toggleDrawer: () => void;
   userName: string;
   userAvatar?: string;
+  initialIsAuthenticated?: boolean;
 }
 
 
@@ -25,19 +26,37 @@ function useBreadcrumb() {
   const t = useTranslations("TopBar");
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
-  const crumbs = ["BidVault", ...segments.map(capitalize)];
-  const pageTitle = segments.length > 0 ? capitalize(segments[segments.length - 1]) : t("home");
+  const lotMatch = pathname.match(/\/user\/auctions\/[^/]+\/([^/]+)\/?$/);
+  const lotId = lotMatch?.[1];
+
+  let crumbs = ["BidVault", ...segments.map(capitalize)];
+  let pageTitle =
+    segments.length > 0 ? capitalize(segments[segments.length - 1]) : t("home");
+
+  if (lotId) {
+    const formattedId = formatLotIdDisplay(lotId);
+    pageTitle = t("lotDetails", { id: formattedId });
+    crumbs = [...crumbs.slice(0, -1), pageTitle];
+  }
+
   return { crumbs, pageTitle, pathname };
 }
 
-export const TopBar = ({ toggleDrawer, userName, userAvatar }: TopBarProps) => {
+export const TopBar = ({
+  toggleDrawer,
+  userName,
+  userAvatar,
+  initialIsAuthenticated = false,
+}: TopBarProps) => {
   const t = useTranslations("TopBar");
   const { crumbs, pageTitle, pathname } = useBreadcrumb();
   const router = useRouter();
   const locale = useLocale();
   const { showToast } = useToast();
   const { logout } = useAuth();
-  const userId = useSelector((state: RootState) => state.auth.userId);
+  const authUserName = useSelector((state: RootState) => state.auth.userName);
+  const reduxIsAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const isAuthenticated = reduxIsAuthenticated || initialIsAuthenticated;
 
   const handleLocaleChange = (next: string) => {
     if (routing.locales.includes(next as (typeof routing.locales)[number])) {
@@ -53,7 +72,7 @@ export const TopBar = ({ toggleDrawer, userName, userAvatar }: TopBarProps) => {
         router.push("/login");
         break;
       case "profile":
-        router.push(getProfileHref(userId));
+        router.push(getProfileHref(authUserName));
         break;
     }
   };
@@ -94,37 +113,48 @@ export const TopBar = ({ toggleDrawer, userName, userAvatar }: TopBarProps) => {
           )}
         />
 
-        <button
-          onClick={() => router.push("/user/notifications")}
-          aria-label="Notifications"
-          className="relative w-8 h-8 flex items-center justify-center rounded-[8px] bg-[#13151a] border border-[#2a2e3a] text-[#4a5270] hover:text-brand-primary hover:border-brand-primary/30 transition-all shrink-0 cursor-pointer group/nav"
-        >
-          <NotificationIcon className="w-4 h-4 transition-transform group-hover/nav:scale-110" />
+        {isAuthenticated ? (
+          <>
+            <button
+              onClick={() => router.push("/user/notifications")}
+              aria-label="Notifications"
+              className="relative w-8 h-8 flex items-center justify-center rounded-[8px] bg-[#13151a] border border-[#2a2e3a] text-[#4a5270] hover:text-brand-primary hover:border-brand-primary/30 transition-all shrink-0 cursor-pointer group/nav"
+            >
+              <NotificationIcon className="w-4 h-4 transition-transform group-hover/nav:scale-110" />
 
-          <span className="absolute top-[6px] right-[6px] w-[7px] h-[7px] rounded-full bg-brand-primary border-2 border-[#0b0c0f] animate-bvPulseSoft shadow-[0_0_8px_rgba(240,165,0,0.5)]" />
-        </button>
+              <span className="absolute top-[6px] right-[6px] w-[7px] h-[7px] rounded-full bg-brand-primary border-2 border-[#0b0c0f] animate-bvPulseSoft shadow-[0_0_8px_rgba(240,165,0,0.5)]" />
+            </button>
 
-        <Select
-          options={userOptions.map((opt) => ({
-            ...opt,
-            label: opt.disabled
-              ? `${t(`userOptions.${opt.value}`)} (${t("comingSoon")})`
-              : t(`userOptions.${opt.value}`),
-          }))}
-          onChange={handleUserAction}
-          align="right"
-          renderTrigger={(isOpen) => (
-            <Avatar
-              name={userName}
-              src={userAvatar}
-              size="md"
-              className={`transition-all duration-300 ${isOpen
-                ? "ring-4 ring-brand-primary/30 border-brand-primary scale-110 shadow-[0_0_20px_rgba(240,165,0,0.3)]"
-                : "hover:scale-105 hover:border-brand-primary/50"
-                }`}
+            <Select
+              options={userOptions.map((opt) => ({
+                ...opt,
+                label: opt.disabled
+                  ? `${t(`userOptions.${opt.value}`)} (${t("comingSoon")})`
+                  : t(`userOptions.${opt.value}`),
+              }))}
+              onChange={handleUserAction}
+              align="right"
+              renderTrigger={(isOpen) => (
+                <Avatar
+                  name={userName}
+                  src={userAvatar}
+                  size="md"
+                  className={`transition-all duration-300 ${isOpen
+                    ? "ring-4 ring-brand-primary/30 border-brand-primary scale-110 shadow-[0_0_20px_rgba(240,165,0,0.3)]"
+                    : "hover:scale-105 hover:border-brand-primary/50"
+                    }`}
+                />
+              )}
             />
-          )}
-        />
+          </>
+        ) : (
+          <Link
+            href="/login"
+            className="shrink-0 rounded-lg bg-brand-primary px-4 py-2 text-xs font-bold uppercase tracking-wider text-black hover:bg-brand-primary/90 active:scale-[0.98] transition-all"
+          >
+            {t("signIn")}
+          </Link>
+        )}
       </div>
     </header>
   );

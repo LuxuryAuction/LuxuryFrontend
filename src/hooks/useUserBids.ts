@@ -9,30 +9,30 @@ import { RootState } from "../store";
 
 export const useUserBids = (
   params?: IUserBidsListParams,
-  profileUserId?: number | string,
+  profileUserName?: string,
 ) => {
-  const authUserId = useSelector((state: RootState) => state.auth.userId);
-  const userId = profileUserId ?? authUserId;
+  const authUserName = useSelector((state: RootState) => state.auth.userName);
+  const userName = profileUserName ?? authUserName ?? undefined;
 
   const [data, setData] = useState<IUserBidsListResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchBids = useCallback(async () => {
-    if (userId == null) return;
+    if (!userName) return;
 
     setIsLoading(true);
     setError(null);
 
     try {
-      const responseData = await usersService.getUserBids(userId, params);
+      const responseData = await usersService.getUserBids(userName, params);
       setData(responseData);
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Failed to fetch bids"));
     } finally {
       setIsLoading(false);
     }
-  }, [userId, params]);
+  }, [userName, params]);
 
   useEffect(() => {
     fetchBids();

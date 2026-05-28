@@ -9,7 +9,6 @@ export const ADMIN_ROUTES = [
 
 // Routes that require authentication (any role)
 export const PROTECTED_ROUTES = [
-  "/user/profile",
   "/user/create-lot",
   "/user/my-bids",
   "/user/lots",
@@ -27,6 +26,7 @@ export const AUTH_ROUTES = [
 // Public routes that anyone can access (including /user/categories etc. as requested)
 export const PUBLIC_ROUTES = [
   "/",
+  "/user/profile",
   "/user/categories",
   "/user/auction-rules",
   "/user/info",

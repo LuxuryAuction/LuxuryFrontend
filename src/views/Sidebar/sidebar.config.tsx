@@ -165,7 +165,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     titleKey: "groups.main",
     items: [
-      { id: "profile", labelKey: "nav.profile", href: "/user/profile", icon: Icons.user },
+      { id: "profile", labelKey: "nav.profile", href: "/user/categories", icon: Icons.user },
       { id: "categories", labelKey: "nav.categories", href: "/user/categories", icon: Icons.categories },
       { id: "create-lot", labelKey: "nav.createLot", href: "/user/create-lot", icon: Icons.plus },
 
@@ -208,31 +208,45 @@ export const NAV_GROUPS: NavGroup[] = [
   },
 ];
 
-export function getProfileHref(userId: number | null | undefined): string {
-  return userId != null ? `/user/profile/${userId}` : "/user/profile";
+export function getProfileHref(userName: string | null | undefined): string {
+  return userName ? `/user/profile/${encodeURIComponent(userName)}` : "/user/categories";
 }
 
+const AUTH_ONLY_NAV_IDS = new Set([
+  "profile",
+  "my-lots",
+  "my-bids",
+  "notifications",
+  "create-lot",
+  "chat",
+]);
+
 export function getUserNavGroups(
-  userId: number | null | undefined,
+  userName: string | null | undefined,
   userRole?: string | null,
+  isAuthenticated = false,
 ): NavGroup[] {
-  const profileHref = getProfileHref(userId);
+  const profileHref = getProfileHref(userName);
   const isAdmin = userRole === "admin";
 
   return NAV_GROUPS.filter(
     (group) => isAdmin || group.titleKey !== "groups.admin",
-  ).map((group) => ({
-    ...group,
-    items: group.items.map((item) =>
-      item.id === "profile" ? { ...item, href: profileHref } : item
-    ),
-  }));
+  )
+    .map((group) => ({
+      ...group,
+      items: group.items
+        .filter((item) => isAuthenticated || !AUTH_ONLY_NAV_IDS.has(item.id))
+        .map((item) =>
+          item.id === "profile" ? { ...item, href: profileHref } : item,
+        ),
+    }))
+    .filter((group) => group.items.length > 0);
 }
 
 export const DEFAULT_USER: SidebarUser = {
   name: "Alex Kovalenko",
   role: "User · Verified",
-  href: "/user/profile",
+  href: "/user/categories",
 };
 
 export const ADMIN_NAV_GROUPS: NavGroup[] = [

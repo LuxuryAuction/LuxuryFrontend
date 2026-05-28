@@ -21,7 +21,7 @@ export const BidCard = ({ bid, idx }: { bid: IUserBid; idx: number }) => {
     <div
       className="group relative flex flex-col overflow-hidden rounded-xl border border-border-primary/50 bg-surface-secondary cursor-pointer hover:border-border-primary hover:shadow-[0_4px_28px_rgba(0,0,0,0.35)] transition-all duration-300 animate-bvCatFadeUp"
       style={{ animationDelay: `${idx * 0.07}s` }}
-      onClick={() => router.push(`/user/auctions/${lot.categoryId}/${lot.id}`)}
+      onClick={() => router.push(`/user/auctions/${lot.category.slug}/${lot.id}`)}
     >
       <div className="h-[2px] w-full" style={{ background: meta.bar }} />
 

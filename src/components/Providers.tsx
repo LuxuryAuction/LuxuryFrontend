@@ -1,30 +1,24 @@
 "use client";
 
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { Provider, useDispatch } from "react-redux";
 import { store } from "../store";
 import { setAuth } from "../store/slices/authSlice";
-import { getCookie } from "../utils/session";
+import { readClientAuthSession } from "../utils/authSession";
 
 function AuthHydrator({ children }: { children: React.ReactNode }) {
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const accessToken = getCookie("accessToken");
-      const userId = getCookie("userId");
-      const userName = getCookie("userName");
-      const userRole = getCookie("userRole");
-
-      if (accessToken && userId && userName && userRole) {
-        dispatch(
-          setAuth({
-            userId: Number(userId),
-            userName,
-            userRole,
-          })
-        );
-      }
+  useLayoutEffect(() => {
+    const session = readClientAuthSession();
+    if (session.isAuthenticated) {
+      dispatch(
+        setAuth({
+          userId: session.userId,
+          userName: session.userName,
+          userRole: session.userRole,
+        }),
+      );
     }
   }, [dispatch]);
 

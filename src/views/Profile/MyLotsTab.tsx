@@ -23,10 +23,10 @@ const MY_LOTS_FILTER_TABS = [
 ];
 
 interface MyLotsTabProps {
-  userId?: string;
+  userName?: string;
 }
 
-export const MyLotsTab = ({ userId }: MyLotsTabProps) => {
+export const MyLotsTab = ({ userName }: MyLotsTabProps) => {
   const [viewVariant, setViewVariant] = useState<ViewVariant>("grid");
   const [activeTab, setActiveTab] = useState("all");
   const [search, setSearch] = useState("");
@@ -44,7 +44,7 @@ export const MyLotsTab = ({ userId }: MyLotsTabProps) => {
     pageSize: 20,
   }), [activeTab, search, page]);
 
-  const { data, isLoading: isLoadingLots } = useGetUserLots(params, userId);
+  const { data, isLoading: isLoadingLots } = useGetUserLots(params, userName);
 
   const items = data?.items ?? [];
 

@@ -29,7 +29,7 @@ export const ListVariant = ({ lot, showCategory = true, categoryName }: { lot: I
 
   return (
     <Link
-      href={`/user/auctions/${lot.categoryId}/${lot.id}`}
+      href={`/user/auctions/${lot.categorySlug}/${lot.id}`}
       className="group relative flex items-center gap-4 px-4 py-3 rounded-[12px] transition-all duration-200 bg-surface-secondary border border-border-primary hover:border-brand-primary/30 hover:bg-surface-tertiary"
     >
       <div

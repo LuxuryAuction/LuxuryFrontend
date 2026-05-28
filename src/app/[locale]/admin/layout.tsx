@@ -14,13 +14,13 @@ export default function AdminLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const userId = useSelector((state: RootState) => state.auth.userId);
+  const userName = useSelector((state: RootState) => state.auth.userName);
   const t = useTranslations("Sidebar.user");
   const {
     isOpen, isCollapsed, isMounted, toggleDrawer, closeDrawer, toggleCollapse,
   } = useSidebar();
 
-  const { data: profile } = useGetProfile(userId ?? undefined);
+  const { data: profile } = useGetProfile(userName ?? undefined);
 
   const marginClass = isMounted && isCollapsed ? "md:ml-16" : "md:ml-[248px]";
 

@@ -1,10 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import { ClockIcon, ShieldIcon, CreditCardIcon, CheckIcon } from "@/public/assets/icons";
 import { formatCurrency } from "@/src/utils/textUtils";
 import { LiveBadge } from "@/src/components/ui/LiveBadge";
 import { useTranslations } from "next-intl";
+import { Link } from "@/src/i18n/navigation";
+import { RootState } from "@/src/store";
+import { LotStatus, LIVE_STATUSES } from "@/src/components/ui/LotCard/constants";
+import { StatusBadge } from "@/src/components/ui/LotCard/components/StatusBadge";
+import { ILotDetailsBid } from "@/src/services/LotsService/types";
 
 interface BiddingPanelProps {
   currentPrice: number;
@@ -13,6 +19,9 @@ interface BiddingPanelProps {
   endTime: string;
   totalBids: number;
   totalParticipants: number;
+  status: LotStatus;
+  bidsHistory: ILotDetailsBid[];
+  sellerUserName: string;
   onPlaceBid: (amount: number) => void | Promise<void>;
   isPlacingBid?: boolean;
 }
@@ -24,6 +33,9 @@ export const BiddingPanel = ({
   endTime,
   totalBids,
   totalParticipants,
+  status,
+  bidsHistory,
+  sellerUserName,
   onPlaceBid,
   isPlacingBid = false,
 }: BiddingPanelProps) => {
@@ -32,6 +44,21 @@ export const BiddingPanel = ({
   const [isUrgent, setIsUrgent] = useState(false);
   const t = useTranslations("BiddingPanel");
   const tLotCard = useTranslations("LotCard");
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const authUserName = useSelector((state: RootState) => state.auth.userName);
+  const isLive = LIVE_STATUSES.includes(status);
+  const canPlaceBid = status === LotStatus.Active;
+
+  const winningBid = useMemo(
+    () => bidsHistory.find((bid) => bid.isBestBid) ?? null,
+    [bidsHistory],
+  );
+
+  const isWinner =
+    isAuthenticated &&
+    authUserName != null &&
+    winningBid != null &&
+    winningBid.user.userName.toLowerCase() === authUserName.toLowerCase();
 
   useEffect(() => {
     const tick = () => {
@@ -77,7 +104,11 @@ export const BiddingPanel = ({
         <div className="absolute -top-16 -right-16 w-40 h-40 bg-brand-primary/8 blur-[60px] pointer-events-none" />
 
         <div className="flex items-center justify-between px-6 p-5 border-b border-border-primary/40">
-          <LiveBadge variant="lg" tone="inline" />
+          {isLive ? (
+            <LiveBadge variant="lg" tone="inline" />
+          ) : (
+            <StatusBadge status={status} />
+          )}
           <div className="flex items-center gap-3 text-[10px] font-mono text-content-tertiary">
             <span>{t("participants", { count: totalParticipants })}</span>
             <div className="w-px h-3 bg-border-primary/60" />
@@ -88,7 +119,7 @@ export const BiddingPanel = ({
         <div className="px-6 py-5 z-10">
           <div className="flex items-center justify-between mb-1">
             <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-content-tertiary">
-              {t("currentBid")}
+              {isLive ? t("currentBid") : tLotCard("finalPrice")}
             </span>
             <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg ${isUrgent ? "bg-red-500/10" : "bg-surface-tertiary/80"}`}>
               <ClockIcon className={`w-3 h-3 ${isUrgent ? "text-red-400" : "text-brand-primary"}`} />
@@ -125,48 +156,83 @@ export const BiddingPanel = ({
 
       <div className="rounded-b-[16px] bg-surface-secondary/70 backdrop-blur-md border border-border-primary border-t-0 relative overflow-hidden">
         <div className="flex flex-col gap-5 p-6 relative z-10">
-          <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-mono uppercase tracking-widest text-content-tertiary pl-1">
-              {t("yourBid")}
-            </label>
-            <div className="flex items-center gap-2 p-1.5 pl-4 rounded-xl bg-surface-primary border border-border-primary focus-within:border-brand-primary/50 focus-within:shadow-[0_0_0_4px_rgba(240,165,0,0.06)] transition-all">
-              <span className="text-content-tertiary/60 font-bold text-lg select-none">₴</span>
-              <input
-                type="number"
-                value={bidAmount}
-                onChange={(e) => setBidAmount(Number(e.target.value))}
-                className="bg-transparent border-none outline-none text-content-primary font-bold text-xl w-full font-mono tracking-tight"
-                min={currentPrice + minStep}
-                step={minStep}
-              />
-              <div className="flex gap-1">
-                <button
-                  onClick={() => setBidAmount(prev => Math.max(currentPrice + minStep, prev - minStep))}
-                  className="w-9 h-9 flex items-center justify-center rounded-lg bg-surface-tertiary text-content-secondary hover:text-content-primary transition-all text-base font-bold active:scale-95 cursor-pointer"
-                >
-                  −
-                </button>
-                <button
-                  onClick={() => setBidAmount(prev => prev + minStep)}
-                  className="w-9 h-9 flex items-center justify-center rounded-lg bg-brand-primary/10 text-brand-primary hover:bg-brand-primary hover:text-black transition-all text-base font-bold active:scale-95 cursor-pointer"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          </div>
+          {canPlaceBid && (
+            isAuthenticated ? (
+              <>
+                <div className="flex flex-col gap-2">
+                  <label className="text-[10px] font-mono uppercase tracking-widest text-content-tertiary pl-1">
+                    {t("yourBid")}
+                  </label>
+                  <div className="flex items-center gap-2 p-1.5 pl-4 rounded-xl bg-surface-primary border border-border-primary focus-within:border-brand-primary/50 focus-within:shadow-[0_0_0_4px_rgba(240,165,0,0.06)] transition-all">
+                    <span className="text-content-tertiary/60 font-bold text-lg select-none">₴</span>
+                    <input
+                      type="number"
+                      value={bidAmount}
+                      onChange={(e) => setBidAmount(Number(e.target.value))}
+                      className="bg-transparent border-none outline-none text-content-primary font-bold text-xl w-full font-mono tracking-tight"
+                      min={currentPrice + minStep}
+                      step={minStep}
+                    />
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        onClick={() => setBidAmount(prev => Math.max(currentPrice + minStep, prev - minStep))}
+                        className="w-9 h-9 flex items-center justify-center rounded-lg bg-surface-tertiary text-content-secondary hover:text-content-primary transition-all text-base font-bold active:scale-95 cursor-pointer"
+                      >
+                        −
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setBidAmount(prev => prev + minStep)}
+                        className="w-9 h-9 flex items-center justify-center rounded-lg bg-brand-primary/10 text-brand-primary hover:bg-brand-primary hover:text-black transition-all text-base font-bold active:scale-95 cursor-pointer"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
 
-          <button
-            type="button"
-            disabled={isPlacingBid}
-            onClick={() => onPlaceBid(bidAmount)}
-            className="group relative w-full overflow-hidden rounded-xl bg-linear-to-r from-brand-primary to-[#ffb822] py-4 text-[13px] uppercase tracking-[0.15em] font-black text-black shadow-[0_8px_20px_rgba(240,165,0,0.25)] hover:shadow-[0_12px_25px_rgba(240,165,0,0.4)] active:scale-[0.98] transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            <div className="absolute inset-0 -translate-x-[150%] bg-linear-to-r from-transparent via-white/40 to-transparent group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out skew-x-[-20deg]" />
-            <span className="relative z-10 flex items-center justify-center gap-2">
-              {t("placeBid")} <span className="opacity-50 font-normal">—</span> {formatCurrency(bidAmount, "before")}
-            </span>
-          </button>
+                <button
+                  type="button"
+                  disabled={isPlacingBid}
+                  onClick={() => onPlaceBid(bidAmount)}
+                  className="group relative w-full overflow-hidden rounded-xl bg-linear-to-r from-brand-primary to-[#ffb822] py-4 text-[13px] uppercase tracking-[0.15em] font-black text-black shadow-[0_8px_20px_rgba(240,165,0,0.25)] hover:shadow-[0_12px_25px_rgba(240,165,0,0.4)] active:scale-[0.98] transition-all duration-300 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  <div className="absolute inset-0 -translate-x-[150%] bg-linear-to-r from-transparent via-white/40 to-transparent group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out skew-x-[-20deg]" />
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    {t("placeBid")} <span className="opacity-50 font-normal">—</span> {formatCurrency(bidAmount, "before")}
+                  </span>
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                className="group relative w-full overflow-hidden rounded-xl bg-linear-to-r from-brand-primary to-[#ffb822] py-4 text-[13px] uppercase tracking-[0.15em] font-black text-black text-center shadow-[0_8px_20px_rgba(240,165,0,0.25)] hover:shadow-[0_12px_25px_rgba(240,165,0,0.4)] active:scale-[0.98] transition-all duration-300"
+              >
+                <div className="absolute inset-0 -translate-x-[150%] bg-linear-to-r from-transparent via-white/40 to-transparent group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out skew-x-[-20deg]" />
+                <span className="relative z-10">{t("loginToBid")}</span>
+              </Link>
+            )
+          )}
+
+          {!canPlaceBid && (
+            isWinner ? (
+              <Link
+                href={`/user/profile/${encodeURIComponent(sellerUserName)}`}
+                className="group relative w-full overflow-hidden rounded-xl bg-linear-to-r from-brand-primary to-[#ffb822] py-4 text-[13px] uppercase tracking-[0.15em] font-black text-black text-center shadow-[0_8px_20px_rgba(240,165,0,0.25)] hover:shadow-[0_12px_25px_rgba(240,165,0,0.4)] active:scale-[0.98] transition-all duration-300"
+              >
+                <div className="absolute inset-0 -translate-x-[150%] bg-linear-to-r from-transparent via-white/40 to-transparent group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out skew-x-[-20deg]" />
+                <span className="relative z-10">{t("contactSeller")}</span>
+              </Link>
+            ) : (
+              <Link
+                href="/user/categories"
+                className="w-full rounded-xl border border-border-primary bg-surface-primary py-4 text-[13px] uppercase tracking-[0.15em] font-bold text-content-primary text-center hover:border-brand-primary/40 hover:bg-surface-tertiary transition-all duration-300 active:scale-[0.98]"
+              >
+                {t("goToAuctions")}
+              </Link>
+            )
+          )}
 
           <div className="flex items-center justify-center gap-4 pt-3 border-t border-border-primary/30">
             <div className="flex items-center gap-1.5 text-[9px] text-content-tertiary uppercase tracking-wider">

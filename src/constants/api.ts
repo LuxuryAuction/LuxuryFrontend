@@ -9,12 +9,12 @@ export const API_ENDPOINTS = {
     LOGOUT: 'auth/logout',
   },
   USERS: {
-    PROFILE: (userId: number | string) => `users/${userId}/profile`,
-    NOTIFICATIONS: (userId: number | string) => `users/${userId}/notifications`,
-    NOTIFICATIONS_READ_ALL: (userId: number | string) => `users/${userId}/notifications/read`,
-    NOTIFICATION_READ: (userId: number | string, notificationId: number | string) =>
-      `users/${userId}/notifications/${notificationId}/read`,
-    BIDS: (userId: number | string) => `users/${userId}/bids`,
+    PROFILE: (userName: string) => `users/${userName}/profile`,
+    NOTIFICATIONS: (userName: string) => `users/${userName}/notifications`,
+    NOTIFICATIONS_READ_ALL: (userName: string) => `users/${userName}/notifications/read`,
+    NOTIFICATION_READ: (userName: string, notificationId: number | string) =>
+      `users/${userName}/notifications/${notificationId}/read`,
+    BIDS: (userName: string) => `users/${userName}/bids`,
   },
   CATEGORIES: {
     LIST: "categories",

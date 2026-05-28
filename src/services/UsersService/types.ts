@@ -5,8 +5,9 @@ export interface IUserProfile {
   lotsSold: number;
   lotsBought: number;
   activeLots: number;
+  outbidLotsCount: number;
   favoriteCategoryId: number;
-  categoryName: string;
+  categoryName: string | null;
   isVerified: boolean;
   trustScore: number;
   balance?: number;
@@ -59,8 +60,9 @@ export type BidDisplayStatus =
   | UserBidStatus.Won
   | UserBidStatus.Lost;
 
-export interface IUserBidLotCategory {
+export interface ILotCategory {
   id: number;
+  slug: string;
   name: string;
 }
 
@@ -78,9 +80,8 @@ export interface IUserBidLot {
   id: number;
   lotNumber: string;
   name: string;
-  categoryId: number;
-  category: IUserBidLotCategory;
-  categoryName: string;
+  slug: string;
+  category: ILotCategory;
   seller: IUserBidLotSeller;
   startingPrice: number;
   currentPrice: number;

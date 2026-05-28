@@ -1,5 +1,6 @@
 export interface ICategory {
   id: number;
+  slug: string;
   name: string;
   shortDescription: string;
   image: string;

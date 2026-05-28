@@ -2,6 +2,14 @@ export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1).replace(/-/g, " ");
 }
 
+export function formatLotIdDisplay(id: string, length = 6): string {
+  const numeric = id.replace(/^#/, "").trim();
+  if (!/^\d+$/.test(numeric)) {
+    return numeric;
+  }
+  return String(Number(numeric)).padStart(length, "0");
+}
+
 
 export const formatCurrency = (amount: string | number, symbolPosition: "before" | "after" = "after") => {
   if (typeof amount !== "number" || !amount) {

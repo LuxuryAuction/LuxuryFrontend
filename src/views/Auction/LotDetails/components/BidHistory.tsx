@@ -53,7 +53,7 @@ export const BidHistory = ({ bids }: BidHistoryProps) => {
                 }`}
               style={{ animationDelay: `${i * 50}ms` }}
             >
-              <Link href={`/user/profile/${bid.user.id}`} className="flex items-center gap-3 group/user hover:opacity-90 transition-opacity cursor-pointer">
+              <Link href={`/user/profile/${encodeURIComponent(bid.user.userName)}`} className="flex items-center gap-3 group/user hover:opacity-90 transition-opacity cursor-pointer">
                 <div className="relative">
                   <Avatar
                     name={displayName}

@@ -33,10 +33,10 @@ function getApiStatusParam(tab: BidFilterTab) {
 }
 
 interface MyBidsTabProps {
-  userId?: string;
+  userName?: string;
 }
 
-export const MyBidsTab = ({ userId }: MyBidsTabProps) => {
+export const MyBidsTab = ({ userName }: MyBidsTabProps) => {
   const [activeTab, setActiveTab] = useState<BidFilterTab>("all");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -50,7 +50,7 @@ export const MyBidsTab = ({ userId }: MyBidsTabProps) => {
     [page, activeTab],
   );
 
-  const { items, isLoading, error } = useUserBids(listParams, userId);
+  const { items, isLoading, error } = useUserBids(listParams, userName);
 
   const filteredItems = useMemo(() => {
     const byTab = items.filter((bid) => matchesBidFilterTab(bid, activeTab));

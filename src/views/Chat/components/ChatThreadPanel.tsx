@@ -76,12 +76,18 @@ export const ChatThreadPanel = ({
                 <div className={`flex flex-col gap-1 min-w-0 max-w-[88%] ${isMe ? "items-end" : "items-start"}`}>
                   <div className={`flex items-baseline gap-2 flex-wrap ${isMe ? "flex-row-reverse" : ""}`}>
                     <div className={`flex items-center gap-2 ${isMe ? "flex-row-reverse" : ""}`}>
-                      <Link
-                        href="/user/profile"
-                        className="text-[13px] font-bold text-content-primary hover:text-brand-primary transition-colors"
-                      >
-                        {msg.userName}
-                      </Link>
+                      {!isMe ? (
+                        <Link
+                          href={`/user/profile/${encodeURIComponent(msg.userName)}`}
+                          className="text-[13px] font-bold text-content-primary hover:text-brand-primary transition-colors"
+                        >
+                          {msg.userName}
+                        </Link>
+                      ) : (
+                        <span className="text-[13px] font-bold text-content-primary">
+                          {msg.userName}
+                        </span>
+                      )}
                     </div>
                     <span className="text-[10px] text-content-tertiary font-mono" suppressHydrationWarning>
                       {getTimeAgo(msg.timestamp)}

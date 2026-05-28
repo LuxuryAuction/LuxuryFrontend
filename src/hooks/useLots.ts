@@ -34,14 +34,14 @@ export const useGetLots = (params?: ILotListParams) => {
   };
 };
 
-export const useGetUserLots = (params: ILotListParams, userId?: number | string) => {
+export const useGetUserLots = (params: ILotListParams, userName?: string) => {
 
   const [data, setData] = useState<ILotListResponse>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchUserLots = useCallback(async () => {
-    if (userId == null) {
+    if (!userName) {
       setIsLoading(false);
       return;
     }
@@ -49,7 +49,7 @@ export const useGetUserLots = (params: ILotListParams, userId?: number | string)
     try {
       setIsLoading(true);
 
-      const data = await lotsService.getLots({ ...params, userId });
+      const data = await lotsService.getLots({ ...params, userName });
 
       setData(data);
       setError(null);
@@ -58,7 +58,7 @@ export const useGetUserLots = (params: ILotListParams, userId?: number | string)
     } finally {
       setIsLoading(false);
     }
-  }, [params, userId]);
+  }, [params, userName]);
 
   useEffect(() => {
     fetchUserLots();

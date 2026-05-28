@@ -20,7 +20,24 @@ interface RequestOptions extends Omit<RequestInit, "body"> {
   returnBlob?: boolean;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_ENDPOINT || "http://127.0.0.1:8080/api";
+function getApiBaseUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_API_ENDPOINT?.replace(/\/$/, "");
+  if (configured) {
+    // Relative path → same-origin proxy (app/api/[...path]/route.ts)
+    if (configured.startsWith("/")) return configured;
+    // Block HTTP API URL on HTTPS pages (mixed content)
+    if (typeof window !== "undefined" && window.location.protocol === "https:") {
+      return "/api";
+    }
+    return configured;
+  }
+
+  if (typeof window !== "undefined" && window.location.protocol === "https:") {
+    return "/api";
+  }
+
+  return "http://127.0.0.1:8080/api";
+}
 
 export const api = {
   async get<T>(endpoint: string, params?: Record<string, string | string[]>) {
@@ -87,7 +104,8 @@ export async function apiRequest<TResponse>(
       requestHeaders.set("Authorization", `Bearer ${token}`);
     }
 
-    let fullUrl = `${API_BASE_URL}/${url}`;
+    const apiBaseUrl = getApiBaseUrl();
+    let fullUrl = `${apiBaseUrl}/${url}`;
     if (params && Object.keys(params).length > 0) {
       const searchParams = createQueryString(params);
       fullUrl += `?${searchParams}`;
@@ -113,7 +131,7 @@ export async function apiRequest<TResponse>(
           // If a refresh is already in progress, wait for it
           if (!refreshPromise) {
             refreshPromise = (async () => {
-              const refreshRes = await fetch(`${API_BASE_URL}/auth/refresh`, {
+              const refreshRes = await fetch(`${getApiBaseUrl()}/auth/refresh`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ refreshToken }),

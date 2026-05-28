@@ -28,7 +28,7 @@ const FILTER_TAB_IDS = [
 ];
 
 export const MyLotsView = () => {
-  const userId = useSelector((state: RootState) => state.auth.userId);
+  const userName = useSelector((state: RootState) => state.auth.userName);
   const t = useTranslations("MyLotsPage");
   const [activeTab, setActiveTab] = useState("all");
   const [viewVariant, setViewVariant] = useState<ViewVariant>("grid");
@@ -55,7 +55,7 @@ export const MyLotsView = () => {
     pageSize: 20,
   }), [activeTab, search, page]);
 
-  const { data, isLoading: isLoadingLots } = useGetUserLots(params, userId ?? undefined);
+  const { data, isLoading: isLoadingLots } = useGetUserLots(params, userName ?? undefined);
 
   const items = data?.items ?? [];
 

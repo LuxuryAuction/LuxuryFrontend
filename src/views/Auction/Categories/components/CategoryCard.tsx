@@ -17,7 +17,7 @@ export const CategoryCard = ({ category, index }: CategoryCardProps) => {
 
   return (
     <Link
-      href={`/user/auctions/${category.id}`}
+      href={`/user/auctions/${category.slug}`}
       className="group relative flex flex-col overflow-hidden rounded-[12px] cursor-pointer bg-surface-primary border border-border-primary transition-all duration-220 ease-in-out opacity-0 translate-y-4 hover:border-brand-primary/30 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5),0_0_0_1px_rgba(240,164,0,0.15)] animate-bvCatFadeUp"
       style={{
         animationDelay: `${0.05 + index * 0.07}s`,

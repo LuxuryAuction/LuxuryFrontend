@@ -28,7 +28,7 @@ export const GridVariant = ({ lot, showCategory = true, categoryName }: { lot: I
 
   return (
     <Link
-      href={`/user/auctions/${lot.categoryId}/${lot.id}`}
+      href={`/user/auctions/${lot.categorySlug}/${lot.id}`}
       className="group relative flex flex-col h-full overflow-hidden rounded-md transition-all duration-300 hover:-translate-y-[4px] bg-surface-secondary border border-border-primary hover:border-brand-primary/30 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
     >
       <div

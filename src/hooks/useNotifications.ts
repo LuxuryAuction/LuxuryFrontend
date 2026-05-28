@@ -8,27 +8,27 @@ import {
 import { RootState } from "../store";
 
 export const useNotifications = (params?: INotificationsListParams) => {
-  const userId = useSelector((state: RootState) => state.auth.userId);
+  const userName = useSelector((state: RootState) => state.auth.userName);
 
   const [data, setData] = useState<INotificationsListResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchNotifications = useCallback(async () => {
-    if (userId == null) return;
+    if (!userName) return;
 
     setIsLoading(true);
     setError(null);
 
     try {
-      const responseData = await usersService.getNotifications(userId, params);
+      const responseData = await usersService.getNotifications(userName, params);
       setData(responseData);
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Failed to fetch notifications"));
     } finally {
       setIsLoading(false);
     }
-  }, [userId, params]);
+  }, [userName, params]);
 
   useEffect(() => {
     fetchNotifications();
@@ -36,30 +36,30 @@ export const useNotifications = (params?: INotificationsListParams) => {
 
   const markAsRead = useCallback(
     async (notificationId: number) => {
-      if (userId == null) return;
+      if (!userName) return;
 
       try {
-        await usersService.markNotificationAsRead(userId, notificationId);
+        await usersService.markNotificationAsRead(userName, notificationId);
         await fetchNotifications();
       } catch (err) {
         setError(err instanceof Error ? err : new Error("Failed to mark notification as read"));
         throw err;
       }
     },
-    [userId, fetchNotifications],
+    [userName, fetchNotifications],
   );
 
   const markAllAsRead = useCallback(async () => {
-    if (userId == null) return;
+    if (!userName) return;
 
     try {
-      await usersService.markAllNotificationsAsRead(userId);
+      await usersService.markAllNotificationsAsRead(userName);
       await fetchNotifications();
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Failed to mark notifications as read"));
       throw err;
     }
-  }, [userId, fetchNotifications]);
+  }, [userName, fetchNotifications]);
 
   return {
     data,

@@ -108,8 +108,7 @@
     "tabs": {
       "all": "All lots",
       "live": "Active",
-      "upcoming": "Upcoming",
-      "ended": "Ended"
+      "upcoming": "Upcoming"
     },
     "filtersPanel": {
       "title": "Search filters",
@@ -205,7 +204,39 @@
     "size": "Size",
     "condition": "Condition",
     "sex": "Sex / gender",
-    "deliveryMethod": "Delivery"
+    "deliveryMethod": "Delivery",
+    "headerBids": "{count, plural, =1 {1 bid} other {# bids}}",
+    "headerParticipants": "{count, plural, =1 {1 participant} other {# participants}}",
+    "tabBids": "Bids",
+    "tabChat": "Chat",
+    "noData": "Lot not found",
+    "published": "Published",
+    "description": "Description",
+    "gallery": {
+      "close": "Close",
+      "prev": "Previous image",
+      "next": "Next image"
+    },
+    "toasts": {
+      "bidTooLow": "Bid must be higher than current price",
+      "leadingBidder": "You are now the leading bidder at {amount}!",
+      "placeBidFailed": "Failed to place bid",
+      "messageSent": "Message sent"
+    },
+    "chat": {
+      "title": "Community Chat",
+      "online": "{count} online",
+      "emptyTitle": "No messages yet",
+      "emptyDescription": "Be the first to ask a question!",
+      "sellerBadge": "Seller",
+      "placeholder": "Ask the seller a question...",
+      "loginToChat": "Sign in to chat"
+    },
+    "seller": {
+      "sales": "{count, plural, =1 {1 sale} other {# sales}}",
+      "noSalesYet": "No sales yet",
+      "viewProfile": "View profile"
+    }
   },
   "LotCard": {
     "finalPrice": "Final price",
@@ -225,7 +256,9 @@
     "settingsUnderDevelopment": "Settings under development"
   },
   "TopBar": {
+    "lotDetails": "Lot - #{id}",
     "home": "Home",
+    "signIn": "Sign in",
     "comingSoon": "soon",
     "logoutSuccess": "Successfully logged out. See you soon!",
     "userOptions": {
@@ -242,7 +275,10 @@
     "step": "Step",
     "nextMin": "Next min",
     "yourBid": "Your Bid",
-    "placeBid": "Place Bid"
+    "placeBid": "Place Bid",
+    "loginToBid": "Sign in to place a bid",
+    "goToAuctions": "Go to auctions",
+    "contactSeller": "Contact seller"
   },
   "BidHistory": {
     "title": "Bid History",
@@ -251,6 +287,23 @@
     "emptyTitle": "No bids yet",
     "emptyDescription": "Be the first to place a bid on this lot.",
     "emptyHint": "Auction is open"
+  },
+  "ProfilePage": {
+    "actions": {
+      "chat": "Chat"
+    },
+    "memberSince": "Member since",
+    "stats": {
+      "lotsSold": "Lots Sold",
+      "lotsBought": "Lots Bought",
+      "activeLots": "Active Lots"
+    },
+    "verifiedSeller": "Verified Seller",
+    "trustScore": "Trust Score: {score}/100",
+    "outbidAlert": {
+      "title": "Outbid Alert",
+      "body": "You are <outbid>outbid</outbid> on {count, plural, =1 {1 lot} other {# lots}}. Raise your bid before the auction ends."
+    }
   },
   "ReportModal": {
     "title": "Report User",

@@ -1,12 +1,13 @@
 import { LotStatus } from "@/src/components/ui/LotCard/constants";
+import { ILotCategory } from "../../UsersService/types";
 
 export interface ILot {
   id: number;
   lotNumber: string;
   name: string;
-  categoryName: string;
   description: string;
-  categoryId: number;
+  category: ILotCategory;
+  categorySlug: string;
   startingPrice: number;
   currentPrice: number;
   priceStep: number;
@@ -57,6 +58,7 @@ export interface ILotDetails {
   name: string;
   category: {
     id: number;
+    slug: string;
     name: string;
   };
   description: string;
@@ -89,8 +91,8 @@ export interface ILotListResponse {
 
 
 export interface ILotListParams {
-  categoryId?: number;
-  userId?: number | string;
+  slug?: string;
+  userName?: string;
   sex?: string;
   status?: string;
   minPrice?: number;

@@ -108,8 +108,7 @@
     "tabs": {
       "all": "Усі публікації",
       "live": "Активні",
-      "upcoming": "Незабаром",
-      "ended": "Завершені"
+      "upcoming": "Незабаром"
     },
     "filtersPanel": {
       "title": "Фільтри пошуку",
@@ -205,7 +204,39 @@
     "size": "Розмір",
     "condition": "Стан",
     "sex": "Стать",
-    "deliveryMethod": "Доставка"
+    "deliveryMethod": "Доставка",
+    "headerBids": "{count, plural, =1 {1 ставка} few {# ставки} other {# ставок}}",
+    "headerParticipants": "{count, plural, =1 {1 учасник} few {# учасники} other {# учасників}}",
+    "tabBids": "Ставки",
+    "tabChat": "Чат",
+    "noData": "Лот не знайдено",
+    "published": "Опубліковано",
+    "description": "Опис",
+    "gallery": {
+      "close": "Закрити",
+      "prev": "Попереднє фото",
+      "next": "Наступне фото"
+    },
+    "toasts": {
+      "bidTooLow": "Ставка має бути вищою за поточну ціну",
+      "leadingBidder": "Ви лідер аукціону зі ставкою {amount}!",
+      "placeBidFailed": "Не вдалося зробити ставку",
+      "messageSent": "Повідомлення надіслано"
+    },
+    "chat": {
+      "title": "Чат спільноти",
+      "online": "{count} онлайн",
+      "emptyTitle": "Повідомлень ще немає",
+      "emptyDescription": "Поставте перше запитання!",
+      "sellerBadge": "Продавець",
+      "placeholder": "Запитайте продавця…",
+      "loginToChat": "Увійдіть, щоб написати в чат"
+    },
+    "seller": {
+      "sales": "{count, plural, =1 {1 продаж} few {# продажі} other {# продажів}}",
+      "noSalesYet": "Продажів ще немає",
+      "viewProfile": "Профіль"
+    }
   },
   "LotCard": {
     "finalPrice": "Кінцева ціна",
@@ -225,7 +256,9 @@
     "settingsUnderDevelopment": "Налаштування в розробці"
   },
   "TopBar": {
+    "lotDetails": "Лот - #{id}",
     "home": "Головна",
+    "signIn": "Увійти",
     "comingSoon": "розробка",
     "logoutSuccess": "Ви успішно вийшли з системи. До зустрічі!",
     "userOptions": {
@@ -242,7 +275,10 @@
     "step": "Крок",
     "nextMin": "Мін. наступна",
     "yourBid": "Ваша ставка",
-    "placeBid": "Зробити ставку"
+    "placeBid": "Зробити ставку",
+    "loginToBid": "Увійдіть, щоб зробити ставку",
+    "goToAuctions": "Перейти до аукціонів",
+    "contactSeller": "Зв'язатися з продавцем"
   },
   "BidHistory": {
     "title": "Історія ставок",
@@ -251,6 +287,23 @@
     "emptyTitle": "Ставок ще немає",
     "emptyDescription": "Станьте першим, хто зробить ставку на цей лот.",
     "emptyHint": "Аукціон відкритий"
+  },
+  "ProfilePage": {
+    "actions": {
+      "chat": "Чат"
+    },
+    "memberSince": "Учасник з",
+    "stats": {
+      "lotsSold": "Продано лотів",
+      "lotsBought": "Куплено лотів",
+      "activeLots": "Активні лоти"
+    },
+    "verifiedSeller": "Перевірений продавець",
+    "trustScore": "Рейтинг довіри: {score}/100",
+    "outbidAlert": {
+      "title": "Перебито ставку",
+      "body": "Вас <outbid>перебили</outbid> на {count, plural, =1 {1 лоті} few {# лотах} other {# лотах}}. Підвищте ставку до завершення аукціону."
+    }
   },
   "ReportModal": {
     "title": "Поскаржитися на користувача",
