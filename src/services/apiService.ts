@@ -20,7 +20,7 @@ interface RequestOptions extends Omit<RequestInit, "body"> {
   returnBlob?: boolean;
 }
 
-function getApiBaseUrl(): string {
+export function getApiBaseUrl(): string {
   const configured = process.env.NEXT_PUBLIC_API_ENDPOINT?.replace(/\/$/, "");
   if (configured) {
     // Relative path → same-origin proxy (app/api/[...path]/route.ts)
@@ -152,7 +152,7 @@ export async function apiRequest<TResponse>(
           // Retry the original request with new token
           accessToken = getAccessToken();
           response = await makeRequest(accessToken);
-        } catch (refreshError) {
+        } catch {
           refreshPromise = null;
           clearSession();
           // Optionally redirect to login or throw specific error

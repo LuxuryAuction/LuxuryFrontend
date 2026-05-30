@@ -16,6 +16,8 @@ interface ChatThreadPanelProps {
   onSend: (text: string) => void;
   onBack?: () => void;
   showBack?: boolean;
+  isLoading?: boolean;
+  isSending?: boolean;
 }
 
 export const ChatThreadPanel = ({
@@ -27,6 +29,8 @@ export const ChatThreadPanel = ({
   onSend,
   onBack,
   showBack,
+  isLoading = false,
+  isSending = false,
 }: ChatThreadPanelProps) => {
   const [draft, setDraft] = useState("");
 
@@ -61,14 +65,19 @@ export const ChatThreadPanel = ({
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-4">
-        {messages.length === 0 ? (
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center gap-2 opacity-80">
+            <p className="text-[14px] font-semibold text-content-primary">Loading messages...</p>
+            <p className="text-[12px] text-content-tertiary max-w-xs">Fetching the latest conversation history.</p>
+          </div>
+        ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center gap-2 opacity-80">
             <p className="text-[14px] font-semibold text-content-primary">No messages yet</p>
             <p className="text-[12px] text-content-tertiary max-w-xs">Write the first message in this thread.</p>
           </div>
         ) : (
           messages.map((msg) => {
-            const isMe = msg.userName === "You";
+            const isMe = msg.isOwn || msg.userName === "You";
 
             return (
               <div key={msg.id} className={`flex gap-3 w-full ${isMe ? "flex-row-reverse" : ""}`}>
@@ -126,7 +135,7 @@ export const ChatThreadPanel = ({
           <button
             type="button"
             className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-brand-primary text-black hover:bg-brand-primary/90 active:scale-95 transition-all cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
-            disabled={!draft.trim()}
+            disabled={!draft.trim() || isSending}
             onClick={send}
           >
             <SendIcon className="w-4 h-4 -translate-x-px translate-y-px" />
