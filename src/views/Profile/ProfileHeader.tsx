@@ -75,7 +75,7 @@ export const ProfileHeader = ({
               </div>
             )}
           </div>
-          <div className="flex flex-col gap-0.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2 sm:gap-y-0.5 font-mono text-[0.6rem] sm:text-[0.65rem] md:text-[0.7rem] text-content-tertiary mt-1 sm:mt-0.5 mb-2 sm:mb-3">
+          <div className="flex flex-col gap-0.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2 sm:gap-y-0.5 font-mono text-[0.7rem] text-content-tertiary mt-1 sm:mt-0.5 mb-2 sm:mb-3">
             <span className="truncate">@{profile.userName}</span>
             <span className="hidden sm:inline opacity-30">·</span>
             <span className="text-content-tertiary/90">
@@ -96,10 +96,10 @@ export const ProfileHeader = ({
       <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full lg:w-auto lg:flex lg:items-center lg:justify-end lg:gap-10 xl:gap-12 pt-4 sm:pt-5 lg:pt-0 border-t lg:border-t-0 border-border-primary/50 lg:ml-auto">
         {userStats.map(({ val, label }) => (
           <div key={label} className="flex flex-col items-center justify-center min-w-0 px-1">
-            <div className="text-[1.1rem] sm:text-[1.2rem] md:text-[1.3rem] font-bold text-content-light leading-none tabular-nums">
+            <div className="text-[1.2rem] md:text-[1.3rem] font-bold text-content-light leading-none tabular-nums">
               {val}
             </div>
-            <div className="font-mono text-[0.5rem] sm:text-[0.55rem] md:text-[0.58rem] tracking-wider sm:tracking-widest uppercase text-content-tertiary mt-1 sm:mt-1.5 text-center leading-tight max-w-full">
+            <div className="font-mono text-[0.55rem] md:text-[0.58rem] tracking-wider sm:tracking-widest uppercase text-content-tertiary mt-1 sm:mt-1.5 text-center leading-tight max-w-full">
               {label}
             </div>
           </div>

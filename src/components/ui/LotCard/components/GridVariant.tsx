@@ -101,13 +101,13 @@ export const GridVariant = ({ lot, showCategory = true, categoryName }: { lot: I
           )}
         </div>
         {lot.description && (
-          <p className="text-[11px] text-content-tertiary mb-2 line-clamp-2">
+          <p className="text-[12px] md:text-[11px] text-content-tertiary mb-2 line-clamp-2">
             {lot.description}
           </p>
         )}
 
 
-        <div className="text-[11px] mb-4 text-content-tertiary font-medium flex items-center justify-between">
+        <div className="text-[12px] md:text-[11px] mb-4 text-content-tertiary font-medium flex items-center justify-between">
           <span>
             {t("by")} <span className="text-content-secondary">@{lot.seller.userName}</span>
           </span>

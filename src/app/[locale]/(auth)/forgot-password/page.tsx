@@ -17,13 +17,13 @@ const ForgotPassword = () => {
     e.preventDefault();
     if (!email) return;
     showToast("success", "Password reset link sent to your email.", "bottom-right");
-    // setTimeout(() => router.push("/login"), 2000); // Optional auto-redirect
+    setTimeout(() => router.push("/login"), 2000);
   };
 
   return (
     <div className="h-dvh flex overflow-hidden bg-auth-primary justify-center">
       {/* LEFT */}
-      <AuthSidePanel 
+      <AuthSidePanel
         title={<>Recover <br /><span className="text-brand-primary">Access.</span></>}
       />
 
@@ -44,14 +44,14 @@ const ForgotPassword = () => {
           </div>
 
           <div className="flex flex-col space-y-4">
-            <Input 
-              type="email" 
-              label="Email Address" 
-              inputSize="xs" 
-              placeholder="you@example.com" 
+            <Input
+              type="email"
+              label="Email Address"
+              inputSize="xs"
+              placeholder="you@example.com"
               value={email}
               onChange={setEmail}
-              required 
+              required
             />
 
             <Button variant="primary" size="sm" textSize="xs" type="submit" fullWidth>
