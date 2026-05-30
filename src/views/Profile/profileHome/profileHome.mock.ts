@@ -31,7 +31,7 @@ export const MOCK_PROFILE_BADGES_RESPONSE: IProfileBadgesResponse = {
       badgeRare: "common",
       badgeTitle: "Перший лот",
       badgeDescription: "Виставили або продали перший лот.",
-      isCollected: false,
+      isCollected: true,
       isFavourite: false,
     },
     {
@@ -47,7 +47,7 @@ export const MOCK_PROFILE_BADGES_RESPONSE: IProfileBadgesResponse = {
       badgeRare: "epic",
       badgeTitle: "Елітний продавець",
       badgeDescription: "Завершили 50+ продажів лотів.",
-      isCollected: false,
+      isCollected: true,
       isFavourite: false,
     },
     {
@@ -55,7 +55,7 @@ export const MOCK_PROFILE_BADGES_RESPONSE: IProfileBadgesResponse = {
       badgeRare: "legendary",
       badgeTitle: "Силовий продавець",
       badgeDescription: "Завершили 100+ продажів — вищий рівень.",
-      isCollected: false,
+      isCollected: true,
       isFavourite: false,
     },
     {
@@ -71,7 +71,7 @@ export const MOCK_PROFILE_BADGES_RESPONSE: IProfileBadgesResponse = {
       badgeRare: "rare",
       badgeTitle: "Колекціонер",
       badgeDescription: "Виграли 10+ лотів на аукціоні.",
-      isCollected: false,
+      isCollected: true,
       isFavourite: false,
     },
     {
@@ -87,7 +87,7 @@ export const MOCK_PROFILE_BADGES_RESPONSE: IProfileBadgesResponse = {
       badgeRare: "epic",
       badgeTitle: "Верифікований",
       badgeDescription: "Особу та статус продавця підтверджено платформою.",
-      isCollected: false,
+      isCollected: true,
       isFavourite: false,
     },
     {
