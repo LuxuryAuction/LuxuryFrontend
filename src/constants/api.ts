@@ -18,6 +18,7 @@ export const API_ENDPOINTS = {
   },
   CATEGORIES: {
     LIST: "categories",
+    CREATE: "admin/categories",
     BY_ID: (id: number) => `admin/categories/${id}`,
     UPDATE_STATUS: (id: number) => `admin/categories${id}/status`
   },

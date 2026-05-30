@@ -4,6 +4,7 @@ import { GridIcon } from "@/public/assets/icons";
 import NoData from "@/src/components/ui/NoData";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { useGetCategories } from "@/src/hooks/useCategory";
+import { CategoryCreateCard } from "./components/CategoryCreateCard";
 import { CategoryEditCard } from "./components/CategoryEditCard";
 
 export const AdminCategoriesView = () => {
@@ -17,6 +18,8 @@ export const AdminCategoriesView = () => {
         title="Категорії"
         description="Редагування назви, опису, зображення та ціни публікації."
       />
+
+      <CategoryCreateCard onCreated={fetchCategories} />
 
       {error && (
         <div className="mb-6 rounded-xl border border-rose-500/25 bg-rose-500/10 px-4 py-3 text-sm text-rose-200/90">

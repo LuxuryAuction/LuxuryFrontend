@@ -14,6 +14,7 @@ interface ProfileHeaderProps {
   profile: IProfile;
   profileUserName?: string;
   isMe?: boolean;
+  isAuthenticated?: boolean;
   onReportClick?: () => void;
 }
 
@@ -21,6 +22,7 @@ export const ProfileHeader = ({
   profile,
   profileUserName,
   isMe = true,
+  isAuthenticated = false,
   onReportClick,
 }: ProfileHeaderProps) => {
   const t = useTranslations("ProfilePage");
@@ -51,7 +53,7 @@ export const ProfileHeader = ({
             <div className="text-[1.05rem] sm:text-[1.2rem] md:text-[1.4rem] font-bold text-content-light wrap-break-word min-w-0 leading-tight">
               {profile.name}
             </div>
-            {!isMe && (
+            {!isMe && isAuthenticated && (
               <div className="flex items-center gap-2 flex-wrap w-auto sm:shrink-0">
                 <Link
                   href={chatHref}

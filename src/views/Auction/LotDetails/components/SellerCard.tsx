@@ -57,7 +57,7 @@ export const SellerCard = ({ seller }: SellerCardProps) => {
 
         <Link
           href={`/user/profile/${encodeURIComponent(seller.userName)}`}
-          className="flex w-full shrink-0 items-center justify-center gap-1.5 rounded-lg border border-brand-primary/20 bg-brand-primary/10 px-4 py-2.5 text-[11px] font-black uppercase tracking-widest text-brand-primary transition-all  group/follow sm:w-auto sm:justify-start sm:rounded-none sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:hover:gap-2"
+          className="flex shrink-0 items-center justify-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-brand-primary transition-all group/follow hover:gap-2"
         >
           {t("viewProfile")}
           <ArrowRightIcon className="h-3.5 w-3.5 transition-transform group-hover/follow:translate-x-1" />

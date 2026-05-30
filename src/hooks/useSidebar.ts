@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useIsMobile } from "./useIsMobile";
 
-const STORAGE_KEY = "bidvault:sidebar:collapsed";
+const STORAGE_KEY = "auctiquebids:sidebar:collapsed";
 const MOBILE_BP = 900;
 
 export function useSidebar() {

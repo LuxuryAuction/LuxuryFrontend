@@ -6,6 +6,7 @@ import { Link, useRouter } from "@/src/i18n/navigation";
 import { useState } from "react";
 import AuthSidePanel from "@/src/components/auth/AuthSidePanel";
 import { useToast } from "@/src/components/ui/Toast";
+import { BrandLogo } from "@/src/components/common/BrandLogo";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -30,19 +31,16 @@ const ForgotPassword = () => {
       <div className="w-full lg:w-[520px] flex items-center justify-center px-6 lg:px-10 h-full overflow-hidden">
         <form className="w-full" onSubmit={handleSubmit}>
           <div className="flex items-center gap-[0.7rem] mb-6">
-            <div className="w-[32px] h-[32px] bg-brand-primary rounded-md flex items-center justify-center font-extrabold cursor-pointer" onClick={() => router.push("/")}>
-              B
-            </div>
-            <span className="text-md text-white font-bold cursor-pointer" onClick={() => router.push("/")}>
-              Luxury<span className="text-brand-primary">Auction</span>
-            </span>
+            <button type="button" onClick={() => router.push("/")} className="cursor-pointer">
+              <BrandLogo size="sm" />
+            </button>
           </div>
 
           <div className="text-[1.8rem] font-bold text-white mb-2">
             Forgot Password
           </div>
           <div className="text-xs text-content-tertiary mb-6 leading-normal">
-            Enter the email address associated with your account and we'll send you a link to reset your password.
+            Enter the email address associated with your account and we&apos;ll send you a link to reset your password.
           </div>
 
           <div className="flex flex-col space-y-4">

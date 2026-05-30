@@ -9,4 +9,18 @@ export interface ICategory {
   isFrozen: boolean;
 }
 
-export type ICategoryUpdatePayload = Pick<ICategory, "name" | "shortDescription" | "image" | "postingPrice">;
+export type ICategoryUpdatePayload = {
+  name: string;
+  shortDescription: string;
+  postingPrice: number;
+  image?: File;
+};
+
+export type ICategoryCreatePayload = {
+  id?: number;
+  slug: string;
+  name: string;
+  shortDescription: string;
+  image: File;
+  postingPrice: number;
+};

@@ -1,7 +1,7 @@
 import AuctionRulesView from "@/src/views/AuctionRules";
 
 export const metadata = {
-  title: "Правила аукціону | BidVault",
+  title: "Правила аукціону | AuctiqueBids",
   description:
     "Обов’язкові правила аукціону, можливі санкції та корисні матеріали в Telegraph: ставки, оплата, відправка, бан.",
 };

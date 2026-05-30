@@ -10,6 +10,7 @@ export interface SidebarProps {
   user: SidebarUser;
   logoHref?: string;
   variant?: "app" | "admin";
+  isAuthenticated?: boolean;
   isCollapsed: boolean;
   isOpen: boolean;
   onClose: () => void;
@@ -22,6 +23,7 @@ export function Sidebar({
   user,
   logoHref = "/",
   variant = "app",
+  isAuthenticated = true,
   isCollapsed,
   isOpen,
   onClose,
@@ -50,6 +52,7 @@ export function Sidebar({
           user={user}
           logoHref={logoHref}
           variant={variant}
+          isAuthenticated={isAuthenticated}
           isCollapsed={isCollapsed}
           onClose={onClose}
           onToggleCollapse={onToggleCollapse}
@@ -89,6 +92,7 @@ export function Sidebar({
           user={user}
           logoHref={logoHref}
           variant={variant}
+          isAuthenticated={isAuthenticated}
           isCollapsed={false}
           onClose={onClose}
           onToggleCollapse={onToggleCollapse}

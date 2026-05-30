@@ -29,7 +29,7 @@ function useBreadcrumb() {
   const lotMatch = pathname.match(/\/user\/auctions\/[^/]+\/([^/]+)\/?$/);
   const lotId = lotMatch?.[1];
 
-  let crumbs = ["BidVault", ...segments.map(capitalize)];
+  let crumbs = ["AuctiqueBids", ...segments.map(capitalize)];
   let pageTitle =
     segments.length > 0 ? capitalize(segments[segments.length - 1]) : t("home");
 

@@ -3,7 +3,7 @@ const AuctionRulesPageFooter = () => {
     <footer className="mt-12 pt-8 border-t border-border-primary flex flex-col md:flex-row items-center justify-between gap-6">
       <div className="flex items-center gap-4">
         <div className="w-10 h-10 rounded-xl bg-surface-primary flex items-center justify-center border border-border-primary">
-          <span className="text-brand-primary font-black text-xs">BV</span>
+          <span className="text-brand-primary font-black text-xs">AB</span>
         </div>
         <div>
           <div className="text-[10px] font-bold text-content-primary uppercase tracking-widest">Правила платформи</div>

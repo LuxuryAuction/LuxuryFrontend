@@ -13,8 +13,8 @@ export interface RuleItem {
 export const FAQ_DATA: FaqItem[] = [
   {
     category: "General",
-    question: "Що таке BidVault?",
-    answer: "BidVault — це преміальна аукціонна платформа для обміну цінними лотами з фокусом на безпеку та прозорість кожної транзакції.",
+    question: "Що таке AuctiqueBids?",
+    answer: "AuctiqueBids — це преміальна аукціонна платформа для обміну цінними лотами з фокусом на безпеку та прозорість кожної транзакції.",
   },
   {
     category: "Bidding",

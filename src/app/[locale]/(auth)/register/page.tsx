@@ -9,6 +9,7 @@ import { registerSchema, RegisterSchema } from "@/src/schemas/auth.schema";
 import AuthSidePanel from "@/src/components/auth/AuthSidePanel";
 import { useAuth } from "@/src/hooks/useAuth";
 import { useToast } from "@/src/components/ui/Toast";
+import { BrandLogo } from "@/src/components/common/BrandLogo";
 
 
 const Register = () => {
@@ -58,12 +59,7 @@ const Register = () => {
       <div className="w-full lg:w-[520px] flex items-center justify-center px-6 lg:px-10 h-full overflow-hidden">
         <form className="w-full" onSubmit={hookFormSubmit(handleSignUp)}>
           <div className="flex items-center gap-[0.7rem] mb-6">
-            <div className="w-[32px] h-[32px] bg-brand-primary rounded-md flex items-center justify-center font-extrabold">
-              B
-            </div>
-            <span className="text-md text-white font-bold">
-              Luxury<span className="text-brand-primary">Auction</span>
-            </span>
+            <BrandLogo size="sm" />
           </div>
 
           <div className="text-[1.8rem] font-bold text-white">

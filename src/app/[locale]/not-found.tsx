@@ -301,7 +301,7 @@ export default function NotFound() {
         >
           <Link
             href="/user/categories"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-[13px] font-semibold text-[#0b0c0f] transition-all duration-150 hover:-translate-y-[1px]"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-[13px] font-semibold text-[#0b0c0f] transition-all duration-150 hover:-translate-y-px"
             style={{
               background: "linear-gradient(135deg, #f0a500, #e07800)",
               boxShadow: "0 2px 12px rgba(240,165,0,0.3)",
@@ -374,7 +374,7 @@ export default function NotFound() {
           className="mt-8 font-mono text-[10px] tracking-[0.18em] uppercase text-[#2e3452]"
           style={{ animation: "fadeUp 0.6s 0.35s ease both", opacity: 0 }}
         >
-          BidVault · Auction Platform · Est. 2024
+          AuctiqueBids · Auction Platform · Est. 2024
         </p>
       </div>
 

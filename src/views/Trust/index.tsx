@@ -26,7 +26,7 @@ export const TrustView = () => {
           </span>
         </div>
         <h1 className="text-[clamp(2rem,5vw,3.5rem)] font-black text-content-primary tracking-tight leading-[1.05]">
-          BidVault Protocol
+          AuctiqueBids Protocol
         </h1>
         <p className="mt-4 text-sm text-content-secondary max-w-md mx-auto leading-relaxed">
           Наші стандарти безпеки, правила платформи та відповіді на найчастіші запитання.
@@ -184,7 +184,7 @@ export const TrustView = () => {
       <footer className="relative z-10 mt-16 md:mt-24 pt-10 border-t border-border-primary flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-surface-secondary flex items-center justify-center border border-border-primary">
-            <span className="text-brand-primary font-black text-xs">BV</span>
+            <span className="text-brand-primary font-black text-xs">AB</span>
           </div>
           <div>
             <div className="text-[10px] font-bold text-content-primary uppercase tracking-widest">Protocol v2.4</div>

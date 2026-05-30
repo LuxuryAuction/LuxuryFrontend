@@ -5,6 +5,7 @@ import { CollapseToggle } from "./CollapseToggle";
 import { SidebarProps } from "./Sidebar";
 import { SidebarGroup } from "./SidebarGroup";
 import { Logo } from "./SidebarLogo";
+import { SidebarSignIn } from "./SidebarSignIn";
 import { SidebarUserBlock } from "./SidebarUser";
 
 export const SidebarPanel = ({
@@ -12,6 +13,7 @@ export const SidebarPanel = ({
   user,
   logoHref,
   variant,
+  isAuthenticated = true,
   isCollapsed,
   onClose,
   onToggleCollapse,
@@ -44,11 +46,19 @@ export const SidebarPanel = ({
       </nav>
 
       <div className={`shrink-0 py-3 border-t ${variant === "admin" ? "border-admin-accent/15" : "border-border-primary"}`}>
-        <SidebarUserBlock
-          user={user}
-          isCollapsed={isCollapsed}
-          variant={variant}
-        />
+        {isAuthenticated ? (
+          <SidebarUserBlock
+            user={user}
+            isCollapsed={isCollapsed}
+            variant={variant}
+          />
+        ) : (
+          <SidebarSignIn
+            isCollapsed={isCollapsed}
+            variant={variant}
+            onClick={onClose}
+          />
+        )}
       </div>
     </div>
   );

@@ -107,7 +107,7 @@ export const InfoView = () => {
           Directorship
         </h1>
         <p className="text-lg text-white/30 max-w-xl leading-relaxed font-light">
-          The governing body of BidVault. Absolute authority, strategic oversight, and unyielding integrity.
+          The governing body of AuctiqueBids. Absolute authority, strategic oversight, and unyielding integrity.
         </p>
       </header>
 
@@ -118,14 +118,14 @@ export const InfoView = () => {
 
       <div className="flex flex-col">
         {ADMIN_TEAM.map((member) => (
-          <div key={member.id} className="group flex flex-col md:flex-row items-start md:items-center py-10 border-b border-white/5 gap-8 md:gap-12 hover:bg-white/[0.01] transition-colors -mx-6 px-6">
+          <div key={member.id} className="group flex flex-col md:flex-row items-start md:items-center py-10 border-b border-white/5 gap-8 md:gap-12 hover:bg-white/1 transition-colors -mx-6 px-6">
 
             <div className="flex items-center gap-8 md:w-1/3">
               <Avatar
                 name={member.name}
                 src={member.avatar}
                 size="lg"
-                className="!rounded-full border border-white/10 shrink-0"
+                className="rounded-full! border border-white/10 shrink-0"
               />
               <div>
                 <h4 className="text-2xl font-bold text-white tracking-tight mb-1">{member.name}</h4>
@@ -167,7 +167,7 @@ export const InfoView = () => {
           The Code
         </h3>
         <p className="text-base text-white/40 leading-relaxed max-w-2xl font-light mb-12">
-          BidVault operates on principles of high-value exchange and absolute integrity.
+          AuctiqueBids operates on principles of high-value exchange and absolute integrity.
           Our directors ensure that every transaction meets rigorous standards. Violations of community guidelines are met with immediate, non-negotiable action.
         </p>
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ProfileHeader } from "./ProfileHeader";
-import { OverviewTab } from "./OverviewTab";
+import { ProfileHome } from "./profileHome";
 import { MyLotsTab } from "./MyLotsTab";
 import { MyBidsTab } from "./MyBidsTab";
 import { BalanceTab } from "./BalanceTab";
@@ -18,7 +18,7 @@ import { RootState } from "@/src/store";
 import { useTranslations } from "next-intl";
 
 export const ProfilePage = () => {
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("profileHome");
   const [isReportOpen, setIsReportOpen] = useState(false);
 
   const { showToast } = useToast();
@@ -27,6 +27,7 @@ export const ProfilePage = () => {
   const params = useParams();
   const profileUserName = params.userName as string | undefined;
   const authUserName = useSelector((state: RootState) => state.auth.userName);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const isMe =
     profileUserName != null &&
@@ -37,14 +38,14 @@ export const ProfilePage = () => {
 
   const tabsConfig = isMe
     ? [
-      { id: "overview", label: "Overview" },
-      { id: "lots", label: "Lots" },
-      { id: "bids", label: "Bids" },
-      { id: "balance", label: "Balance" },
+      { id: "profileHome", label: t("tabs.profileHome") },
+      { id: "lots", label: t("tabs.lots") },
+      { id: "bids", label: t("tabs.bids") },
+      { id: "balance", label: t("tabs.balance") },
     ]
     : [
-      { id: "overview", label: "Overview" },
-      { id: "lots", label: "Lots" },
+      { id: "profileHome", label: t("tabs.profileHome") },
+      { id: "lots", label: t("tabs.lots") },
     ];
 
   const handleReportSubmit = async (data: {
@@ -86,7 +87,8 @@ export const ProfilePage = () => {
         profile={profile}
         profileUserName={profile.userName}
         isMe={isMe}
-        onReportClick={() => setIsReportOpen(true)}
+        isAuthenticated={isAuthenticated}
+        onReportClick={isAuthenticated ? () => setIsReportOpen(true) : undefined}
       />
 
       {isMe && profile.outbidLotsCount > 0 && (
@@ -105,12 +107,12 @@ export const ProfilePage = () => {
         className="mb-5"
       />
 
-      {activeTab === "overview" && <OverviewTab />}
+      {activeTab === "profileHome" && <ProfileHome profile={profile} isMe={isMe} />}
       {activeTab === "lots" && <MyLotsTab userName={profileUserName} />}
       {activeTab === "bids" && isMe && <MyBidsTab userName={profileUserName} />}
       {activeTab === "balance" && isMe && <BalanceTab balance={profile.balance} />}
 
-      {!isMe && (
+      {!isMe && isAuthenticated && (
         <ReportModal
           isOpen={isReportOpen}
           onClose={() => setIsReportOpen(false)}

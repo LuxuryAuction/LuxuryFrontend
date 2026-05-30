@@ -178,13 +178,13 @@ export const NAV_GROUPS: NavGroup[] = [
         icon: Icons.bell,
         badge: { count: 5, variant: "danger" },
       },
-      { id: "verified-sellers", labelKey: "nav.verifiedSellers", href: "/user/verified-sellers", icon: Icons.users },
+      // { id: "verified-sellers", labelKey: "nav.verifiedSellers", href: "/user/verified-sellers", icon: Icons.users },
     ],
   },
   {
     titleKey: "groups.direction",
     items: [
-      { id: "info", labelKey: "nav.directionInfo", href: "/user/info", icon: Icons.info },
+      // { id: "info", labelKey: "nav.directionInfo", href: "/user/info", icon: Icons.info },
       {
         id: "auction-rules",
         labelKey: "nav.auctionRules",

@@ -1,6 +1,6 @@
 {
   "Meta": {
-    "title": "BidVault | Premium Auction",
+    "title": "AuctiqueBids | Premium Auction",
     "description": "High-end auction platform for exclusive lots."
    },
   "HomePage": {
@@ -94,7 +94,7 @@
     "description": "Choose a category to browse active lots and place your bids.",
     "emptyTitle": "No categories",
     "emptyDescription": "There are no categories available at the moment. Please check back later.",
-    "viewLots": "View lots",
+    "viewAuction": "View Auction",
     "activeLots": "{count} active lots"
   },
   "CategoryLotsPage": {
@@ -288,7 +288,56 @@
     "emptyDescription": "Be the first to place a bid on this lot.",
     "emptyHint": "Auction is open"
   },
+  "ProfileHome": {
+    "eyebrow": "Achievements",
+    "titleOwn": "My badges",
+    "titleOther": "Badges · {name}",
+    "subtitleOwn": "Rewards for selling, winning auctions, and building trust. Every unlocked badge is listed below.",
+    "subtitleOther": "Rewards this member has unlocked on the platform.",
+    "introStatLabel": "unlocked",
+    "collectedLabel": "collected",
+    "progressLabel": "Collection",
+    "progressRemaining": "{count, plural, one {# badge left to unlock} other {# badges left to unlock}}",
+    "progressByRarity": "By rarity",
+    "nextBadge": "Next to unlock",
+    "allCollected": "All badges collected — your shelf is full!",
+    "showcaseTitle": "Showcase",
+    "showcaseSubtitleOwn": "Your top badges — pin up to 4 from the list below.",
+    "showcaseSubtitleOther": "Highlighted achievements on this profile.",
+    "showcaseEmptySlot": "No badge",
+    "showcaseEmptySlotOwn": "Pin a badge below",
+    "showcaseEmptyTitle": "Showcase is empty",
+    "showcaseEmpty": "Complete achievements below to unlock your first badge.",
+    "emptyCategoryTitle": "No badges in this category",
+    "emptyCategoryDescription": "Try another filter or keep collecting achievements.",
+    "pinHint": "Pin ★ on a badge (max 4)",
+    "filters": {
+      "all": "All",
+      "collected": "Collected",
+      "locked": "Locked"
+    },
+    "rarity": {
+      "common": "Common",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
+    },
+    "status": {
+      "collected": "Collected",
+      "locked": "Locked"
+    },
+    "actions": {
+      "pin": "Pin to showcase",
+      "unpin": "Remove from showcase"
+    }
+  },
   "ProfilePage": {
+    "tabs": {
+      "profileHome": "Home",
+      "lots": "Lots",
+      "bids": "Bids",
+      "balance": "Balance"
+    },
     "actions": {
       "chat": "Chat"
     },

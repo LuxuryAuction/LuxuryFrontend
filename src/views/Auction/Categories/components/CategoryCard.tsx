@@ -56,7 +56,7 @@ export const CategoryCard = ({ category, index }: CategoryCardProps) => {
 
         <div className="flex items-center justify-between mt-3.5 pt-3 border-t border-border-primary/50">
           <span className="font-mono text-[10px] tracking-widest uppercase transition-colors duration-150 text-content-tertiary">
-            {t("viewLots")}
+            {t("viewAuction")}
           </span>
           <ArrowRightIcon className="w-4 h-4 transition-all duration-200 group-hover:translate-x-1 text-content-tertiary" />
         </div>

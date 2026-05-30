@@ -72,6 +72,7 @@ export function UserLayoutClient({ children, initialAuth }: UserLayoutClientProp
           href: profileHref,
         }}
         logoHref="/"
+        isAuthenticated={isAuthenticated}
         isCollapsed={isCollapsed}
         isOpen={isOpen}
         onClose={closeDrawer}

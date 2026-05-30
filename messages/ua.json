@@ -1,6 +1,6 @@
 {
   "Meta": {
-    "title": "BidVault | Преміум-аукціон",
+    "title": "AuctiqueBids | Преміум-аукціон",
     "description": "Платформа високого класу для ексклюзивних лотів."
   },
   "HomePage": {
@@ -94,7 +94,7 @@
     "description": "Оберіть категорію, щоб переглянути активні публікації та зробити ставку.",
     "emptyTitle": "Немає категорій",
     "emptyDescription": "Зараз немає доступних категорій. Загляньте пізніше.",
-    "viewLots": "Переглянути публікації",
+    "viewAuction": "Переглянути аукціон",
     "activeLots": "Активних публікацій: {count}"
   },
   "CategoryLotsPage": {
@@ -288,7 +288,56 @@
     "emptyDescription": "Станьте першим, хто зробить ставку на цей лот.",
     "emptyHint": "Аукціон відкритий"
   },
+  "ProfileHome": {
+    "eyebrow": "Досягнення",
+    "titleOwn": "Мої бейджі",
+    "titleOther": "Бейджі · {name}",
+    "subtitleOwn": "Нагороди за продажі, покупки та репутацію на аукціоні. Усі відкриті бейджі — нижче.",
+    "subtitleOther": "Нагороди, які цей учасник уже відкрив на платформі.",
+    "introStatLabel": "відкрито",
+    "collectedLabel": "зібрано",
+    "progressLabel": "Колекція",
+    "progressRemaining": "{count, plural, one {Залишився # бейдж} few {Залишилось # бейджі} other {Залишилось # бейджів}}",
+    "progressByRarity": "За рідкістю",
+    "nextBadge": "Наступний бейдж",
+    "allCollected": "Усі бейджі зібрано — колекцію завершено!",
+    "showcaseTitle": "Вітрина",
+    "showcaseSubtitleOwn": "Ваші головні бейджі — закріпіть до 4 зі списку нижче.",
+    "showcaseSubtitleOther": "Найважливіші досягнення цього профілю.",
+    "showcaseEmptySlot": "Немає бейджа",
+    "showcaseEmptySlotOwn": "Закріпіть бейдж нижче",
+    "showcaseEmptyTitle": "Вітрина порожня",
+    "showcaseEmpty": "Виконуйте досягнення нижче, щоб відкрити перший бейдж.",
+    "emptyCategoryTitle": "Немає бейджів у цій категорії",
+    "emptyCategoryDescription": "Спробуйте інший фільтр або продовжуйте збирати досягнення.",
+    "pinHint": "Зірка ★ на бейджі (макс. 4)",
+    "filters": {
+      "all": "Усі",
+      "collected": "Зібрані",
+      "locked": "Закриті"
+    },
+    "rarity": {
+      "common": "Звичайний",
+      "rare": "Рідкісний",
+      "epic": "Епічний",
+      "legendary": "Легендарний"
+    },
+    "status": {
+      "collected": "Зібрано",
+      "locked": "Заблоковано"
+    },
+    "actions": {
+      "pin": "Закріпити у вітрині",
+      "unpin": "Прибрати з вітрини"
+    }
+  },
   "ProfilePage": {
+    "tabs": {
+      "profileHome": "Головна",
+      "lots": "Лоти",
+      "bids": "Ставки",
+      "balance": "Баланс"
+    },
     "actions": {
       "chat": "Чат"
     },
