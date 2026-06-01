@@ -34,7 +34,7 @@ export const ProfilePage = () => {
     authUserName != null &&
     profileUserName.toLowerCase() === authUserName.toLowerCase();
 
-  const { data: profile, isLoading, error } = useGetProfile(profileUserName);
+  const { data: profile, isLoading, error, refetch } = useGetProfile(profileUserName);
 
   const tabsConfig = isMe
     ? [
@@ -110,7 +110,9 @@ export const ProfilePage = () => {
       {activeTab === "profileHome" && <ProfileHome profile={profile} isMe={isMe} />}
       {activeTab === "lots" && <MyLotsTab userName={profileUserName} />}
       {activeTab === "bids" && isMe && <MyBidsTab userName={profileUserName} />}
-      {activeTab === "balance" && isMe && <BalanceTab balance={profile.balance} />}
+      {activeTab === "balance" && isMe && (
+        <BalanceTab balance={profile.balance} onTopUpSuccess={refetch} />
+      )}
 
       {!isMe && isAuthenticated && (
         <ReportModal

@@ -190,13 +190,12 @@
     "buttons": {
       "reset": "Reset",
       "publishing": "Publishing...",
-      "processingPayment": "Processing payment...",
       "publishLot": "Publish",
-      "publishLotWithPrice": "Publish ({price})"
+      "publishLotWithPrice": "Publish ({price})",
+      "topUpBalance": "Top up balance"
     },
     "toasts": {
-      "paymentFailed": "Payment failed. Please try again.",
-      "paymentSuccess": "Payment successful! Creating lot...",
+      "insufficientBalance": "Insufficient balance. Top up your balance to publish this lot.",
       "createFailed": "Failed to create lot"
     }
   },

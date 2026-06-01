@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Link } from "@/src/i18n/navigation";
+import { Link, useRouter } from "@/src/i18n/navigation";
+import { useDispatch, useSelector } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -24,20 +25,25 @@ import { createLotSchema } from "@/src/schemas/createLot.schema";
 import { LotPublished } from "./components/LotPublished";
 import { Checkbox } from "@/src/components/ui/Checkbox";
 import { useCreateLot } from "@/src/hooks/useLots";
-import { useWayForPay } from "@/src/hooks/useWayForPay";
 import { useGetCategories } from "@/src/hooks/useCategory";
 import { formatCurrency } from "@/src/utils/textUtils";
 import { useToast } from "@/src/components/ui/Toast";
+import { RootState } from "@/src/store";
+import { setUserBalance } from "@/src/store/slices/authSlice";
+import { getProfileHref } from "@/src/views/Sidebar/sidebar.config";
 
 export const CreateLotView = () => {
+  const dispatch = useDispatch();
+  const router = useRouter();
   const t = useTranslations("CreateLot");
+  const userName = useSelector((state: RootState) => state.auth.userName);
+  const balance = useSelector((state: RootState) => state.auth.balance);
   const tCondition = useTranslations("ItemCondition");
   const tSex = useTranslations("ItemSex");
   const tDelivery = useTranslations("LotDelivery");
   const [submitted, setSubmitted] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const { createLot, isLoading: isCreating } = useCreateLot();
-  const { pay, isLoading: isPaying } = useWayForPay();
   const { categories, isLoading: isLoadingCategories } = useGetCategories();
   const { showToast } = useToast();
 
@@ -78,21 +84,12 @@ export const CreateLotView = () => {
   const onSubmit = async (data: ICreateLotFormData) => {
     try {
       const selectedCategory = categories.find(cat => cat.id === Number(data.categoryId));
-      const postingPrice = selectedCategory?.postingPrice || 50;
-      const paymentResult = await pay({
-        amount: postingPrice,
-        productName: `Listing fee: ${data.title}`,
-        clientFirstName: "User", // TODO: Get from profile
-      });
+      const postingPrice = selectedCategory?.postingPrice ?? 0;
 
-      console.log("WayForPay Result:", paymentResult);
-
-      if (paymentResult.status !== "approved") {
-        showToast("error", t("toasts.paymentFailed"));
+      if (postingPrice > 0 && (balance ?? 0) < postingPrice) {
+        showToast("error", t("toasts.insufficientBalance"));
         return;
       }
-
-      showToast("success", t("toasts.paymentSuccess"));
 
       await createLot({
         name: data.title,
@@ -109,6 +106,10 @@ export const CreateLotView = () => {
         images: data.images,
       });
 
+      if (balance != null && postingPrice > 0) {
+        dispatch(setUserBalance(balance - postingPrice));
+      }
+
       setSubmitted(true);
     } catch (error) {
       console.error("Failed to create lot:", error);
@@ -118,6 +119,14 @@ export const CreateLotView = () => {
   };
 
   const formValues = watch();
+
+  const selectedCategory = categories.find(
+    (cat) => cat.id === Number(formValues.categoryId),
+  );
+  const postingPrice = selectedCategory?.postingPrice ?? 0;
+  const hasEnoughBalance =
+    !formValues.categoryId || (balance ?? 0) >= postingPrice;
+  console.log(balance)
 
   if (submitted) {
     return (
@@ -358,20 +367,33 @@ export const CreateLotView = () => {
               >
                 Save Draft
               </Button> */}
-              <Button
-                type="submit"
-                variant="primary"
-                size="sm"
-                isLoading={isCreating || isPaying}
-                loadingText={isPaying ? t("buttons.processingPayment") : t("buttons.publishing")}
-                disabled={!agreed}
-              >
-                {formValues.categoryId ? (
-                  <>{t("buttons.publishLotWithPrice", { price: formatCurrency(categories.find(cat => cat.id === Number(formValues.categoryId))?.postingPrice || 0) })}</>
-                ) : (
-                  <>{t("buttons.publishLot")}</>
-                )}
-              </Button>
+              {hasEnoughBalance ? (
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="sm"
+                  isLoading={isCreating}
+                  loadingText={t("buttons.publishing")}
+                  disabled={!agreed}
+                >
+                  {formValues.categoryId ? (
+                    <>{t("buttons.publishLotWithPrice", { price: formatCurrency(postingPrice) })}</>
+                  ) : (
+                    <>{t("buttons.publishLot")}</>
+                  )}
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="sm"
+                  disabled={!agreed}
+                  onClick={() => router.push(getProfileHref(userName))}
+                  className="w-auto!"
+                >
+                  {t("buttons.topUpBalance")}
+                </Button>
+              )}
             </div>
           </div>
         </form>

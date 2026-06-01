@@ -1,24 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { useWayForPay } from "@/src/hooks/useWayForPay";
+import { useTopUpBalance } from "@/src/hooks/useTopUpBalance";
 import { Button } from "@/src/components/ui/Button";
 import { Input } from "@/src/components/ui/Input";
-import { formatCurrency } from "@/src/utils/textUtils";
 import { useToast } from "@/src/components/ui/Toast";
-
-import { ShieldIcon, ArrowRightIcon } from "@/public/assets/icons";
 
 import { BalanceInfo } from "./components/BalanceInfo";
 import { PromoCodeField } from "./components/PromoCodeField";
 import { PaymentSummary } from "./components/PaymentSummary";
 import { SecurePaymentFooter } from "./components/SecurePaymentFooter";
 
-export const BalanceTab = ({ balance = 0 }: { balance?: number }) => {
+type BalanceTabProps = {
+  balance?: number;
+  onTopUpSuccess?: () => void;
+};
+
+export const BalanceTab = ({ balance = 0, onTopUpSuccess }: BalanceTabProps) => {
   const [amount, setAmount] = useState("");
   const [promoCode, setPromoCode] = useState("");
   const [promoBonus, setPromoBonus] = useState(0); // percentage bonus
-  const { pay, isLoading } = useWayForPay();
+  const { topUpAndPay, isLoading } = useTopUpBalance();
   const { showToast } = useToast();
 
   const handleApplyPromo = (code: string) => {
@@ -49,14 +51,12 @@ export const BalanceTab = ({ balance = 0 }: { balance?: number }) => {
     }
 
     try {
-      const result = await pay({
-        amount: amountVal,
-        productName: "Top up balance",
-      });
+      const result = await topUpAndPay(amountVal);
 
       if (result.status === "approved") {
         showToast("success", "Balance successfully topped up!");
         setAmount("");
+        onTopUpSuccess?.();
       } else {
         showToast("error", "Payment was not successful.");
       }
@@ -101,8 +101,8 @@ export const BalanceTab = ({ balance = 0 }: { balance?: number }) => {
                   onClick={() => setAmount(String(q))}
                   className={`
                     py-2 rounded-lg text-[0.75rem] font-medium border transition-all cursor-pointer
-                    ${amount === String(q) 
-                      ? "bg-brand-primary border-brand-primary text-black shadow-[0_0_15px_rgba(240,165,0,0.3)]" 
+                    ${amount === String(q)
+                      ? "bg-brand-primary border-brand-primary text-black shadow-[0_0_15px_rgba(240,165,0,0.3)]"
                       : "bg-[#1c1f27] border-border-primary text-content-secondary hover:border-brand-primary/40 hover:text-brand-primary"
                     }
                   `}
@@ -115,11 +115,11 @@ export const BalanceTab = ({ balance = 0 }: { balance?: number }) => {
 
           <PromoCodeField onApply={handleApplyPromo} promoBonus={promoBonus} />
 
-          <PaymentSummary 
-            amount={numAmount} 
-            promoBonus={promoBonus} 
-            bonusAmount={bonusAmount} 
-            totalCredited={totalCredited} 
+          <PaymentSummary
+            amount={numAmount}
+            promoBonus={promoBonus}
+            bonusAmount={bonusAmount}
+            totalCredited={totalCredited}
           />
 
           <div className="pt-4">
@@ -132,7 +132,7 @@ export const BalanceTab = ({ balance = 0 }: { balance?: number }) => {
             >
               Add Balance
             </Button>
-            
+
             <SecurePaymentFooter />
           </div>
         </div>
