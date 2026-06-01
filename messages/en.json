@@ -221,11 +221,15 @@
       "bidTooLow": "Bid must be higher than current price",
       "leadingBidder": "You are now the leading bidder at {amount}!",
       "placeBidFailed": "Failed to place bid",
-      "messageSent": "Message sent"
+      "messageSent": "Message sent",
+      "messageSendFailed": "Failed to send message",
+      "loadMessagesFailed": "Failed to load chat messages",
+      "realtimeChatFailed": "Realtime chat connection failed"
     },
     "chat": {
       "title": "Community Chat",
       "online": "{count} online",
+      "loading": "Loading messages...",
       "emptyTitle": "No messages yet",
       "emptyDescription": "Be the first to ask a question!",
       "sellerBadge": "Seller",

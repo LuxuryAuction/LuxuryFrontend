@@ -1,13 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { HubConnection } from "@microsoft/signalr";
 import { useSelector } from "react-redux";
 import PageHeader from "@/src/components/ui/PageHeader";
+import { useAuctionHub } from "@/src/hooks/useAuctionHub";
 import { useIsMobile } from "@/src/hooks/useIsMobile";
 import { RootState } from "@/src/store";
 import { chatService } from "@/src/services/ChatService";
-import { createAuctionHub } from "@/src/services/ChatService/hub";
 import type { IDirectChatDto, IDirectMessageDto } from "@/src/services/ChatService/types";
 import type { IChatMessage } from "../Auction/LotDetails/types";
 import type { IConversation } from "./types";
@@ -52,7 +51,6 @@ function toConversation(chat: IDirectChatDto, currentUserId: number | null): ICo
 export const ChatView = () => {
   const isMobile = useIsMobile();
   const currentUserId = useSelector((state: RootState) => state.auth.userId);
-  const connectionRef = useRef<HubConnection | null>(null);
   const activeIdRef = useRef<string | null>(null);
   const loadedChatIdsRef = useRef<Set<number>>(new Set());
   const userSelectedConversationRef = useRef(false);
@@ -187,13 +185,8 @@ export const ChatView = () => {
     void Promise.resolve().then(() => loadMessages(active.chatId));
   }, [active, loadMessages]);
 
-  useEffect(() => {
-    if (!currentUserId) return;
-
-    const connection = createAuctionHub();
-    connectionRef.current = connection;
-
-    connection.on("DirectMessage", (message: IDirectMessageDto) => {
+  const handleDirectMessage = useCallback(
+    (message: IDirectMessageDto) => {
       const chatMessage = toChatMessage(message, currentUserId);
 
       setConversations((prev) => {
@@ -221,18 +214,18 @@ export const ChatView = () => {
           ...prev.filter((conversation) => conversation.chatId !== message.chatId),
         ];
       });
-    });
+    },
+    [currentUserId, loadConversations],
+  );
 
-    connection.start().catch(() => {
-      setError("Realtime chat connection failed.");
-    });
-
-    return () => {
-      connection.off("DirectMessage");
-      void connection.stop();
-      connectionRef.current = null;
-    };
-  }, [currentUserId, loadConversations]);
+  const {
+    sendDirectMessage,
+    isConnected,
+    error: hubError,
+  } = useAuctionHub({
+    enabled: currentUserId != null,
+    onDirectMessage: handleDirectMessage,
+  });
 
   const selectConversation = useCallback(
     (id: string) => {
@@ -249,8 +242,7 @@ export const ChatView = () => {
   const handleSend = async (text: string) => {
     if (!active) return;
 
-    const connection = connectionRef.current;
-    if (!connection) {
+    if (!isConnected) {
       setError("Chat connection is not ready yet.");
       return;
     }
@@ -259,7 +251,7 @@ export const ChatView = () => {
     setError(null);
 
     try {
-      await connection.invoke("SendDirectMessage", active.otherUserId, text);
+      await sendDirectMessage(active.otherUserId, text);
       await loadMessages(active.chatId);
       await loadConversations();
     } catch {
@@ -271,6 +263,7 @@ export const ChatView = () => {
 
   const showListColumn = !isMobile || mobileShowList;
   const showThreadColumn = !isMobile || !mobileShowList;
+  const visibleError = error ?? (hubError ? "Realtime chat connection failed." : null);
 
   return (
     <div className="p-5 md:p-7 max-w-7xl mx-auto flex flex-col min-h-0">
@@ -279,9 +272,9 @@ export const ChatView = () => {
         title="Chats"
       />
 
-      {error && (
+      {visibleError && (
         <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-[13px] text-red-200">
-          {error}
+          {visibleError}
         </div>
       )}
 

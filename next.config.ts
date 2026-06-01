@@ -4,9 +4,21 @@ import path from "path";
 
 const withNextIntl = createNextIntlPlugin();
 
+const backendUrl = process.env.API_BACKEND_URL?.replace(/\/$/, "");
+
 const nextConfig: NextConfig = {
   outputFileTracingRoot: process.cwd(),
   allowedDevOrigins: ["192.168.0.104", "192.168.0.109", "192.168.50.54", "192.168.50.255"],
+  async rewrites() {
+    if (!backendUrl) return [];
+
+    return [
+      {
+        source: "/hubs/:path*",
+        destination: `${backendUrl}/hubs/:path*`,
+      },
+    ];
+  },
   turbopack: {
     resolveAlias: {
       "next-intl/config": "./src/i18n/request.ts",

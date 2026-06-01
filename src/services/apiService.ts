@@ -39,6 +39,20 @@ export function getApiBaseUrl(): string {
   return "http://127.0.0.1:8080/api";
 }
 
+/**
+ * Host root for SignalR hubs (PathBase, without /api).
+ * e.g. https://host/luxury when NEXT_PUBLIC_API_ENDPOINT is https://host/luxury/api
+ */
+export function getApiHostBaseUrl(): string {
+  const signalrEndpoint = process.env.NEXT_PUBLIC_SIGNALR_ENDPOINT?.replace(/\/$/, "");
+  if (signalrEndpoint) return signalrEndpoint;
+
+  const apiBaseUrl = getApiBaseUrl();
+  if (apiBaseUrl.startsWith("/")) return "";
+
+  return apiBaseUrl.replace(/\/api$/, "");
+}
+
 export const api = {
   async get<T>(endpoint: string, params?: Record<string, string | string[]>) {
     return apiRequest<T>(endpoint, { method: "GET", params });

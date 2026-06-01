@@ -1,22 +1,32 @@
 import * as signalR from "@microsoft/signalr";
+import { getApiHostBaseUrl } from "../apiService";
 import { getAccessToken } from "@/src/utils/session";
-import { getApiBaseUrl } from "../apiService";
 
-const AUCTION_HUB_PATH = "hubs/auction";
+export const AUCTION_HUB_PATH = "hubs/auction";
 
-function getRealtimeBaseUrl(): string {
-  const configured = process.env.NEXT_PUBLIC_SIGNALR_ENDPOINT?.replace(/\/$/, "");
-  if (configured) return configured;
+/** Server hub event: new direct message payload (DirectMessageDto). */
+export const AUCTION_HUB_EVENTS = {
+  DIRECT_MESSAGE: "DirectMessage",
+  LOT_MESSAGE: "LotMessage",
+} as const;
 
-  const apiBaseUrl = getApiBaseUrl();
-  if (apiBaseUrl.startsWith("/")) return "";
+/** Server hub method: send a direct message to recipientUserId. */
+export const AUCTION_HUB_METHODS = {
+  SEND_DIRECT_MESSAGE: "SendDirectMessage",
+  SEND_LOT_MESSAGE: "SendLotMessage",
+  JOIN_LOT: "JoinLot",
+  LEAVE_LOT: "LeaveLot",
+} as const;
 
-  return apiBaseUrl.replace(/\/api$/, "");
-}
-
+/**
+ * Auction hub — direct messages and other realtime events.
+ * JWT is passed via accessTokenFactory (?access_token=... on /hubs/*).
+ */
 export function createAuctionHub() {
-  const baseUrl = getRealtimeBaseUrl();
-  const hubUrl = baseUrl ? `${baseUrl}/${AUCTION_HUB_PATH}` : `/${AUCTION_HUB_PATH}`;
+  const apiHostBase = getApiHostBaseUrl();
+  const hubUrl = apiHostBase
+    ? `${apiHostBase}/${AUCTION_HUB_PATH}`
+    : `/${AUCTION_HUB_PATH}`;
 
   return new signalR.HubConnectionBuilder()
     .withUrl(hubUrl, {

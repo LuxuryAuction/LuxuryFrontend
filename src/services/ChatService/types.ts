@@ -17,6 +17,16 @@ export interface IDirectMessageDto {
   readAt: string | null;
 }
 
+export interface ILotMessageDto {
+  id: number;
+  lotId: number;
+  senderId: number;
+  senderUserName: string;
+  senderProfileImage: string | null;
+  content: string;
+  createdAt: string;
+}
+
 export interface IDirectChatDto {
   chatId: number;
   otherUser: IDirectChatUser;

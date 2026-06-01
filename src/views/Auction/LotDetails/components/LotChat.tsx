@@ -12,10 +12,12 @@ import { RootState } from "@/src/store";
 
 interface LotChatProps {
   messages: IChatMessage[];
-  onSendMessage?: (message: string) => void;
+  onSendMessage?: (message: string) => void | Promise<void>;
+  isLoading?: boolean;
+  isSending?: boolean;
 }
 
-export const LotChat = ({ messages, onSendMessage }: LotChatProps) => {
+export const LotChat = ({ messages, onSendMessage, isLoading = false, isSending = false }: LotChatProps) => {
   const t = useTranslations("LotDetails.chat");
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const [newMessage, setNewMessage] = useState("");
@@ -49,7 +51,11 @@ export const LotChat = ({ messages, onSendMessage }: LotChatProps) => {
       </div>
 
       <div className="flex flex-col gap-5 py-5 max-h-[400px] overflow-y-auto pr-2 relative z-10">
-        {messages.length === 0 ? (
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-10 text-center gap-2 opacity-80">
+            <span className="text-[13px] font-bold text-content-primary">{t("loading")}</span>
+          </div>
+        ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 text-center gap-3 opacity-80">
             <div className="w-12 h-12 rounded-full bg-surface-tertiary border border-border-primary flex items-center justify-center shadow-inner">
               <svg className="w-5 h-5 text-content-tertiary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -118,7 +124,7 @@ export const LotChat = ({ messages, onSendMessage }: LotChatProps) => {
             />
             <button
               type="button"
-              disabled={!newMessage.trim()}
+              disabled={!newMessage.trim() || isSending}
               className="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-brand-primary text-black hover:bg-brand-primary/90 active:scale-95 transition-all shadow-[0_0_15px_rgba(240,165,0,0.15)] group-focus-within/input:shadow-[0_0_20px_rgba(240,165,0,0.3)] cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
               onClick={trySend}
             >
