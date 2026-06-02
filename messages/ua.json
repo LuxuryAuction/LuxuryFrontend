@@ -191,13 +191,18 @@
       "reset": "Очистити",
       "publishing": "Публікуємо…",
       "processingPayment": "Обробка платежу…",
+      "confirmingPayment": "Підтвердження оплати…",
       "publishLot": "Опублікувати",
       "publishLotWithPrice": "Опублікувати ({price})"
     },
     "toasts": {
       "paymentFailed": "Оплата не пройшла. Будь ласка, спробуйте ще раз.",
       "paymentSuccess": "Оплата успішна! Створюємо лот...",
-      "createFailed": "Не вдалося створити лот"
+      "createFailed": "Не вдалося створити лот",
+      "publishSuccess": "Лот успішно опубліковано.",
+      "redirectingToTopUp": "Недостатньо коштів. Перенаправлення на поповнення…",
+      "insufficientBalance": "Недостатньо коштів. Поповніть баланс і спробуйте знову.",
+      "paymentStillProcessing": "Оплата ще обробляється. Перевірте баланс і спробуйте знову."
     }
   },
   "LotDetails": {

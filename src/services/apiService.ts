@@ -5,9 +5,10 @@ import {
   shouldProxyHubThroughDevServer,
 } from "./apiUrls";
 
-interface ApiError {
+export interface ApiError {
   message: string;
   description?: string;
+  status?: number;
 }
 
 export interface ApiResponse<T> {
@@ -201,6 +202,7 @@ export async function apiRequest<TResponse>(
       throw {
         message: errorData.message || errorData.error || `HTTP error ${response.status}`,
         description: errorData.description || response.statusText,
+        status: response.status,
       } as ApiError;
     }
 

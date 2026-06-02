@@ -191,13 +191,18 @@
       "reset": "Reset",
       "publishing": "Publishing...",
       "processingPayment": "Processing payment...",
+      "confirmingPayment": "Confirming payment...",
       "publishLot": "Publish",
       "publishLotWithPrice": "Publish ({price})"
     },
     "toasts": {
       "paymentFailed": "Payment failed. Please try again.",
       "paymentSuccess": "Payment successful! Creating lot...",
-      "createFailed": "Failed to create lot"
+      "createFailed": "Failed to create lot",
+      "publishSuccess": "Lot published successfully.",
+      "redirectingToTopUp": "Insufficient balance. Redirecting to top up...",
+      "insufficientBalance": "Insufficient balance. Top up your account and try again.",
+      "paymentStillProcessing": "Payment is still processing. Check your balance and try again."
     }
   },
   "LotDetails": {

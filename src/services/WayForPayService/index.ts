@@ -1,127 +1,91 @@
-import type { IWayForPaySignRequest, IWayForPaySignResponse, WayForPayResult } from "./types";
+import { API_ENDPOINTS } from "@/src/constants/api";
+import { api } from "../apiService";
+import type { ApiError } from "../apiService";
+import {
+  topUpError,
+  topUpLog,
+  topUpLogWayForPayFields,
+  topUpWarn,
+} from "@/src/utils/topUpDebugLog";
+import type { ITopUpRequest, ITopUpResponse } from "./types";
 
-/**
- * Request HMAC_MD5 signature from our Next.js API route
- */
-async function getPaymentSignature(data: IWayForPaySignRequest): Promise<IWayForPaySignResponse> {
-  const response = await fetch("/api/wayforpay/sign", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
+export { TOP_UP_MIN_AMOUNT, TOP_UP_MAX_AMOUNT } from "./types";
+export type { ITopUpRequest, ITopUpResponse } from "./types";
 
-  if (!response.ok) {
-    throw new Error("Failed to get payment signature");
-  }
-
-  return response.json();
-}
-
-/**
- * Generate a unique order reference for this transaction
- */
-function generateOrderReference(): string {
-  const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
-  return `LOT-${timestamp}-${random}`;
-}
-
-export interface OpenPaymentWidgetParams {
-  amount: number;
-  productName: string;
-  clientEmail?: string;
-  clientPhone?: string;
-  clientFirstName?: string;
-  clientLastName?: string;
-}
-
-/**
- * Open the WayForPay payment widget and return a promise that resolves
- * with the payment result (approved/declined/pending).
- */
-export function openPaymentWidget(params: OpenPaymentWidgetParams): Promise<WayForPayResult> {
-  return new Promise(async (resolve, reject) => {
-    let messageHandler: ((event: MessageEvent) => void) | null = null;
-
-    const cleanup = () => {
-      if (messageHandler) {
-        window.removeEventListener("message", messageHandler);
-        messageHandler = null;
-      }
-    };
+export const paymentsService = {
+  initiateTopUp: async (amount: number): Promise<ITopUpResponse> => {
+    topUpLog("service.initiateTopUp.request", {
+      amount,
+      endpoint: API_ENDPOINTS.PAYMENTS.TOP_UP,
+    });
 
     try {
-      // Check if the Wayforpay widget script is loaded
-      if (typeof Wayforpay === "undefined") {
-        throw new Error("WayForPay widget script not loaded. Please refresh the page.");
-      }
+      const response = await api.post<ITopUpResponse>(API_ENDPOINTS.PAYMENTS.TOP_UP, {
+        amount,
+      } satisfies ITopUpRequest);
 
-      const orderReference = generateOrderReference();
-      const orderDate = Math.floor(Date.now() / 1000);
+      topUpLog("service.initiateTopUp.response", {
+        orderReference: response.orderReference,
+        amount: response.amount,
+        currency: response.currency,
+        payUrl: response.payUrl,
+        fieldCount: Object.keys(response.fields ?? {}).length,
+      });
 
-      // Get the server-side HMAC_MD5 signature
-      const signData: IWayForPaySignRequest = {
-        orderReference,
-        orderDate,
-        amount: params.amount,
-        currency: "UAH",
-        productName: [params.productName],
-        productCount: [1],
-        productPrice: [params.amount],
-      };
-
-      const { merchantAccount, merchantDomainName, merchantSignature } =
-        await getPaymentSignature(signData);
-
-      messageHandler = (event: MessageEvent) => {
-        if (event.data === "WfpWidgetEventClose") {
-          cleanup();
-          reject(new Error("Payment window closed by user"));
-        }
-      };
-      window.addEventListener("message", messageHandler);
-
-      const wayforpay = new Wayforpay();
-
-      wayforpay.run(
-        {
-          merchantAccount,
-          merchantDomainName,
-          authorizationType: "SimpleSignature",
-          merchantSignature,
-          orderReference,
-          orderDate: String(orderDate),
-          amount: String(params.amount),
-          currency: "UAH",
-          productName: [params.productName],
-          productPrice: [String(params.amount)],
-          productCount: ["1"],
-          clientFirstName: params.clientFirstName || "",
-          clientLastName: params.clientLastName || "",
-          clientEmail: params.clientEmail || "",
-          clientPhone: params.clientPhone || "",
-          language: "UA",
-          straightWidget: true,
-        },
-        // onApproved
-        (response) => {
-          cleanup();
-          resolve({ status: "approved", response });
-        },
-        // onDeclined
-        (response) => {
-          cleanup();
-          resolve({ status: "declined", response });
-        },
-        // onPending
-        (response) => {
-          cleanup();
-          resolve({ status: "pending", response });
-        },
-      );
-    } catch (error) {
-      cleanup();
-      reject(error);
+      return response;
+    } catch (err) {
+      const apiErr = err as ApiError;
+      topUpError("service.initiateTopUp.failed", err, {
+        status: apiErr.status,
+        message: apiErr.message,
+        description: apiErr.description,
+      });
+      throw err;
     }
+  },
+};
+
+/**
+ * POST signed fields to WayForPay hosted page. Do not modify field keys/values.
+ */
+export function redirectToWayForPay(payUrl: string, fields: Record<string, string>): void {
+  topUpLog("service.redirectToWayForPay.start", {
+    payUrl,
+    fieldCount: Object.keys(fields).length,
   });
+  topUpLogWayForPayFields(fields);
+
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = payUrl;
+  form.acceptCharset = "utf-8";
+  form.style.display = "none";
+
+  for (const [name, value] of Object.entries(fields)) {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = name;
+    input.value = value;
+    form.appendChild(input);
+  }
+
+  document.body.appendChild(form);
+  topUpLog("service.redirectToWayForPay.submitting", { payUrl });
+  form.submit();
+  topUpWarn("service.redirectToWayForPay.submitted", {
+    note: "Navigation to WayForPay should occur; user leaves the app",
+  });
+}
+
+export async function startBalanceTopUp(amount: number): Promise<void> {
+  topUpLog("service.startBalanceTopUp.start", { amount });
+
+  const initiation = await paymentsService.initiateTopUp(amount);
+
+  topUpLog("service.startBalanceTopUp.redirecting", {
+    orderReference: initiation.orderReference,
+    payUrl: initiation.payUrl,
+  });
+
+  redirectToWayForPay(initiation.payUrl, initiation.fields);
 }
