@@ -228,6 +228,8 @@
     },
     "chat": {
       "title": "Community Chat",
+      "groupSubtitle": "Group chat for this lot",
+      "live": "Live",
       "online": "{count} online",
       "loading": "Loading messages...",
       "emptyTitle": "No messages yet",

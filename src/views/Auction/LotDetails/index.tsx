@@ -18,7 +18,7 @@ import { useGetLot, usePlaceBid } from "@/src/hooks/useLots";
 import { useSelector } from "react-redux";
 import { RootState } from "@/src/store";
 import { useAuctionHub } from "@/src/hooks/useAuctionHub";
-import { chatService } from "@/src/services/ChatService";
+import { chatService, sortMessagesChronological } from "@/src/services/ChatService";
 import type { ILotMessageDto } from "@/src/services/ChatService/types";
 import type { IChatMessage } from "./types";
 
@@ -111,7 +111,9 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
       .then((messages) => {
         if (!isMounted) return;
         setChatMessages(
-          messages.map((message) => toLotChatMessage(message, currentUserId, lot.seller.id)),
+          sortMessagesChronological(messages).map((message) =>
+            toLotChatMessage(message, currentUserId, lot.seller.id),
+          ),
         );
       })
       .catch(() => {
@@ -173,10 +175,6 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
 
     try {
       await sendLotMessage(lotId, text);
-      const messages = await chatService.getLotMessages(lotId);
-      setChatMessages(
-        messages.map((message) => toLotChatMessage(message, currentUserId, lot?.seller.id)),
-      );
       showToast("success", tLot("toasts.messageSent"));
     } catch {
       showToast("error", tLot("toasts.messageSendFailed"));
@@ -241,8 +239,9 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
             publishedAt={lot.startsAt}
           />
 
-          <div className="hidden lg:block">
+          <div className="hidden lg:block w-full">
             <LotChat
+              className="w-full"
               messages={chatMessages}
               onSendMessage={handleSendMessage}
               isSending={isSendingChat}
@@ -284,8 +283,9 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
               <BidHistory bids={lot.bidsHistory ?? []} />
             </div>
 
-            <div className={activeTab === "chat" ? "block lg:hidden" : "hidden"}>
+            <div className={activeTab === "chat" ? "block lg:hidden w-full" : "hidden"}>
               <LotChat
+                className="w-full"
                 messages={chatMessages}
                 onSendMessage={handleSendMessage}
                 isSending={isSendingChat}

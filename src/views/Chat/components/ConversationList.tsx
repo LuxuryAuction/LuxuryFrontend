@@ -18,7 +18,7 @@ export const ConversationList = ({ items, activeId, onSelect }: ConversationList
   );
 
   return (
-    <div className="flex flex-col rounded-2xl border border-border-primary bg-surface-secondary/50 overflow-hidden min-h-0 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] relative">
+    <div className="flex flex-col h-full min-h-0 rounded-2xl border border-border-primary bg-surface-secondary/50 overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.03)] relative">
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-linear-to-r from-brand-primary/50 via-brand-primary/20 to-transparent pointer-events-none" />
 
       <header className="shrink-0 px-4 pt-4 pb-3 border-b border-border-primary/40 bg-surface-primary/20">
@@ -57,7 +57,7 @@ export const ConversationList = ({ items, activeId, onSelect }: ConversationList
         </div>
       </header>
 
-      <div className="flex-1 min-h-[280px] max-h-[min(59vh,640px)] overflow-y-auto p-2.5 flex flex-col gap-1.5">
+      <div className="flex-1 min-h-0 overflow-y-auto p-2.5 flex flex-col gap-1.5">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 px-4 text-center rounded-xl border border-dashed border-border-primary/60 bg-surface-primary/20">
             <div className="w-11 h-11 rounded-2xl border border-border-primary bg-surface-tertiary/50 flex items-center justify-center mb-3">

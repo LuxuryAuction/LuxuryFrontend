@@ -1,5 +1,9 @@
 import { getAccessToken, getRefreshToken, setSession, clearSession } from "../utils/session";
 import { IAuthTokens } from "./AuthService/types";
+import {
+  extractPathBaseFromApiEndpoint,
+  shouldProxyHubThroughDevServer,
+} from "./apiUrls";
 
 interface ApiError {
   message: string;
@@ -41,16 +45,29 @@ export function getApiBaseUrl(): string {
 
 /**
  * Host root for SignalR hubs (PathBase, without /api).
- * e.g. https://host/luxury when NEXT_PUBLIC_API_ENDPOINT is https://host/luxury/api
+ * Local dev uses same-origin + Next rewrites to avoid CORS on negotiate.
  */
 export function getApiHostBaseUrl(): string {
+  const pathBase = extractPathBaseFromApiEndpoint(process.env.NEXT_PUBLIC_API_ENDPOINT);
+
+  // Local dev: use /hubs/* on the Next origin (rewrite adds backend PathBase server-side).
+  if (shouldProxyHubThroughDevServer()) {
+    return "";
+  }
+
   const signalrEndpoint = process.env.NEXT_PUBLIC_SIGNALR_ENDPOINT?.replace(/\/$/, "");
-  if (signalrEndpoint) return signalrEndpoint;
+  if (signalrEndpoint) {
+    if (pathBase && !signalrEndpoint.endsWith(pathBase)) {
+      return `${signalrEndpoint}${pathBase}`;
+    }
+    return signalrEndpoint;
+  }
 
   const apiBaseUrl = getApiBaseUrl();
-  if (apiBaseUrl.startsWith("/")) return "";
+  if (apiBaseUrl.startsWith("/")) return pathBase;
 
-  return apiBaseUrl.replace(/\/api$/, "");
+  const hostRoot = apiBaseUrl.replace(/\/api$/, "");
+  return hostRoot || pathBase;
 }
 
 export const api = {
