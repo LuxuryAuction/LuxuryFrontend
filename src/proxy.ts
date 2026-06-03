@@ -70,5 +70,6 @@ export function proxy(request: NextRequest) {
 export default proxy;
 
 export const config = {
-  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
+  // Exclude api routes, SignalR hub negotiate/WebSocket, and static assets from locale prefixing.
+  matcher: ["/((?!api|hubs|_next|_vercel|.*\\..*).*)"],
 };

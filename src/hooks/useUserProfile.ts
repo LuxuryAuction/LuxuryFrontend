@@ -13,7 +13,7 @@ export const useGetProfile = (profileUserName?: string) => {
   const [error, setError] = useState<Error | null>(null);
 
   const fetchProfile = useCallback(async () => {
-    if (!profileUserName) return;
+    if (!profileUserName) return undefined;
 
     setIsLoading(true);
     setError(null);
@@ -27,8 +27,11 @@ export const useGetProfile = (profileUserName?: string) => {
       if (isOwnProfile && responseData.balance != null) {
         dispatch(setUserBalance(responseData.balance));
       }
+
+      return responseData;
     } catch (err) {
       setError(err instanceof Error ? err : new Error("Failed to fetch user profile"));
+      return undefined;
     } finally {
       setIsLoading(false);
     }

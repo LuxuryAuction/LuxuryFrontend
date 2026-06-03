@@ -28,8 +28,12 @@ export const ProfileHeader = ({
   const t = useTranslations("ProfilePage");
   const tReport = useTranslations("ReportModal");
 
-  const chatHref =
-    profileUserName != null ? `/user/chat?userName=${encodeURIComponent(profileUserName)}` : "/user/chat";
+  const chatParams = new URLSearchParams();
+  chatParams.set("userId", String(profile.id));
+  if (profileUserName != null) {
+    chatParams.set("userName", profileUserName);
+  }
+  const chatHref = `/user/chat?${chatParams.toString()}`;
 
   const userStats = [
     { val: String(profile.lotsSold), label: t("stats.lotsSold") },

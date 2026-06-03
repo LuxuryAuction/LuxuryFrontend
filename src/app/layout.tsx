@@ -1,5 +1,4 @@
 import { Inter, JetBrains_Mono } from "next/font/google";
-import Script from "next/script";
 import { ToastProvider } from "@/src/components/ui/Toast";
 import { Providers } from "@/src/components/Providers";
 import "./globals.css";
@@ -37,11 +36,6 @@ export default function RootLayout({
             {children}
           </ToastProvider>
         </Providers>
-        <Script
-          id="widget-wfp-script"
-          src="https://secure.wayforpay.com/server/pay-widget.js"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );

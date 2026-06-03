@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/src/i18n/navigation";
 import { ProfileHeader } from "./ProfileHeader";
 import { ProfileHome } from "./profileHome";
 import { MyLotsTab } from "./MyLotsTab";
@@ -12,17 +14,24 @@ import Tabs from "@/src/components/ui/Tabs";
 import { Alert } from "@/src/components/ui/Alert";
 import { useToast } from "@/src/components/ui/Toast";
 import { useGetProfile } from "@/src/hooks/useUserProfile";
+import { useTopUpReturnPolling } from "@/src/hooks/useTopUpReturnPolling";
 import { useParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/src/store";
 import { useTranslations } from "next-intl";
+import { isTopUpReturn } from "@/src/utils/paymentReturn";
+import { consumePostTopUpRedirect, peekPostTopUpRedirect } from "@/src/utils/paymentStorage";
+import { topUpLog } from "@/src/utils/topUpDebugLog";
 
 export const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState("profileHome");
   const [isReportOpen, setIsReportOpen] = useState(false);
+  const [handledReturn, setHandledReturn] = useState(false);
 
   const { showToast } = useToast();
   const t = useTranslations("ProfilePage");
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const params = useParams();
   const profileUserName = params.userName as string | undefined;
@@ -35,6 +44,67 @@ export const ProfilePage = () => {
     profileUserName.toLowerCase() === authUserName.toLowerCase();
 
   const { data: profile, isLoading, error, refetch } = useGetProfile(profileUserName);
+
+  const isReturnFromPayment = useMemo(
+    () => isTopUpReturn(searchParams) && isMe && !handledReturn,
+    [searchParams, isMe, handledReturn],
+  );
+
+  useEffect(() => {
+    topUpLog("profile.mountState", {
+      profileUserName,
+      authUserName,
+      isMe,
+      isReturnFromPayment,
+      handledReturn,
+      searchParams: searchParams.toString(),
+      profileBalance: profile?.balance,
+      pendingRedirect: peekPostTopUpRedirect(),
+    });
+  }, [
+    profileUserName,
+    authUserName,
+    isMe,
+    isReturnFromPayment,
+    handledReturn,
+    searchParams,
+    profile?.balance,
+  ]);
+
+  useEffect(() => {
+    if (isReturnFromPayment) {
+      topUpLog("profile.returnFromPayment.detected", {
+        profileBalance: profile?.balance,
+        pendingRedirect: peekPostTopUpRedirect(),
+      });
+      setActiveTab("balance");
+    }
+  }, [isReturnFromPayment, profile?.balance]);
+
+  const pollBalance = useCallback(async () => {
+    topUpLog("profile.pollBalance.refetch.start");
+    const updated = await refetch();
+    topUpLog("profile.pollBalance.refetch.done", { balance: updated?.balance });
+    return updated?.balance;
+  }, [refetch]);
+
+  const { isConfirming } = useTopUpReturnPolling({
+    enabled: isReturnFromPayment,
+    initialBalance: profile?.balance ?? 0,
+    onPoll: pollBalance,
+    onSuccess: (newBalance) => {
+      topUpLog("profile.pollBalance.onSuccess", { newBalance });
+      setHandledReturn(true);
+      const redirectPath = consumePostTopUpRedirect();
+      topUpLog("profile.pollBalance.postRedirect", { redirectPath });
+      if (redirectPath) {
+        topUpLog("profile.pollBalance.navigating", { redirectPath });
+        router.replace(redirectPath);
+      }
+    },
+    successMessage: "Balance updated successfully.",
+    timeoutMessage: "Payment is still processing. Refresh the page in a moment.",
+  });
 
   const tabsConfig = isMe
     ? [
@@ -54,7 +124,7 @@ export const ProfilePage = () => {
     proofs: string;
     telegramContact: string;
   }) => {
-    console.log(data)
+    console.log(data);
     try {
       showToast("success", "Report submitted successfully. Our team will review it shortly.");
     } catch {
@@ -79,7 +149,6 @@ export const ProfilePage = () => {
   if (!profile) {
     return null;
   }
-
 
   return (
     <div className="p-5 md:p-7 max-w-7xl mx-auto">
@@ -111,7 +180,7 @@ export const ProfilePage = () => {
       {activeTab === "lots" && <MyLotsTab userName={profileUserName} />}
       {activeTab === "bids" && isMe && <MyBidsTab userName={profileUserName} />}
       {activeTab === "balance" && isMe && (
-        <BalanceTab balance={profile.balance} onTopUpSuccess={refetch} />
+        <BalanceTab balance={profile.balance} isConfirmingPayment={isConfirming} />
       )}
 
       {!isMe && isAuthenticated && (

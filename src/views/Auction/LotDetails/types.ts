@@ -5,4 +5,5 @@ export interface IChatMessage {
   message: string;
   timestamp: string;
   role?: "seller" | "bidder";
+  isOwn?: boolean;
 }

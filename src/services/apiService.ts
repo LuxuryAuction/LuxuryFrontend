@@ -1,9 +1,14 @@
 import { getAccessToken, getRefreshToken, setSession, clearSession } from "../utils/session";
 import { IAuthTokens } from "./AuthService/types";
+import {
+  extractPathBaseFromApiEndpoint,
+  shouldProxyHubThroughDevServer,
+} from "./apiUrls";
 
-interface ApiError {
+export interface ApiError {
   message: string;
   description?: string;
+  status?: number;
 }
 
 export interface ApiResponse<T> {
@@ -20,7 +25,7 @@ interface RequestOptions extends Omit<RequestInit, "body"> {
   returnBlob?: boolean;
 }
 
-function getApiBaseUrl(): string {
+export function getApiBaseUrl(): string {
   const configured = process.env.NEXT_PUBLIC_API_ENDPOINT?.replace(/\/$/, "");
   if (configured) {
     // Relative path → same-origin proxy (app/api/[...path]/route.ts)
@@ -37,6 +42,33 @@ function getApiBaseUrl(): string {
   }
 
   return "http://127.0.0.1:8080/api";
+}
+
+/**
+ * Host root for SignalR hubs (PathBase, without /api).
+ * Local dev uses same-origin + Next rewrites to avoid CORS on negotiate.
+ */
+export function getApiHostBaseUrl(): string {
+  const pathBase = extractPathBaseFromApiEndpoint(process.env.NEXT_PUBLIC_API_ENDPOINT);
+
+  // Local dev: use /hubs/* on the Next origin (rewrite adds backend PathBase server-side).
+  if (shouldProxyHubThroughDevServer()) {
+    return "";
+  }
+
+  const signalrEndpoint = process.env.NEXT_PUBLIC_SIGNALR_ENDPOINT?.replace(/\/$/, "");
+  if (signalrEndpoint) {
+    if (pathBase && !signalrEndpoint.endsWith(pathBase)) {
+      return `${signalrEndpoint}${pathBase}`;
+    }
+    return signalrEndpoint;
+  }
+
+  const apiBaseUrl = getApiBaseUrl();
+  if (apiBaseUrl.startsWith("/")) return pathBase;
+
+  const hostRoot = apiBaseUrl.replace(/\/api$/, "");
+  return hostRoot || pathBase;
 }
 
 export const api = {
@@ -152,7 +184,7 @@ export async function apiRequest<TResponse>(
           // Retry the original request with new token
           accessToken = getAccessToken();
           response = await makeRequest(accessToken);
-        } catch (refreshError) {
+        } catch {
           refreshPromise = null;
           clearSession();
           // Optionally redirect to login or throw specific error
@@ -170,6 +202,7 @@ export async function apiRequest<TResponse>(
       throw {
         message: errorData.message || errorData.error || `HTTP error ${response.status}`,
         description: errorData.description || response.statusText,
+        status: response.status,
       } as ApiError;
     }
 

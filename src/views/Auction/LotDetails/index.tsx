@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { LotInfo } from "./components/LotInfo";
 import { BiddingPanel } from "./components/BiddingPanel";
 import { BidHistory } from "./components/BidHistory";
@@ -17,37 +17,51 @@ import { useTranslations } from "next-intl";
 import { useGetLot, usePlaceBid } from "@/src/hooks/useLots";
 import { useSelector } from "react-redux";
 import { RootState } from "@/src/store";
+import { useAuctionHub } from "@/src/hooks/useAuctionHub";
+import { chatService, sortMessagesChronological } from "@/src/services/ChatService";
+import type { ILotMessageDto } from "@/src/services/ChatService/types";
+import type { IChatMessage } from "./types";
 
 interface LotDetailsViewProps {
   id?: string;
 }
 
-const MOCK_MESSAGES = [
-  {
-    id: "m1",
-    userName: "Trajan",
-    userAvatar: "https://i.pravatar.cc/150?u=trajan",
-    message: "Does it come with original box and papers?",
-    timestamp: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
-    role: "bidder" as const,
-  },
-  {
-    id: "m2",
-    userName: "Alex Kovalenko",
-    userAvatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=200&h=200",
-    message: "This listing is for the watch only. However, it was recently serviced by an authorized Rolex center.",
-    timestamp: new Date(Date.now() - 1000 * 60 * 150).toISOString(),
-    role: "seller" as const,
-  },
-  {
-    id: "m3",
-    userName: "Marcus Aurelius",
-    userAvatar: "https://i.pravatar.cc/150?u=marcus",
-    message: "Beautiful piece! Is the lume still glowing?",
-    timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
-    role: "bidder" as const,
-  },
-];
+function toLotChatMessage(
+  message: ILotMessageDto,
+  currentUserId: number | null,
+  sellerUserId?: number,
+): IChatMessage {
+  const rawMessage = message as ILotMessageDto & {
+    Id?: number;
+    SenderId?: number;
+    SenderUserName?: string;
+    SenderProfileImage?: string | null;
+    Content?: string;
+    CreatedAt?: string;
+  };
+  const id = rawMessage.id ?? rawMessage.Id;
+  const senderId = rawMessage.senderId ?? rawMessage.SenderId;
+  const senderUserName = rawMessage.senderUserName ?? rawMessage.SenderUserName ?? "";
+  const senderProfileImage = rawMessage.senderProfileImage ?? rawMessage.SenderProfileImage;
+  const content = rawMessage.content ?? rawMessage.Content ?? "";
+  const createdAt = rawMessage.createdAt ?? rawMessage.CreatedAt ?? new Date().toISOString();
+  const isOwn = currentUserId != null && senderId === currentUserId;
+
+  return {
+    id: String(id),
+    userName: isOwn ? "You" : senderUserName,
+    userAvatar: senderProfileImage ?? undefined,
+    message: content,
+    timestamp: createdAt,
+    role: senderId === sellerUserId ? "seller" : "bidder",
+    isOwn,
+  };
+}
+
+function getLotMessageLotId(message: ILotMessageDto): number | undefined {
+  const rawMessage = message as ILotMessageDto & { LotId?: number };
+  return rawMessage.lotId ?? rawMessage.LotId;
+}
 
 export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
   const lotId = Number(id);
@@ -60,6 +74,70 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
   const tDelivery = useTranslations("LotDelivery");
   const tLot = useTranslations("LotDetails");
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const currentUserId = useSelector((state: RootState) => state.auth.userId);
+  const [chatMessages, setChatMessages] = useState<IChatMessage[]>([]);
+  const [isSendingChat, setIsSendingChat] = useState(false);
+
+  const handleLotMessage = useCallback(
+    (message: ILotMessageDto) => {
+      if (Number.isNaN(lotId) || getLotMessageLotId(message) !== lotId) return;
+
+      const mappedMessage = toLotChatMessage(message, currentUserId, lot?.seller.id);
+      setChatMessages((prev) => {
+        if (prev.some((item) => item.id === mappedMessage.id)) return prev;
+        return [...prev, mappedMessage];
+      });
+    },
+    [currentUserId, lot?.seller.id, lotId],
+  );
+
+  const {
+    sendLotMessage,
+    joinLot,
+    leaveLot,
+    isConnected: isHubConnected,
+  } = useAuctionHub({
+    enabled: isAuthenticated,
+    onLotMessage: handleLotMessage,
+  });
+
+  useEffect(() => {
+    if (Number.isNaN(lotId) || !lot) return;
+
+    let isMounted = true;
+
+    chatService
+      .getLotMessages(lotId)
+      .then((messages) => {
+        if (!isMounted) return;
+        setChatMessages(
+          sortMessagesChronological(messages).map((message) =>
+            toLotChatMessage(message, currentUserId, lot.seller.id),
+          ),
+        );
+      })
+      .catch(() => {
+        if (isMounted) {
+          showToast("error", tLot("toasts.loadMessagesFailed"));
+        }
+      })
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentUserId, lot, lotId, showToast, tLot]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !isHubConnected || Number.isNaN(lotId)) return;
+
+    void joinLot(lotId).catch(() => {
+      showToast("error", tLot("toasts.realtimeChatFailed"));
+    });
+
+    return () => {
+      void leaveLot(lotId);
+    };
+  }, [isAuthenticated, isHubConnected, joinLot, leaveLot, lotId, showToast, tLot]);
 
   const handlePlaceBid = async (amount: number) => {
     if (!lot || Number.isNaN(lotId)) return;
@@ -85,10 +163,24 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
     }
   };
 
-  const handleSendMessage = (text: string) => {
-    if (!isAuthenticated) return;
-    console.log(text);
-    showToast("success", tLot("toasts.messageSent"));
+  const handleSendMessage = async (text: string) => {
+    if (!isAuthenticated || Number.isNaN(lotId)) return;
+
+    if (!isHubConnected) {
+      showToast("error", tLot("toasts.realtimeChatFailed"));
+      return;
+    }
+
+    setIsSendingChat(true);
+
+    try {
+      await sendLotMessage(lotId, text);
+      showToast("success", tLot("toasts.messageSent"));
+    } catch {
+      showToast("error", tLot("toasts.messageSendFailed"));
+    } finally {
+      setIsSendingChat(false);
+    }
   };
 
 
@@ -147,8 +239,13 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
             publishedAt={lot.startsAt}
           />
 
-          <div className="hidden lg:block">
-            <LotChat messages={MOCK_MESSAGES} onSendMessage={handleSendMessage} />
+          <div className="hidden lg:block w-full">
+            <LotChat
+              className="w-full"
+              messages={chatMessages}
+              onSendMessage={handleSendMessage}
+              isSending={isSendingChat}
+            />
           </div>
         </div>
 
@@ -186,8 +283,13 @@ export const LotDetailsView = ({ id }: LotDetailsViewProps) => {
               <BidHistory bids={lot.bidsHistory ?? []} />
             </div>
 
-            <div className={activeTab === "chat" ? "block lg:hidden" : "hidden"}>
-              <LotChat messages={MOCK_MESSAGES} onSendMessage={handleSendMessage} />
+            <div className={activeTab === "chat" ? "block lg:hidden w-full" : "hidden"}>
+              <LotChat
+                className="w-full"
+                messages={chatMessages}
+                onSendMessage={handleSendMessage}
+                isSending={isSendingChat}
+              />
             </div>
 
             <SellerCard seller={lot.seller} />

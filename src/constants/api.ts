@@ -30,6 +30,8 @@ export const API_ENDPOINTS = {
   CHATS: {
     DIRECT: "chats/direct",
     DIRECT_MESSAGES: (chatId: number | string) => `chats/direct/${chatId}/messages`,
+    DIRECT_MESSAGE_READ: (messageId: number | string) => `messages/direct/${messageId}/read`,
+    LOT_MESSAGES: (lotId: number | string) => `lots/${lotId}/messages`,
   },
   PAYMENTS: {
     TOP_UP: "payments/top-up",

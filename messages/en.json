@@ -190,13 +190,20 @@
     "buttons": {
       "reset": "Reset",
       "publishing": "Publishing...",
+      "processingPayment": "Processing payment...",
+      "confirmingPayment": "Confirming payment...",
       "publishLot": "Publish",
       "publishLotWithPrice": "Publish ({price})",
       "topUpBalance": "Top up balance"
     },
     "toasts": {
-      "insufficientBalance": "Insufficient balance. Top up your balance to publish this lot.",
-      "createFailed": "Failed to create lot"
+      "paymentFailed": "Payment failed. Please try again.",
+      "paymentSuccess": "Payment successful! Creating lot...",
+      "createFailed": "Failed to create lot",
+      "publishSuccess": "Lot published successfully.",
+      "redirectingToTopUp": "Insufficient balance. Redirecting to top up...",
+      "insufficientBalance": "Insufficient balance. Top up your account and try again.",
+      "paymentStillProcessing": "Payment is still processing. Check your balance and try again."
     }
   },
   "LotDetails": {
@@ -220,11 +227,17 @@
       "bidTooLow": "Bid must be higher than current price",
       "leadingBidder": "You are now the leading bidder at {amount}!",
       "placeBidFailed": "Failed to place bid",
-      "messageSent": "Message sent"
+      "messageSent": "Message sent",
+      "messageSendFailed": "Failed to send message",
+      "loadMessagesFailed": "Failed to load chat messages",
+      "realtimeChatFailed": "Realtime chat connection failed"
     },
     "chat": {
       "title": "Community Chat",
+      "groupSubtitle": "Group chat for this lot",
+      "live": "Live",
       "online": "{count} online",
+      "loading": "Loading messages...",
       "emptyTitle": "No messages yet",
       "emptyDescription": "Be the first to ask a question!",
       "sellerBadge": "Seller",
