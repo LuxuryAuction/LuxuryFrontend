@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Link, useRouter } from "@/src/i18n/navigation";
-import { useDispatch, useSelector } from "react-redux";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
+import { useSelector } from "react-redux";
+import { Link } from "@/src/i18n/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -25,26 +26,47 @@ import { createLotSchema } from "@/src/schemas/createLot.schema";
 import { LotPublished } from "./components/LotPublished";
 import { Checkbox } from "@/src/components/ui/Checkbox";
 import { useCreateLot } from "@/src/hooks/useLots";
+import { useBalanceTopUp } from "@/src/hooks/useBalanceTopUp";
 import { useGetCategories } from "@/src/hooks/useCategory";
+import { useGetProfile } from "@/src/hooks/useUserProfile";
 import { formatCurrency } from "@/src/utils/textUtils";
 import { useToast } from "@/src/components/ui/Toast";
 import { RootState } from "@/src/store";
-import { setUserBalance } from "@/src/store/slices/authSlice";
-import { getProfileHref } from "@/src/views/Sidebar/sidebar.config";
+import { buildCreateLotRequest } from "@/src/utils/createLotPayload";
+import {
+  clearPendingLotDraft,
+  loadPendingLotDraft,
+  savePendingLotDraft,
+  setPostTopUpRedirect,
+} from "@/src/utils/paymentStorage";
+import {
+  computeTopUpShortfall,
+  CREATE_LOT_TOP_UP_RETURN_PATH,
+  isInsufficientBalanceError,
+  isTopUpReturn,
+} from "@/src/utils/paymentReturn";
+import type { ApiError } from "@/src/services/apiService";
+
+const RESUME_POLL_INTERVAL_MS = 2000;
+const RESUME_POLL_MAX_ATTEMPTS = 15;
 
 export const CreateLotView = () => {
-  const dispatch = useDispatch();
-  const router = useRouter();
   const t = useTranslations("CreateLot");
-  const userName = useSelector((state: RootState) => state.auth.userName);
-  const balance = useSelector((state: RootState) => state.auth.balance);
   const tCondition = useTranslations("ItemCondition");
   const tSex = useTranslations("ItemSex");
   const tDelivery = useTranslations("LotDelivery");
+  const searchParams = useSearchParams();
+  const authUserName = useSelector((state: RootState) => state.auth.userName);
+
   const [submitted, setSubmitted] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [isResuming, setIsResuming] = useState(false);
+  const resumeStartedRef = useRef(false);
+
   const { createLot, isLoading: isCreating } = useCreateLot();
+  const { startTopUp, isLoading: isStartingTopUp, minAmount, maxAmount } = useBalanceTopUp();
   const { categories, isLoading: isLoadingCategories } = useGetCategories();
+  const { data: profile, refetch: refetchProfile } = useGetProfile(authUserName ?? undefined);
   const { showToast } = useToast();
 
   const categoryOptions = useMemo(() =>
@@ -81,52 +103,132 @@ export const CreateLotView = () => {
     defaultValues: INITIAL_FORM,
   });
 
-  const onSubmit = async (data: ICreateLotFormData) => {
-    try {
-      const selectedCategory = categories.find(cat => cat.id === Number(data.categoryId));
-      const postingPrice = selectedCategory?.postingPrice ?? 0;
+  const getPostingPrice = useCallback(
+    (categoryId: string | number) => {
+      const selectedCategory = categories.find((cat) => cat.id === Number(categoryId));
+      return selectedCategory?.postingPrice ?? 50;
+    },
+    [categories],
+  );
 
-      if (postingPrice > 0 && (balance ?? 0) < postingPrice) {
-        showToast("error", t("toasts.insufficientBalance"));
+  const publishLot = useCallback(
+    async (data: ICreateLotFormData) => {
+      await createLot(buildCreateLotRequest(data));
+      setSubmitted(true);
+    },
+    [createLot],
+  );
+
+  const redirectToTopUp = useCallback(
+    async (data: ICreateLotFormData, postingPrice: number, balance: number) => {
+      const topUpAmount = computeTopUpShortfall(balance, postingPrice, minAmount, maxAmount);
+      await savePendingLotDraft(data, postingPrice);
+      setPostTopUpRedirect(CREATE_LOT_TOP_UP_RETURN_PATH);
+      showToast("info", t("toasts.redirectingToTopUp"));
+      await startTopUp(topUpAmount);
+    },
+    [minAmount, maxAmount, showToast, startTopUp, t],
+  );
+
+  useEffect(() => {
+    if (!isTopUpReturn(searchParams) || !authUserName || resumeStartedRef.current) {
+      return;
+    }
+    resumeStartedRef.current = true;
+
+    let cancelled = false;
+
+    const resumeAfterTopUp = async () => {
+      setIsResuming(true);
+      const draft = await loadPendingLotDraft();
+      if (!draft || cancelled) {
+        setIsResuming(false);
         return;
       }
 
-      await createLot({
-        name: data.title,
-        description: data.description,
-        categoryId: Number(data.categoryId),
-        startingPrice: Number(data.startingPrice),
-        priceStep: Number(data.minBidIncrement) || 10,
-        startDate: new Date(data.startDate).toISOString(),
-        draft: false,
-        sex: data.sex || "unisex",
-        condition: data.condition,
-        size: data.size || "onesize",
-        deliveryMethod: data.delivery,
-        images: data.images,
-      });
+      reset(draft.form);
 
-      if (balance != null && postingPrice > 0) {
-        dispatch(setUserBalance(balance - postingPrice));
+      for (let attempt = 0; attempt < RESUME_POLL_MAX_ATTEMPTS; attempt += 1) {
+        if (cancelled) return;
+
+        const updated = await refetchProfile();
+        const balance = updated?.balance ?? 0;
+
+        if (balance >= draft.postingPrice) {
+          try {
+            await publishLot(draft.form);
+            clearPendingLotDraft();
+            showToast("success", t("toasts.publishSuccess"));
+          } catch (error) {
+            if (isInsufficientBalanceError(error)) {
+              showToast("error", t("toasts.insufficientBalance"));
+            } else {
+              const message =
+                error instanceof Error ? error.message : t("toasts.createFailed");
+              showToast("error", message);
+            }
+          } finally {
+            setIsResuming(false);
+          }
+          return;
+        }
+
+        await new Promise((resolve) => {
+          window.setTimeout(resolve, RESUME_POLL_INTERVAL_MS);
+        });
       }
 
-      setSubmitted(true);
+      showToast("info", t("toasts.paymentStillProcessing"));
+      setIsResuming(false);
+    };
+
+    void resumeAfterTopUp();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [authUserName, publishLot, refetchProfile, reset, searchParams, showToast, t]);
+
+  const onSubmit = async (data: ICreateLotFormData) => {
+    const postingPrice = getPostingPrice(data.categoryId);
+
+    try {
+      let balance = profile?.balance ?? 0;
+      if (!profile && authUserName) {
+        const refreshed = await refetchProfile();
+        balance = refreshed?.balance ?? 0;
+      }
+
+      if (balance >= postingPrice) {
+        await publishLot(data);
+        showToast("success", t("toasts.publishSuccess"));
+        return;
+      }
+
+      await redirectToTopUp(data, postingPrice, balance);
     } catch (error) {
-      console.error("Failed to create lot:", error);
-      const message = error instanceof Error ? error.message : t("toasts.createFailed");
+      if (isInsufficientBalanceError(error)) {
+        const balance = profile?.balance ?? 0;
+        try {
+          await redirectToTopUp(data, postingPrice, balance);
+        } catch (topUpError) {
+          const message =
+            topUpError instanceof Error ? topUpError.message : t("toasts.createFailed");
+          showToast("error", message);
+        }
+        return;
+      }
+
+      const apiError = error as ApiError;
+      const message =
+        error instanceof Error
+          ? error.message
+          : apiError.message || t("toasts.createFailed");
       showToast("error", message);
     }
   };
 
   const formValues = watch();
-
-  const selectedCategory = categories.find(
-    (cat) => cat.id === Number(formValues.categoryId),
-  );
-  const postingPrice = selectedCategory?.postingPrice ?? 0;
-  const hasEnoughBalance =
-    !formValues.categoryId || (balance ?? 0) >= postingPrice;
-  console.log(balance)
 
   if (submitted) {
     return (
@@ -367,33 +469,26 @@ export const CreateLotView = () => {
               >
                 Save Draft
               </Button> */}
-              {hasEnoughBalance ? (
-                <Button
-                  type="submit"
-                  variant="primary"
-                  size="sm"
-                  isLoading={isCreating}
-                  loadingText={t("buttons.publishing")}
-                  disabled={!agreed}
-                >
-                  {formValues.categoryId ? (
-                    <>{t("buttons.publishLotWithPrice", { price: formatCurrency(postingPrice) })}</>
-                  ) : (
-                    <>{t("buttons.publishLot")}</>
-                  )}
-                </Button>
-              ) : (
-                <Button
-                  type="button"
-                  variant="primary"
-                  size="sm"
-                  disabled={!agreed}
-                  onClick={() => router.push(getProfileHref(userName))}
-                  className="w-auto!"
-                >
-                  {t("buttons.topUpBalance")}
-                </Button>
-              )}
+              <Button
+                type="submit"
+                variant="primary"
+                size="sm"
+                isLoading={isCreating || isStartingTopUp || isResuming}
+                loadingText={
+                  isResuming
+                    ? t("buttons.confirmingPayment")
+                    : isStartingTopUp
+                      ? t("buttons.processingPayment")
+                      : t("buttons.publishing")
+                }
+                disabled={!agreed}
+              >
+                {formValues.categoryId ? (
+                  <>{t("buttons.publishLotWithPrice", { price: formatCurrency(categories.find(cat => cat.id === Number(formValues.categoryId))?.postingPrice || 0) })}</>
+                ) : (
+                  <>{t("buttons.publishLot")}</>
+                )}
+              </Button>
             </div>
           </div>
         </form>

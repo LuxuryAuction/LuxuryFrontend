@@ -102,11 +102,21 @@ export const useAuctionHub = ({
     await connection.invoke(AUCTION_HUB_METHODS.SEND_LOT_MESSAGE, lotId, content);
   }, []);
 
+  const markDirectRead = useCallback(async (messageId: number) => {
+    const connection = connectionRef.current;
+    if (!connection) {
+      throw new Error("Chat connection is not ready yet.");
+    }
+
+    await connection.invoke(AUCTION_HUB_METHODS.MARK_DIRECT_READ, messageId);
+  }, []);
+
   return {
     sendDirectMessage,
     sendLotMessage,
     joinLot,
     leaveLot,
+    markDirectRead,
     isConnected,
     error,
   };

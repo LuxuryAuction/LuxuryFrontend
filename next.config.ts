@@ -4,18 +4,31 @@ import path from "path";
 
 const withNextIntl = createNextIntlPlugin();
 
-const backendUrl = process.env.API_BACKEND_URL?.replace(/\/$/, "");
+function resolveBackendRootUrl(): string | undefined {
+  const explicit = process.env.API_BACKEND_URL?.replace(/\/$/, "");
+  if (explicit) return explicit;
+
+  const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT?.replace(/\/$/, "");
+  if (apiEndpoint?.endsWith("/api")) {
+    return apiEndpoint.slice(0, -4);
+  }
+
+  return undefined;
+}
+
+const backendRoot = resolveBackendRootUrl();
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: process.cwd(),
   allowedDevOrigins: ["192.168.0.104", "192.168.0.109", "192.168.50.54", "192.168.50.255"],
   async rewrites() {
-    if (!backendUrl) return [];
+    if (!backendRoot) return [];
 
+    // Client always calls /hubs/* (no locale, no PathBase). backendRoot includes PathBase when set.
     return [
       {
         source: "/hubs/:path*",
-        destination: `${backendUrl}/hubs/:path*`,
+        destination: `${backendRoot}/hubs/:path*`,
       },
     ];
   },

@@ -6,7 +6,8 @@ import PageHeader from "@/src/components/ui/PageHeader";
 import { useAuctionHub } from "@/src/hooks/useAuctionHub";
 import { useIsMobile } from "@/src/hooks/useIsMobile";
 import { RootState } from "@/src/store";
-import { chatService } from "@/src/services/ChatService";
+import { chatService, sortMessagesChronological } from "@/src/services/ChatService";
+import { collapseChatPreview, normalizeOutgoingChatText } from "@/src/utils/chatText";
 import type { IDirectChatDto, IDirectMessageDto } from "@/src/services/ChatService/types";
 import type { IChatMessage } from "../Auction/LotDetails/types";
 import type { IConversation } from "./types";
@@ -41,7 +42,9 @@ function toConversation(chat: IDirectChatDto, currentUserId: number | null): ICo
     otherUserId: chat.otherUser.id,
     peerUserName: chat.otherUser.userName,
     peerAvatar: chat.otherUser.profileImage ?? undefined,
-    lastPreview: lastMessage ? `${isOwnLastMessage ? "You: " : ""}${lastMessage.content}` : EMPTY_PREVIEW,
+    lastPreview: lastMessage
+      ? `${isOwnLastMessage ? "You: " : ""}${collapseChatPreview(lastMessage.content)}`
+      : EMPTY_PREVIEW,
     lastAt: chat.updatedAt,
     unreadCount: chat.unreadCount,
     messages: [],
@@ -88,31 +91,60 @@ export const ChatView = () => {
     loadedChatIdsRef.current.clear();
   }, [currentUserId]);
 
-  const loadMessages = useCallback(async (chatId: number) => {
-    setLoadingMessagesChatId(chatId);
-    setError(null);
+  const markIncomingAsRead = useCallback(
+    async (messages: IDirectMessageDto[], markDirectRead: (messageId: number) => Promise<void>) => {
+      if (currentUserId == null) return;
 
-    try {
-      const messages = await chatService.getDirectMessages(chatId);
-      const mappedMessages = messages.map((message) => toChatMessage(message, currentUserId));
+      const unreadForMe = messages.filter(
+        (message) => message.recipientId === currentUserId && !message.readAt,
+      );
 
-      loadedChatIdsRef.current.add(chatId);
-      setConversations((prev) =>
-        prev.map((conversation) =>
-          conversation.chatId === chatId
-            ? { ...conversation, messages: mappedMessages, unreadCount: 0 }
-            : conversation,
+      await Promise.all(
+        unreadForMe.map((message) =>
+          markDirectRead(message.id).catch(() => chatService.markDirectMessageRead(message.id)),
         ),
       );
-    } catch {
-      setError("Failed to load messages.");
-    } finally {
-      setLoadingMessagesChatId(null);
-    }
-  }, [currentUserId]);
+    },
+    [currentUserId],
+  );
 
-  const loadConversations = useCallback(async () => {
-    setIsLoadingConversations(true);
+  const loadMessages = useCallback(
+    async (chatId: number, markDirectRead?: (messageId: number) => Promise<void>) => {
+      setLoadingMessagesChatId(chatId);
+      setError(null);
+
+      try {
+        const messages = sortMessagesChronological(await chatService.getDirectMessages(chatId));
+        const mappedMessages = messages.map((message) => toChatMessage(message, currentUserId));
+
+        if (markDirectRead) {
+          await markIncomingAsRead(messages, markDirectRead);
+        }
+
+        loadedChatIdsRef.current.add(chatId);
+        setConversations((prev) =>
+          prev.map((conversation) =>
+            conversation.chatId === chatId
+              ? { ...conversation, messages: mappedMessages, unreadCount: 0 }
+              : conversation,
+          ),
+        );
+      } catch {
+        setError("Failed to load messages.");
+      } finally {
+        setLoadingMessagesChatId(null);
+      }
+    },
+    [currentUserId, markIncomingAsRead],
+  );
+
+  const hasLoadedConversationsRef = useRef(false);
+
+  const loadConversations = useCallback(async (options?: { silent?: boolean }) => {
+    const showFullScreenLoading = !options?.silent && !hasLoadedConversationsRef.current;
+    if (showFullScreenLoading) {
+      setIsLoadingConversations(true);
+    }
     setError(null);
 
     try {
@@ -172,44 +204,55 @@ export const ChatView = () => {
     } catch {
       setError("Failed to load chats.");
     } finally {
-      setIsLoadingConversations(false);
+      hasLoadedConversationsRef.current = true;
+      if (showFullScreenLoading) {
+        setIsLoadingConversations(false);
+      }
     }
   }, [currentUserId, requestedUserId, requestedUserName]);
 
   useEffect(() => {
-    void Promise.resolve().then(loadConversations);
+    void loadConversations();
   }, [loadConversations]);
 
-  useEffect(() => {
-    if (!active || loadedChatIdsRef.current.has(active.chatId)) return;
-    void Promise.resolve().then(() => loadMessages(active.chatId));
-  }, [active, loadMessages]);
+  const markDirectReadRef = useRef<((messageId: number) => Promise<void>) | null>(null);
 
   const handleDirectMessage = useCallback(
     (message: IDirectMessageDto) => {
       const chatMessage = toChatMessage(message, currentUserId);
+      const isForMe =
+        currentUserId != null && message.recipientId === currentUserId && !message.readAt;
 
       setConversations((prev) => {
         const existingConversation = prev.find((conversation) => conversation.chatId === message.chatId);
         if (!existingConversation) {
-          void loadConversations();
+          void loadConversations({ silent: true });
           return prev;
         }
 
         const isActive = activeIdRef.current === existingConversation.id;
         const messageExists = existingConversation.messages.some((item) => item.id === chatMessage.id);
 
+        if (isActive && isForMe && markDirectReadRef.current) {
+          void markDirectReadRef.current(message.id).catch(() =>
+            chatService.markDirectMessageRead(message.id),
+          );
+        }
+
         return [
           {
             ...existingConversation,
-            lastPreview: `${chatMessage.isOwn ? "You: " : ""}${chatMessage.message}`,
+            lastPreview: `${chatMessage.isOwn ? "You: " : ""}${collapseChatPreview(chatMessage.message)}`,
             lastAt: chatMessage.timestamp,
             unreadCount: isActive || chatMessage.isOwn
               ? 0
               : existingConversation.unreadCount + 1,
             messages: messageExists
               ? existingConversation.messages
-              : [...existingConversation.messages, chatMessage],
+              : [
+                  ...existingConversation.messages.filter((item) => !item.id.startsWith("pending-")),
+                  chatMessage,
+                ],
           },
           ...prev.filter((conversation) => conversation.chatId !== message.chatId),
         ];
@@ -220,12 +263,20 @@ export const ChatView = () => {
 
   const {
     sendDirectMessage,
+    markDirectRead,
     isConnected,
     error: hubError,
   } = useAuctionHub({
     enabled: currentUserId != null,
     onDirectMessage: handleDirectMessage,
   });
+
+  markDirectReadRef.current = markDirectRead;
+
+  useEffect(() => {
+    if (!active || loadedChatIdsRef.current.has(active.chatId)) return;
+    void Promise.resolve().then(() => loadMessages(active.chatId, markDirectRead));
+  }, [active, loadMessages, markDirectRead]);
 
   const selectConversation = useCallback(
     (id: string) => {
@@ -247,14 +298,51 @@ export const ChatView = () => {
       return;
     }
 
+    const normalized = normalizeOutgoingChatText(text);
+    if (!normalized) return;
+
+    const now = new Date().toISOString();
+    const optimisticId = `pending-${Date.now()}`;
+    const optimisticMessage: IChatMessage = {
+      id: optimisticId,
+      userName: "You",
+      message: normalized,
+      timestamp: now,
+      isOwn: true,
+    };
+
+    setConversations((prev) => {
+      const updated = prev.map((conversation) =>
+        conversation.chatId === active.chatId
+          ? {
+              ...conversation,
+              lastPreview: `You: ${collapseChatPreview(normalized)}`,
+              lastAt: now,
+              messages: [...conversation.messages, optimisticMessage],
+            }
+          : conversation,
+      );
+      const current = updated.find((conversation) => conversation.chatId === active.chatId);
+      if (!current) return updated;
+      return [current, ...updated.filter((conversation) => conversation.chatId !== active.chatId)];
+    });
+
     setSendingChatId(active.chatId);
     setError(null);
 
     try {
-      await sendDirectMessage(active.otherUserId, text);
-      await loadMessages(active.chatId);
-      await loadConversations();
+      await sendDirectMessage(active.otherUserId, normalized);
     } catch {
+      setConversations((prev) =>
+        prev.map((conversation) =>
+          conversation.chatId === active.chatId
+            ? {
+                ...conversation,
+                messages: conversation.messages.filter((message) => message.id !== optimisticId),
+              }
+            : conversation,
+        ),
+      );
       setError("Failed to send message.");
     } finally {
       setSendingChatId(null);
@@ -266,21 +354,21 @@ export const ChatView = () => {
   const visibleError = error ?? (hubError ? "Realtime chat connection failed." : null);
 
   return (
-    <div className="p-5 md:p-7 max-w-7xl mx-auto flex flex-col min-h-0">
+    <div className="p-5 md:p-7 max-w-7xl mx-auto flex flex-col min-h-0 h-[calc(100dvh-4.5rem)] max-h-[calc(100dvh-4.5rem)]">
       <PageHeader
         label="Messages"
         title="Chats"
       />
 
       {visibleError && (
-        <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-[13px] text-red-200">
+        <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-[13px] text-red-200 shrink-0">
           {visibleError}
         </div>
       )}
 
-      <div className="flex flex-col lg:flex-row gap-4 min-h-0 flex-1">
+      <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0 overflow-hidden">
         {showThreadColumn && (
-          <section className={`flex-1 min-w-0 flex flex-col ${isMobile && mobileShowList ? "hidden" : ""}`}>
+          <section className={`flex-1 min-w-0 min-h-0 flex flex-col ${isMobile && mobileShowList ? "hidden" : ""}`}>
             {isLoadingConversations ? (
               <div className="rounded-2xl border border-border-primary bg-surface-secondary/30 flex flex-col items-center justify-center min-h-[320px] px-6 text-center">
                 <p className="text-content-primary font-semibold mb-1">Loading chats...</p>
@@ -290,6 +378,7 @@ export const ChatView = () => {
               </div>
             ) : active ? (
               <ChatThreadPanel
+                className="flex-1 min-h-0 max-h-none h-full"
                 title={active.title}
                 subtitle={active.subtitle}
                 peerUserName={active.peerUserName}
@@ -312,7 +401,7 @@ export const ChatView = () => {
           </section>
         )}
         {showListColumn && (
-          <aside className={`w-full shrink-0 lg:w-[min(100%,380px)] ${!isMobile ? "" : showThreadColumn ? "hidden" : ""}`}>
+          <aside className={`w-full shrink-0 lg:w-[min(100%,380px)] min-h-0 flex flex-col ${!isMobile ? "h-full" : ""} ${!isMobile ? "" : showThreadColumn ? "hidden" : ""}`}>
             <ConversationList
               items={conversations}
               activeId={activeId}

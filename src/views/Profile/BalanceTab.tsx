@@ -1,32 +1,34 @@
 "use client";
 
 import { useState } from "react";
-import { useTopUpBalance } from "@/src/hooks/useTopUpBalance";
+import { useBalanceTopUp } from "@/src/hooks/useBalanceTopUp";
 import { Button } from "@/src/components/ui/Button";
 import { Input } from "@/src/components/ui/Input";
+import { formatCurrency } from "@/src/utils/textUtils";
 import { useToast } from "@/src/components/ui/Toast";
+import { consumePostTopUpRedirect, peekPostTopUpRedirect } from "@/src/utils/paymentStorage";
+import { topUpError, topUpLog } from "@/src/utils/topUpDebugLog";
 
 import { BalanceInfo } from "./components/BalanceInfo";
 import { PromoCodeField } from "./components/PromoCodeField";
 import { PaymentSummary } from "./components/PaymentSummary";
 import { SecurePaymentFooter } from "./components/SecurePaymentFooter";
 
-type BalanceTabProps = {
+interface BalanceTabProps {
   balance?: number;
-  onTopUpSuccess?: () => void;
-};
+  isConfirmingPayment?: boolean;
+}
 
-export const BalanceTab = ({ balance = 0, onTopUpSuccess }: BalanceTabProps) => {
+export const BalanceTab = ({ balance = 0, isConfirmingPayment = false }: BalanceTabProps) => {
   const [amount, setAmount] = useState("");
   const [promoCode, setPromoCode] = useState("");
-  const [promoBonus, setPromoBonus] = useState(0); // percentage bonus
-  const { topUpAndPay, isLoading } = useTopUpBalance();
+  const [promoBonus, setPromoBonus] = useState(0);
+  const { startTopUp, isLoading, minAmount, maxAmount } = useBalanceTopUp();
   const { showToast } = useToast();
 
   const handleApplyPromo = (code: string) => {
     setPromoCode(code);
     if (!code) return;
-    // Mock promo logic
     if (code.toUpperCase() === "LUXURY10") {
       setPromoBonus(10);
       showToast("success", "Promo code applied: +10% bonus!");
@@ -45,24 +47,28 @@ export const BalanceTab = ({ balance = 0, onTopUpSuccess }: BalanceTabProps) => 
 
   const handleTopUp = async () => {
     const amountVal = Number(amount);
+    topUpLog("balanceTab.handleTopUp.click", {
+      rawAmount: amount,
+      amountVal,
+      currentBalance: balance,
+      pendingRedirect: peekPostTopUpRedirect(),
+    });
+
     if (!amountVal || amountVal <= 0) {
+      topUpLog("balanceTab.handleTopUp.invalidAmount", { amountVal });
       showToast("error", "Please enter a valid amount");
       return;
     }
 
-    try {
-      const result = await topUpAndPay(amountVal);
+    const clearedRedirect = consumePostTopUpRedirect();
+    topUpLog("balanceTab.handleTopUp.clearedRedirect", { clearedRedirect });
 
-      if (result.status === "approved") {
-        showToast("success", "Balance successfully topped up!");
-        setAmount("");
-        onTopUpSuccess?.();
-      } else {
-        showToast("error", "Payment was not successful.");
-      }
+    try {
+      await startTopUp(amountVal);
+      topUpLog("balanceTab.handleTopUp.startTopUpReturned", { amountVal });
     } catch (err) {
-      console.error(err);
-      const message = err instanceof Error ? err.message : "Payment failed or was cancelled";
+      topUpError("balanceTab.handleTopUp.failed", err, { amountVal });
+      const message = err instanceof Error ? err.message : "Failed to start payment";
       showToast("error", message);
     }
   };
@@ -71,6 +77,12 @@ export const BalanceTab = ({ balance = 0, onTopUpSuccess }: BalanceTabProps) => 
 
   return (
     <div className="bg-auth-app border border-border-primary rounded-lg p-6 md:p-8 animate-bvFadeIn">
+      {isConfirmingPayment && (
+        <div className="mb-4 rounded-xl border border-brand-primary/30 bg-brand-primary/10 px-4 py-3 text-[13px] text-content-primary">
+          Confirming your payment… Balance will update shortly.
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
         <BalanceInfo balance={balance} />
 
@@ -84,9 +96,13 @@ export const BalanceTab = ({ balance = 0, onTopUpSuccess }: BalanceTabProps) => 
               placeholder="Enter amount"
               value={amount}
               onChange={setAmount}
-              className="mb-4"
+              className="mb-2"
               inputSize="lg"
             />
+            <p className="text-[11px] text-content-tertiary">
+              Min {formatCurrency(minAmount, "after")} · max {formatCurrency(maxAmount, "after")}. You pay the
+              amount entered; promo bonus is display-only until supported by the server.
+            </p>
           </div>
 
           <div className="mb-2">
@@ -127,8 +143,8 @@ export const BalanceTab = ({ balance = 0, onTopUpSuccess }: BalanceTabProps) => 
               variant="primary"
               className="w-full h-14 text-[0.95rem] font-bold uppercase tracking-wider shadow-[0_10px_30px_-5px_rgba(240,165,0,0.2)]"
               onClick={handleTopUp}
-              isLoading={isLoading}
-              disabled={!amount || Number(amount) <= 0}
+              isLoading={isLoading || isConfirmingPayment}
+              disabled={!amount || Number(amount) <= 0 || isConfirmingPayment}
             >
               Add Balance
             </Button>
