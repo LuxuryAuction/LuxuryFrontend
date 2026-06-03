@@ -60,9 +60,8 @@ function ShowcaseFilledSlot({ badge, index = 0 }: { badge: IProfileBadge; index?
       style={{ animationDelay: `${index * 0.07}s` }}
       className={[
         "group/slot relative flex h-full flex-col items-center overflow-hidden rounded-xl border border-border-primary bg-auth-app pt-5 pb-4 px-3 text-center animate-bvCatFadeUp",
-        "transition-[transform,border-color,box-shadow] duration-300 ease-out",
+        "transition-[transform,border-color] duration-300 ease-out",
         "sm:hover:-translate-y-1 sm:hover:border-brand-primary/30",
-        rarityStyle.glow,
       ].join(" ")}
     >
       {/* rarity-tinted glow from the top on hover (desktop) */}

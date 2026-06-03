@@ -1,6 +1,6 @@
 import type { IProfileBadgesResponse } from "./profileHome.types";
 
-export const MOCK_PROFILE_BADGES: IProfileBadgesResponse = {
+export const MOCK_PROFILE_BADGES_RESPONSE: IProfileBadgesResponse = {
   badges: [
     {
       badgeType: "welcome",
@@ -8,7 +8,7 @@ export const MOCK_PROFILE_BADGES: IProfileBadgesResponse = {
       badgeTitle: "На платформі",
       badgeDescription: "Приєдналися до AuctiqueBids і почали свій шлях.",
       isCollected: true,
-      isFavourite: false,
+      isFavourite: true,
     },
     {
       badgeType: "veteran",
@@ -23,8 +23,8 @@ export const MOCK_PROFILE_BADGES: IProfileBadgesResponse = {
       badgeRare: "epic",
       badgeTitle: "Два роки легенди",
       badgeDescription: "Два роки як активний учасник спільноти.",
-      isCollected: false,
-      isFavourite: false,
+      isCollected: true,
+      isFavourite: true,
     },
     {
       badgeType: "first_listing",
@@ -33,14 +33,6 @@ export const MOCK_PROFILE_BADGES: IProfileBadgesResponse = {
       badgeDescription: "Виставили або продали перший лот.",
       isCollected: true,
       isFavourite: false,
-    },
-    {
-      badgeType: "active_seller",
-      badgeRare: "rare",
-      badgeTitle: "Активний продавець",
-      badgeDescription: "Зараз є активні лоти на аукціоні.",
-      isCollected: true,
-      isFavourite: true,
     },
     {
       badgeType: "seller_10",
@@ -55,7 +47,7 @@ export const MOCK_PROFILE_BADGES: IProfileBadgesResponse = {
       badgeRare: "epic",
       badgeTitle: "Елітний продавець",
       badgeDescription: "Завершили 50+ продажів лотів.",
-      isCollected: false,
+      isCollected: true,
       isFavourite: false,
     },
     {
@@ -63,7 +55,7 @@ export const MOCK_PROFILE_BADGES: IProfileBadgesResponse = {
       badgeRare: "legendary",
       badgeTitle: "Силовий продавець",
       badgeDescription: "Завершили 100+ продажів — вищий рівень.",
-      isCollected: false,
+      isCollected: true,
       isFavourite: false,
     },
     {
@@ -72,14 +64,14 @@ export const MOCK_PROFILE_BADGES: IProfileBadgesResponse = {
       badgeTitle: "Перша перемога",
       badgeDescription: "Виграли перший лот на аукціоні.",
       isCollected: true,
-      isFavourite: true,
+      isFavourite: false,
     },
     {
       badgeType: "collector",
       badgeRare: "rare",
       badgeTitle: "Колекціонер",
       badgeDescription: "Виграли 10+ лотів на аукціоні.",
-      isCollected: false,
+      isCollected: true,
       isFavourite: false,
     },
     {
@@ -87,7 +79,7 @@ export const MOCK_PROFILE_BADGES: IProfileBadgesResponse = {
       badgeRare: "epic",
       badgeTitle: "Меценат",
       badgeDescription: "Виграли 25+ лотів — серйозний колекціонер.",
-      isCollected: false,
+      isCollected: true,
       isFavourite: false,
     },
     {
@@ -96,14 +88,6 @@ export const MOCK_PROFILE_BADGES: IProfileBadgesResponse = {
       badgeTitle: "Верифікований",
       badgeDescription: "Особу та статус продавця підтверджено платформою.",
       isCollected: true,
-      isFavourite: true,
-    },
-    {
-      badgeType: "trust_75",
-      badgeRare: "rare",
-      badgeTitle: "Надійний учасник",
-      badgeDescription: "Рейтинг довіри 75 і вище.",
-      isCollected: true,
       isFavourite: false,
     },
     {
@@ -111,27 +95,19 @@ export const MOCK_PROFILE_BADGES: IProfileBadgesResponse = {
       badgeRare: "legendary",
       badgeTitle: "Золота довіра",
       badgeDescription: "Рейтинг довіри 90+ — зразкова репутація.",
-      isCollected: false,
-      isFavourite: false,
-    },
-    {
-      badgeType: "clean_record",
-      badgeRare: "common",
-      badgeTitle: "Хороша репутація",
-      badgeDescription: "Стабільний рейтинг довіри на платформі.",
       isCollected: true,
-      isFavourite: false,
+      isFavourite: true,
     },
   ],
   achievements: {
-    collected: 9,
-    total: 15,
-    percent: 60,
+    collected: 12,
+    total: 12,
+    percent: 100,
     byRarity: [
-      { rarity: "common", collected: 4, total: 4 },
-      { rarity: "rare", collected: 4, total: 5 },
-      { rarity: "epic", collected: 1, total: 4 },
-      { rarity: "legendary", collected: 0, total: 2 },
+      { rarity: "common", collected: 3, total: 3 },
+      { rarity: "rare", collected: 4, total: 4 },
+      { rarity: "epic", collected: 3, total: 3 },
+      { rarity: "legendary", collected: 2, total: 2 },
     ],
   },
 };

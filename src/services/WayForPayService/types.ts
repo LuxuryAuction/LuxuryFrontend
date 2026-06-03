@@ -1,23 +1,3 @@
-export interface IWayForPayWidgetParams {
-  merchantAccount: string;
-  merchantDomainName: string;
-  authorizationType: string;
-  merchantSignature: string;
-  orderReference: string;
-  orderDate: string;
-  amount: string;
-  currency: string;
-  productName: string;
-  productPrice: string;
-  productCount: string;
-  clientFirstName?: string;
-  clientLastName?: string;
-  clientEmail?: string;
-  clientPhone?: string;
-  language?: string;
-  straightWidget?: boolean;
-}
-
 export interface IWayForPayResponse {
   merchantAccount: string;
   orderReference: string;
@@ -41,23 +21,7 @@ export interface IWayForPayResponse {
   paymentSystem: string;
 }
 
-export interface IWayForPaySignRequest {
-  orderReference: string;
-  orderDate: number;
-  amount: number;
-  currency: string;
-  productName: string[];
-  productCount: number[];
-  productPrice: number[];
-}
-
-export interface IWayForPaySignResponse {
-  merchantAccount: string;
-  merchantDomainName: string;
-  merchantSignature: string;
-}
-
-export type WayForPayResult = 
+export type WayForPayResult =
   | { status: "approved"; response: IWayForPayResponse }
   | { status: "declined"; response: IWayForPayResponse }
   | { status: "pending"; response: IWayForPayResponse };

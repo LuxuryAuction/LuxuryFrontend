@@ -190,13 +190,12 @@
     "buttons": {
       "reset": "Очистити",
       "publishing": "Публікуємо…",
-      "processingPayment": "Обробка платежу…",
       "publishLot": "Опублікувати",
-      "publishLotWithPrice": "Опублікувати ({price})"
+      "publishLotWithPrice": "Опублікувати ({price})",
+      "topUpBalance": "Поповнити баланс"
     },
     "toasts": {
-      "paymentFailed": "Оплата не пройшла. Будь ласка, спробуйте ще раз.",
-      "paymentSuccess": "Оплата успішна! Створюємо лот...",
+      "insufficientBalance": "Недостатньо коштів на балансі. Поповніть баланс, щоб опублікувати лот.",
       "createFailed": "Не вдалося створити лот"
     }
   },

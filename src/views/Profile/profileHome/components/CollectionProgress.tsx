@@ -67,7 +67,7 @@ export function CollectionProgress({ achievements, nextBadge = null }: Collectio
   return (
     <div className="flex h-full flex-col justify-center gap-6 p-5 md:p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:gap-10">
-        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 shrink-0 text-center sm:text-left">
+        <div className="flex flex-col items-center gap-4 sm:gap-6 shrink-0 text-center sm:text-left">
           <ProgressRing value={percent} size={120}>
             <span className="text-[1.65rem] sm:text-[1.85rem] font-black text-content-primary tabular-nums leading-none">
               {percent}%
@@ -77,9 +77,13 @@ export function CollectionProgress({ achievements, nextBadge = null }: Collectio
             </span>
           </ProgressRing>
 
-          {remaining > 0 && (
+          {remaining > 0 ? (
             <p className="text-[13px] text-content-secondary max-w-[200px] leading-relaxed">
               {t("progressRemaining", { count: remaining })}
+            </p>
+          ) : (
+            <p className="text-[13px] text-content-secondary max-w-[200px] leading-relaxed text-center">
+              {t("allCollected")}
             </p>
           )}
         </div>

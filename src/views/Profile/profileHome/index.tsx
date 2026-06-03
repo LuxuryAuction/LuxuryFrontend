@@ -9,10 +9,11 @@ import type { IProfile } from "../types";
 import { PROFILE_RARITY_ORDER } from "./profileHome.config";
 import type { ProfileBadgeStatusFilter } from "./profileHome.types";
 import { PROFILE_HOME_MAX_FAVOURITES } from "./profileHome.types";
-import { useProfileBadges } from "./useProfileBadges";
+import { useProfileHome } from "./useProfileHome";
 import { ProfileHomeIntro } from "./components/ProfileHomeIntro";
 import { ProfileHomePanels } from "./components/ProfileHomePanels";
 import { BadgeTile } from "./components/BadgeTile";
+import { AvatarWardrobe } from "./components/AvatarWardrobe";
 
 interface ProfileHomeProps {
   profile: IProfile;
@@ -23,7 +24,17 @@ export function ProfileHome({ profile, isMe = false }: ProfileHomeProps) {
   const t = useTranslations("ProfileHome");
   const [status, setStatus] = useState<ProfileBadgeStatusFilter>("all");
 
-  const { badges, achievements, toggleFavourite } = useProfileBadges(profile.userName);
+  const {
+    badges,
+    achievements,
+    wearables,
+    totalCount,
+    paneCount,
+    equippedLoadout,
+    toggleFavourite,
+    equipWearable,
+    unequipWearable,
+  } = useProfileHome();
 
   const showcaseBadges = useMemo(() => {
     const favourites = badges.filter((b) => b.isFavourite && b.isCollected);
@@ -99,6 +110,18 @@ export function ProfileHome({ profile, isMe = false }: ProfileHomeProps) {
         />
       </section>
 
+      {isMe && (
+        <AvatarWardrobe
+          profile={profile}
+          wearables={wearables}
+          totalCount={totalCount}
+          paneCount={paneCount}
+          equippedLoadout={equippedLoadout}
+          onEquip={equipWearable}
+          onUnequip={unequipWearable}
+        />
+      )}
+
       <Tabs
         tabs={statusTabs}
         activeTab={status}
@@ -107,14 +130,15 @@ export function ProfileHome({ profile, isMe = false }: ProfileHomeProps) {
       />
 
       {filteredBadges.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+        <div className="-mx-5 flex items-stretch snap-x snap-mandatory gap-3 overflow-x-auto pb-2 pl-[max(1.25rem,calc((100%-340px)/2))] pr-[max(1.25rem,calc((100%-340px)/2))] [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 sm:pl-0 sm:pr-0 lg:grid-cols-3 md:gap-6 [&::-webkit-scrollbar]:hidden">
           {filteredBadges.map((badge) => (
-            <BadgeTile
-              key={badge.badgeType}
-              badge={badge}
-              canFavourite={isMe}
-              onToggleFavourite={() => toggleFavourite(badge.badgeType)}
-            />
+            <div key={badge.badgeType} className="flex w-[340px] shrink-0 snap-center sm:block sm:w-auto sm:min-w-0">
+              <BadgeTile
+                badge={badge}
+                canFavourite={isMe}
+                onToggleFavourite={() => toggleFavourite(badge.badgeType)}
+              />
+            </div>
           ))}
         </div>
       ) : (

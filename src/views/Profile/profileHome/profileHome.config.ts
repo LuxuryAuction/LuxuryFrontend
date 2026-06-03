@@ -7,6 +7,18 @@ export const PROFILE_RARITY_ORDER: ProfileBadgeRarity[] = [
   "legendary",
 ];
 
+
+/** Ширина картки в горизонтальному скролі на mobile (Tailwind: w-[340px]) */
+export const PROFILE_HOME_MOBILE_CARD_WIDTH_PX = 340;
+
+/** Карток на одну «сторінку» гардеробу: 3 колонки × 2 ряди */
+export const PROFILE_WARDROBE_ITEMS_PER_PANE = 6;
+
+export function getWardrobePaneCount(totalCount: number): number {
+  if (totalCount <= 0) return 1;
+  return Math.ceil(totalCount / PROFILE_WARDROBE_ITEMS_PER_PANE);
+}
+
 export const PROFILE_BADGE_RARITY_STYLES: Record<
   ProfileBadgeRarity,
   { ring: string; glow: string; label: string; halo: string }
