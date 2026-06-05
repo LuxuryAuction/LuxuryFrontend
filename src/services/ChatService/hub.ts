@@ -24,11 +24,14 @@ export const AUCTION_HUB_METHODS = {
 
 /**
  * Auction hub — direct messages and other realtime events.
- * JWT is passed via accessTokenFactory (?access_token=... on /hubs/*).
+ * JWT is passed via accessTokenFactory (?access_token=... on the hub URL).
+ *
+ * On Vercel/localhost we use /api/hubs/... so the existing app/api/[...path] proxy
+ * forwards to the backend (plain /hubs/... often 404s on Vercel deployments).
  */
 function buildAuctionHubUrl(apiHostBase: string): string {
   if (!apiHostBase) {
-    return `/${AUCTION_HUB_PATH}`;
+    return `/api/${AUCTION_HUB_PATH}`;
   }
 
   if (apiHostBase.startsWith("http://") || apiHostBase.startsWith("https://")) {
