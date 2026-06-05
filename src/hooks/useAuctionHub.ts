@@ -53,7 +53,12 @@ export const useAuctionHub = ({
       })
       .catch((err) => {
         setIsConnected(false);
-        setError(err instanceof Error ? err : new Error("Realtime connection failed"));
+        const message =
+          err instanceof Error ? err.message : "Realtime connection failed";
+        if (process.env.NODE_ENV === "development") {
+          console.error("[AuctionHub] connection failed:", err);
+        }
+        setError(new Error(message));
       });
 
     connection.onreconnected(() => setIsConnected(true));

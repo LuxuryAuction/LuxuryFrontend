@@ -2,7 +2,7 @@ import { getAccessToken, getRefreshToken, setSession, clearSession } from "../ut
 import { IAuthTokens } from "./AuthService/types";
 import {
   extractPathBaseFromApiEndpoint,
-  shouldProxyHubThroughDevServer,
+  shouldUseSameOriginHub,
 } from "./apiUrls";
 
 export interface ApiError {
@@ -51,8 +51,8 @@ export function getApiBaseUrl(): string {
 export function getApiHostBaseUrl(): string {
   const pathBase = extractPathBaseFromApiEndpoint(process.env.NEXT_PUBLIC_API_ENDPOINT);
 
-  // Local dev: use /hubs/* on the Next origin (rewrite adds backend PathBase server-side).
-  if (shouldProxyHubThroughDevServer()) {
+  // Same-origin /hubs/* — dev + HTTPS deployments proxy to the backend (see next.config rewrites).
+  if (shouldUseSameOriginHub()) {
     return "";
   }
 
