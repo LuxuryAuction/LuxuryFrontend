@@ -1,6 +1,7 @@
 import * as signalR from "@microsoft/signalr";
-import { LogLevel } from "@microsoft/signalr";
+import { HttpTransportType, LogLevel } from "@microsoft/signalr";
 import { getApiHostBaseUrl } from "../apiService";
+import { shouldUseSameOriginHub } from "../apiUrls";
 import { getAccessToken } from "@/src/utils/session";
 
 export const AUCTION_HUB_PATH = "hubs/auction";
@@ -40,10 +41,13 @@ function buildAuctionHubUrl(apiHostBase: string): string {
 
 export function createAuctionHub() {
   const hubUrl = buildAuctionHubUrl(getApiHostBaseUrl());
+  // Vercel/serverless cannot proxy WebSocket upgrades; long-polling works via /hubs route handler.
+  const useLongPollingOnly = shouldUseSameOriginHub();
 
   return new signalR.HubConnectionBuilder()
     .withUrl(hubUrl, {
       accessTokenFactory: () => getAccessToken() ?? "",
+      ...(useLongPollingOnly ? { transport: HttpTransportType.LongPolling } : {}),
     })
     .withAutomaticReconnect()
     .configureLogging(process.env.NODE_ENV === "development" ? LogLevel.Warning : LogLevel.Error)
