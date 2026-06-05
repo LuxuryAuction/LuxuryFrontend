@@ -193,7 +193,8 @@
       "processingPayment": "Обробка платежу…",
       "confirmingPayment": "Підтвердження оплати…",
       "publishLot": "Опублікувати",
-      "publishLotWithPrice": "Опублікувати ({price})"
+      "publishLotWithPrice": "Опублікувати ({price})",
+      "topUpBalance": "Поповнити баланс"
     },
     "toasts": {
       "paymentFailed": "Оплата не пройшла. Будь ласка, спробуйте ще раз.",

@@ -1,18 +1,14 @@
-import type React from "react";
+import { forwardRef, type ComponentProps } from "react";
 import {
-  Award,
-  BadgeCheck,
   BadgeDollarSign,
   CalendarClock,
   Crown,
-  Gavel,
   Gem,
   Handshake,
   LockKeyhole,
   Medal,
   PackageCheck,
   Pin,
-  ShieldCheck,
   ShieldPlus,
   Store,
   Trophy,
@@ -26,7 +22,6 @@ export type BadgeIconId =
   | "veteran"
   | "anniversary"
   | "first_listing"
-  | "active_seller"
   | "seller_10"
   | "seller_50"
   | "power_seller"
@@ -34,12 +29,43 @@ export type BadgeIconId =
   | "collector"
   | "patron"
   | "verified"
-  | "trust_75"
   | "trust_90"
-  | "clean_record"
   | "lock";
 
-type IconProps = React.ComponentProps<LucideIcon>;
+type IconProps = ComponentProps<LucideIcon>;
+
+const VerifiedBadgeIcon = forwardRef<SVGSVGElement, IconProps>(function VerifiedBadgeIcon(
+  { className, ...props },
+  ref,
+) {
+  return (
+    <svg
+      ref={ref}
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      <rect width="48" height="48" fill="white" fillOpacity="0.01" />
+      <path
+        d="M24 4L29.2533 7.83204L35.7557 7.81966L37.7533 14.0077L43.0211 17.8197L41 24L43.0211 30.1803L37.7533 33.9923L35.7557 40.1803L29.2533 40.168L24 44L18.7467 40.168L12.2443 40.1803L10.2467 33.9923L4.97887 30.1803L7 24L4.97887 17.8197L10.2467 14.0077L12.2443 7.81966L18.7467 7.83204L24 4Z"
+        fill="#2F88FF"
+        stroke="#000000"
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M17 24L22 29L32 19"
+        stroke="white"
+        strokeWidth="4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}) as LucideIcon;
 
 export const BADGE_ICON_COLORS: Record<ProfileBadgeRarity, string> = {
   common: "text-content-light",
@@ -53,17 +79,14 @@ const ICONS: Record<BadgeIconId, LucideIcon> = {
   veteran: CalendarClock,
   anniversary: Medal,
   first_listing: PackageCheck,
-  active_seller: Gavel,
   seller_10: BadgeDollarSign,
   seller_50: Store,
   power_seller: Crown,
   first_win: Trophy,
   collector: Gem,
   patron: Handshake,
-  verified: BadgeCheck,
-  trust_75: ShieldCheck,
+  verified: VerifiedBadgeIcon,
   trust_90: ShieldPlus,
-  clean_record: Award,
   lock: LockKeyhole,
 };
 

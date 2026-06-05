@@ -193,7 +193,8 @@
       "processingPayment": "Processing payment...",
       "confirmingPayment": "Confirming payment...",
       "publishLot": "Publish",
-      "publishLotWithPrice": "Publish ({price})"
+      "publishLotWithPrice": "Publish ({price})",
+      "topUpBalance": "Top up balance"
     },
     "toasts": {
       "paymentFailed": "Payment failed. Please try again.",

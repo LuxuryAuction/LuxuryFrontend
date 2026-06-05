@@ -21,9 +21,9 @@ export function BadgeTile({ badge, canFavourite, onToggleFavourite }: BadgeTileP
   return (
     <article
       className={[
-        "group relative flex flex-col rounded-xl border p-4 transition-all duration-300",
+        "group relative flex h-full w-full flex-col rounded-xl border p-4 transition-all duration-300",
         isCollected
-          ? `border-border-primary bg-auth-app hover:border-brand-primary/30 ${rarityStyle.glow}`
+          ? "border-border-primary bg-auth-app hover:border-brand-primary/30"
           : "border-border-primary/60 bg-surface-secondary/40 opacity-75",
       ].join(" ")}
     >
@@ -64,20 +64,20 @@ export function BadgeTile({ badge, canFavourite, onToggleFavourite }: BadgeTileP
         {t(`rarity.${badge.badgeRare}`)}
       </div>
 
-      <h3 className="text-[0.85rem] font-bold text-content-light leading-tight mb-1">
+      <h3 className="mb-1 line-clamp-2 text-[0.85rem] font-bold leading-tight text-content-light max-sm:min-h-[2.5em]">
         {badge.badgeTitle}
       </h3>
 
-      <p className="text-[0.72rem] text-content-tertiary leading-relaxed flex-1">
+      <p className="line-clamp-3 flex-1 text-[0.72rem] leading-relaxed text-content-tertiary max-sm:min-h-[3.75em]">
         {badge.badgeDescription}
       </p>
 
       {isCollected ? (
-        <div className="mt-3 font-mono text-[0.58rem] text-[#22c55e] uppercase tracking-wider">
+        <div className="mt-auto pt-3 font-mono text-[0.58rem] uppercase tracking-wider text-[#22c55e]">
           {t("status.collected")}
         </div>
       ) : (
-        <div className="mt-3 font-mono text-[0.58rem] text-content-tertiary/80 uppercase tracking-wider">
+        <div className="mt-auto pt-3 font-mono text-[0.58rem] uppercase tracking-wider text-content-tertiary/80">
           {t("status.locked")}
         </div>
       )}

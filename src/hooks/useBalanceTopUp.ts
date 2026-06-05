@@ -3,7 +3,7 @@ import {
   startBalanceTopUp,
   TOP_UP_MAX_AMOUNT,
   TOP_UP_MIN_AMOUNT,
-} from "@/src/services/WayForPayService";
+} from "@/src/services/PaymentsService";
 import { topUpError, topUpLog, topUpWarn } from "@/src/utils/topUpDebugLog";
 
 interface ApiError {
