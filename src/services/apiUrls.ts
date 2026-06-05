@@ -56,3 +56,23 @@ export function shouldProxyHubThroughAppOrigin(): boolean {
 export function shouldUseSameOriginHub(): boolean {
   return shouldProxyHubThroughDevServer() || shouldProxyHubThroughAppOrigin();
 }
+
+/**
+ * Upstream URL for the Next.js `/api/[...path]` proxy.
+ * REST controllers: `{host}/luxury/api/...` — SignalR hubs: `{host}/luxury/hubs/...` (no `/api` in path).
+ */
+export function buildBackendProxyTargetUrl(pathSegments: string[]): string {
+  const configured = process.env.API_BACKEND_URL?.replace(/\/$/, "") ?? "";
+  const path = pathSegments.join("/");
+
+  if (pathSegments[0] === "hubs") {
+    const hostRoot = configured.replace(/\/api$/i, "");
+    return `${hostRoot}/${path}`;
+  }
+
+  if (configured.endsWith("/api")) {
+    return `${configured}/${path}`;
+  }
+
+  return `${configured}/api/${path}`;
+}
