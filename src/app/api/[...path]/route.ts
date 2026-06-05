@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { buildBackendProxyTargetUrl } from "@/src/services/apiUrls";
 
-const BACKEND_URL = process.env.API_BACKEND_URL?.replace(/\/$/, "");
+export const dynamic = "force-dynamic";
 
 const FORWARDED_HEADERS = [
   "authorization",
@@ -8,13 +9,14 @@ const FORWARDED_HEADERS = [
   "accept",
   "accept-language",
   "cookie",
+  "user-agent",
 ];
 
 async function proxyRequest(
   request: NextRequest,
   context: { params: Promise<{ path: string[] }> },
 ) {
-  if (!BACKEND_URL) {
+  if (!process.env.API_BACKEND_URL) {
     return NextResponse.json(
       { message: "API_BACKEND_URL is not configured on the server" },
       { status: 500 },
@@ -22,7 +24,15 @@ async function proxyRequest(
   }
 
   const { path } = await context.params;
-  const targetUrl = new URL(`${BACKEND_URL}/${path.join("/")}`);
+  const target = buildBackendProxyTargetUrl(path);
+  if (!target) {
+    return NextResponse.json(
+      { message: "Could not resolve backend proxy URL" },
+      { status: 500 },
+    );
+  }
+
+  const targetUrl = new URL(target);
 
   request.nextUrl.searchParams.forEach((value, key) => {
     targetUrl.searchParams.append(key, value);
@@ -37,7 +47,7 @@ async function proxyRequest(
   const hasBody = !["GET", "HEAD"].includes(request.method);
   const body = hasBody ? await request.arrayBuffer() : undefined;
 
-  const backendResponse = await fetch(targetUrl, {
+  const backendResponse = await fetch(targetUrl.toString(), {
     method: request.method,
     headers,
     body,
@@ -60,3 +70,4 @@ export const POST = proxyRequest;
 export const PUT = proxyRequest;
 export const PATCH = proxyRequest;
 export const DELETE = proxyRequest;
+export const OPTIONS = proxyRequest;
