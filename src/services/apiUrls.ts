@@ -35,3 +35,24 @@ export function shouldProxyHubThroughDevServer(): boolean {
     host.startsWith("192.168.")
   );
 }
+
+/**
+ * HTTPS pages cannot open WebSocket/HTTP connections to plain http:// backends (mixed content).
+ * Use same-origin /hubs/* (Next/Vercel rewrite → VPS) instead of NEXT_PUBLIC_SIGNALR_ENDPOINT.
+ */
+export function shouldProxyHubThroughAppOrigin(): boolean {
+  if (typeof window === "undefined") return false;
+  if (window.location.protocol !== "https:") return false;
+
+  const signalr = process.env.NEXT_PUBLIC_SIGNALR_ENDPOINT?.trim();
+  if (signalr?.startsWith("http://")) return true;
+
+  const api = process.env.NEXT_PUBLIC_API_ENDPOINT?.trim();
+  if (api?.startsWith("http://")) return true;
+
+  return false;
+}
+
+export function shouldUseSameOriginHub(): boolean {
+  return shouldProxyHubThroughDevServer() || shouldProxyHubThroughAppOrigin();
+}
