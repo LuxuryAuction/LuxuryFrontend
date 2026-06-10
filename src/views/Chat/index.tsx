@@ -18,6 +18,11 @@ import { ChatThreadPanel } from "./components/ChatThreadPanel";
 
 const EMPTY_PREVIEW = "No messages yet";
 
+function normalizeUserSlug(slug: string | null): string | null {
+  const trimmed = slug?.trim();
+  return trimmed ? trimmed.toLowerCase() : null;
+}
+
 function toChatMessage(message: IDirectMessageDto, currentUserId: number | null): IChatMessage {
   const isOwn = currentUserId != null && message.senderId === currentUserId;
 
@@ -58,23 +63,21 @@ export const ChatView = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentUserId = useSelector((state: RootState) => state.auth.userId);
+  const currentUserSlug = useSelector((state: RootState) => state.auth.userName);
   const activeIdRef = useRef<string | null>(null);
   const loadedChatIdsRef = useRef<Set<number>>(new Set());
   const userSelectedConversationRef = useRef(false);
-  const createdDirectChatForUserIdsRef = useRef<Set<number>>(new Set());
+  const createdDirectChatForSlugsRef = useRef<Set<string>>(new Set());
   const [conversations, setConversations] = useState<IConversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  const requestedUserId = useMemo(() => {
-    const value = searchParams.get("userId");
-    if (!value) return null;
-
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : null;
+  const requestedUserSlug = useMemo(() => {
+    const slug = searchParams.get("user") ?? searchParams.get("userName");
+    return slug?.trim() || null;
   }, [searchParams]);
 
-  const requestedUserName = searchParams.get("userName");
-  const hasDeepLink = requestedUserId != null || requestedUserName != null;
+  const normalizedRequestedSlug = normalizeUserSlug(requestedUserSlug);
+  const hasDeepLink = normalizedRequestedSlug != null;
   const [mobileShowList, setMobileShowList] = useState(true);
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
   const [loadingMessagesChatId, setLoadingMessagesChatId] = useState<number | null>(null);
@@ -153,25 +156,33 @@ export const ChatView = () => {
     try {
       let directChats = await chatService.getDirectChats();
 
-      const existingRequestedChat = requestedUserId
-        ? directChats.find((chat) => chat.otherUser.id === requestedUserId)
+      const existingRequestedChat = normalizedRequestedSlug
+        ? directChats.find(
+          (chat) => chat.otherUser.userName.toLowerCase() === normalizedRequestedSlug,
+        )
         : null;
 
+      const isSelfChat =
+        normalizedRequestedSlug != null &&
+        currentUserSlug != null &&
+        normalizedRequestedSlug === currentUserSlug.toLowerCase();
+
       if (
-        requestedUserId &&
-        requestedUserId !== currentUserId &&
+        requestedUserSlug &&
+        normalizedRequestedSlug &&
+        !isSelfChat &&
         !existingRequestedChat &&
-        !createdDirectChatForUserIdsRef.current.has(requestedUserId)
+        !createdDirectChatForSlugsRef.current.has(normalizedRequestedSlug)
       ) {
-        createdDirectChatForUserIdsRef.current.add(requestedUserId);
+        createdDirectChatForSlugsRef.current.add(normalizedRequestedSlug);
         try {
-          const createdChat = await chatService.createDirectChat({ otherUserId: requestedUserId });
+          const createdChat = await chatService.createDirectChat({ otherUserName: requestedUserSlug });
           directChats = [
             createdChat,
             ...directChats.filter((chat) => chat.chatId !== createdChat.chatId),
           ];
         } catch {
-          createdDirectChatForUserIdsRef.current.delete(requestedUserId);
+          createdDirectChatForSlugsRef.current.delete(normalizedRequestedSlug);
           throw new Error("Failed to create direct chat.");
         }
       }
@@ -190,13 +201,15 @@ export const ChatView = () => {
         }),
       );
 
-      const requestedConversation = requestedUserId
-        ? mappedConversations.find((conversation) => conversation.otherUserId === requestedUserId)
-        : requestedUserName
+      const requestedConversation = normalizedRequestedSlug
         ? mappedConversations.find(
-          (conversation) => conversation.peerUserName.toLowerCase() === requestedUserName.toLowerCase(),
+          (conversation) => conversation.peerUserName.toLowerCase() === normalizedRequestedSlug,
         )
         : null;
+
+      if (hasDeepLink && !requestedConversation) {
+        throw new Error("Could not open chat with this user.");
+      }
 
       setActiveId((currentActiveId) => {
         if (hasDeepLink && requestedConversation) {
@@ -217,22 +230,22 @@ export const ChatView = () => {
       if (hasDeepLink && requestedConversation) {
         router.replace("/user/chat");
       }
-    } catch {
-      setError("Failed to load chats.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load chats.");
     } finally {
       hasLoadedConversationsRef.current = true;
       if (showFullScreenLoading) {
         setIsLoadingConversations(false);
       }
     }
-  }, [currentUserId, requestedUserId, requestedUserName, hasDeepLink, router]);
+  }, [currentUserId, currentUserSlug, requestedUserSlug, normalizedRequestedSlug, hasDeepLink, router]);
 
   useEffect(() => {
     if (!hasDeepLink) return;
 
     userSelectedConversationRef.current = false;
     if (isMobile) setMobileShowList(false);
-  }, [hasDeepLink, requestedUserId, requestedUserName, isMobile]);
+  }, [hasDeepLink, requestedUserSlug, normalizedRequestedSlug, isMobile]);
 
   useEffect(() => {
     void loadConversations();

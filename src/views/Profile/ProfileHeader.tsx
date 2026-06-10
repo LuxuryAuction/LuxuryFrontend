@@ -28,12 +28,10 @@ export const ProfileHeader = ({
   const t = useTranslations("ProfilePage");
   const tReport = useTranslations("ReportModal");
 
-  const chatParams = new URLSearchParams();
-  chatParams.set("userId", String(profile.id));
-  if (profileUserName != null) {
-    chatParams.set("userName", profileUserName);
-  }
-  const chatHref = `/user/chat?${chatParams.toString()}`;
+  const peerSlug = profile.userName || profileUserName;
+  const chatHref = peerSlug
+    ? `/user/chat?user=${encodeURIComponent(peerSlug)}`
+    : "/user/chat";
 
   const userStats = [
     { val: String(profile.lotsSold), label: t("stats.lotsSold") },

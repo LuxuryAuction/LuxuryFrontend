@@ -36,5 +36,6 @@ export interface IDirectChatDto {
 }
 
 export interface ICreateDirectChatRequest {
-  otherUserId: number;
+  otherUserId?: number;
+  otherUserName?: string;
 }
