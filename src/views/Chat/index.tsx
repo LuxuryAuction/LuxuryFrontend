@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useSelector } from "react-redux";
+import { useRouter } from "@/src/i18n/navigation";
 import PageHeader from "@/src/components/ui/PageHeader";
 import { useAuctionHub } from "@/src/hooks/useAuctionHub";
 import { useIsMobile } from "@/src/hooks/useIsMobile";
@@ -53,25 +55,26 @@ function toConversation(chat: IDirectChatDto, currentUserId: number | null): ICo
 
 export const ChatView = () => {
   const isMobile = useIsMobile();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const currentUserId = useSelector((state: RootState) => state.auth.userId);
   const activeIdRef = useRef<string | null>(null);
   const loadedChatIdsRef = useRef<Set<number>>(new Set());
   const userSelectedConversationRef = useRef(false);
-  const requestedChatCreatedRef = useRef(false);
+  const createdDirectChatForUserIdsRef = useRef<Set<number>>(new Set());
   const [conversations, setConversations] = useState<IConversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [requestedUserId] = useState<number | null>(() => {
-    if (typeof window === "undefined") return null;
-    const value = new URLSearchParams(window.location.search).get("userId");
+
+  const requestedUserId = useMemo(() => {
+    const value = searchParams.get("userId");
     if (!value) return null;
 
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : null;
-  });
-  const [requestedUserName] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null;
-    return new URLSearchParams(window.location.search).get("userName");
-  });
+  }, [searchParams]);
+
+  const requestedUserName = searchParams.get("userName");
+  const hasDeepLink = requestedUserId != null || requestedUserName != null;
   const [mobileShowList, setMobileShowList] = useState(true);
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
   const [loadingMessagesChatId, setLoadingMessagesChatId] = useState<number | null>(null);
@@ -158,14 +161,19 @@ export const ChatView = () => {
         requestedUserId &&
         requestedUserId !== currentUserId &&
         !existingRequestedChat &&
-        !requestedChatCreatedRef.current
+        !createdDirectChatForUserIdsRef.current.has(requestedUserId)
       ) {
-        requestedChatCreatedRef.current = true;
-        const createdChat = await chatService.createDirectChat({ otherUserId: requestedUserId });
-        directChats = [
-          createdChat,
-          ...directChats.filter((chat) => chat.chatId !== createdChat.chatId),
-        ];
+        createdDirectChatForUserIdsRef.current.add(requestedUserId);
+        try {
+          const createdChat = await chatService.createDirectChat({ otherUserId: requestedUserId });
+          directChats = [
+            createdChat,
+            ...directChats.filter((chat) => chat.chatId !== createdChat.chatId),
+          ];
+        } catch {
+          createdDirectChatForUserIdsRef.current.delete(requestedUserId);
+          throw new Error("Failed to create direct chat.");
+        }
       }
 
       const mappedConversations = directChats
@@ -182,14 +190,18 @@ export const ChatView = () => {
         }),
       );
 
+      const requestedConversation = requestedUserId
+        ? mappedConversations.find((conversation) => conversation.otherUserId === requestedUserId)
+        : requestedUserName
+        ? mappedConversations.find(
+          (conversation) => conversation.peerUserName.toLowerCase() === requestedUserName.toLowerCase(),
+        )
+        : null;
+
       setActiveId((currentActiveId) => {
-        const requestedConversation = requestedUserId
-          ? mappedConversations.find((conversation) => conversation.otherUserId === requestedUserId)
-          : requestedUserName
-          ? mappedConversations.find(
-            (conversation) => conversation.peerUserName.toLowerCase() === requestedUserName.toLowerCase(),
-          )
-          : null;
+        if (hasDeepLink && requestedConversation) {
+          return requestedConversation.id;
+        }
 
         if (!userSelectedConversationRef.current && requestedConversation) {
           return requestedConversation.id;
@@ -201,6 +213,10 @@ export const ChatView = () => {
 
         return requestedConversation?.id ?? mappedConversations[0]?.id ?? null;
       });
+
+      if (hasDeepLink && requestedConversation) {
+        router.replace("/user/chat");
+      }
     } catch {
       setError("Failed to load chats.");
     } finally {
@@ -209,7 +225,14 @@ export const ChatView = () => {
         setIsLoadingConversations(false);
       }
     }
-  }, [currentUserId, requestedUserId, requestedUserName]);
+  }, [currentUserId, requestedUserId, requestedUserName, hasDeepLink, router]);
+
+  useEffect(() => {
+    if (!hasDeepLink) return;
+
+    userSelectedConversationRef.current = false;
+    if (isMobile) setMobileShowList(false);
+  }, [hasDeepLink, requestedUserId, requestedUserName, isMobile]);
 
   useEffect(() => {
     void loadConversations();
